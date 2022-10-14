@@ -6,9 +6,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import okhttp3.Interceptor
 import okhttp3.OkHttpClient
-import okhttp3.Response
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import javax.inject.Singleton
@@ -29,18 +27,16 @@ class DataModule {
 
     private fun getOkHttpClient(): OkHttpClient {
         val okHttpBuilder = OkHttpClient.Builder()
-        okHttpBuilder.addInterceptor(object : Interceptor{
-            override fun intercept(chain: Interceptor.Chain): Response {
-                val requestBuilder = chain.request()
-                    .newBuilder()
-                    .addHeader("x-api-key", API_KEY)
+        okHttpBuilder.addInterceptor { chain ->
+            val requestBuilder = chain.request()
+                .newBuilder()
+                .addHeader("x-api-key", API_KEY)
 
-                val request = requestBuilder.build()
-                val response = chain.proceed(request)
+            val request = requestBuilder.build()
+            val response = chain.proceed(request)
 
-                return response
-            }
-        })
+            response
+        }
 
         return okHttpBuilder.build()
     }
