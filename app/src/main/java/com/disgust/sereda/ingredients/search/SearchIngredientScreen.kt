@@ -43,7 +43,10 @@ fun SearchIngredientScreen(
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
             keyboardActions = KeyboardActions(onSearch = {
                 focusManager.clearFocus()
-                if (inputText.value.isNotBlank() && lastQuery.value != inputText.value) {
+                if (inputText.value.isNotBlank()
+                    && (lastQuery.value != inputText.value
+                            || ingredients.value is IngredientsListState.Error)
+                ) {
                     vm.getIngredients(inputText.value)
                     lastQuery.value = inputText.value
                 }
