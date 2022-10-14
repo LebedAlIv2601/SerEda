@@ -6,14 +6,14 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-fun <T : Any> ViewModel.doSingleRequest(
-    query: suspend () -> T,
-    doOnLoading: (() -> Unit)? = null,
-    doOnSuccess: (T) -> Unit,
-    doOnError: (Exception) -> Unit
+inline fun <T : Any> ViewModel.doSingleRequest(
+    crossinline query: suspend () -> T,
+    crossinline doOnLoading: () -> Unit = {},
+    crossinline doOnSuccess: (T) -> Unit,
+    crossinline doOnError: (Exception) -> Unit = {}
 ) {
     viewModelScope.launch {
-        doOnLoading?.invoke()
+        doOnLoading.invoke()
         try {
             val response = withContext(Dispatchers.IO) { query.invoke() }
             doOnSuccess.invoke(response)
