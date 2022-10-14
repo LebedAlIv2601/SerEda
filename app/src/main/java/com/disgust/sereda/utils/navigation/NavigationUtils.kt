@@ -1,11 +1,10 @@
-package com.disgust.sereda.utils
+package com.disgust.sereda.utils.navigation
 
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
-import com.disgust.sereda.navigation.Screen
 import com.google.accompanist.navigation.animation.composable
 
 @ExperimentalAnimationApi
