@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "263168925849",
+    "project_id": "sereda-bf52c",
+    "storage_bucket": "sereda-bf52c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:263168925849:android:fdd9cf728f6d0eb2539808",
+        "android_client_info": {
+          "package_name": "com.disgust.sereda"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "263168925849-ij6pfqttt5s94n4126o5snr1e6rqm9lq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBSAfbwZX6KMjcfkK73eIGZ3xz-7pkHFxM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "263168925849-ij6pfqttt5s94n4126o5snr1e6rqm9lq.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
