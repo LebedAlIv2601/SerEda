@@ -1,6 +1,6 @@
-package com.disgust.sereda.ingredients.search.di
+package com.disgust.sereda.ingredients.di
 
-import com.disgust.sereda.ingredients.search.data.SearchIngredientApi
+import com.disgust.sereda.ingredients.data.SearchIngredientApi
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

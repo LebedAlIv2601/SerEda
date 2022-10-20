@@ -8,28 +8,38 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NamedNavArgument
-import androidx.navigation.NavDeepLink
-import androidx.navigation.NavHostController
-import com.disgust.sereda.ingredients.search.SearchIngredientScreen
+import androidx.navigation.*
+import com.disgust.sereda.ingredients.screens.info.IngredientInfoScreen
+import com.disgust.sereda.ingredients.screens.search.SearchIngredientScreen
 
 sealed class Screen(
     val route: String,
     val arguments: List<NamedNavArgument> = emptyList(),
     val deepLinks: List<NavDeepLink> = emptyList(),
-    val screenDrawFun: @Composable (NavHostController) -> Unit
+    val screenDrawFun: @Composable (NavHostController, NavBackStackEntry) -> Unit
 ) {
 
     @ExperimentalComposeUiApi
     object Screen1 :
-        Screen(route = "screen1", screenDrawFun = { Screen1Screen(navController = it) })
+        Screen(route = "screen1", screenDrawFun = { navController, _ ->
+            Screen1Screen(navController = navController)
+        })
 
     @ExperimentalComposeUiApi
-    object SearchIngredient : Screen(route = "search_ingredient", screenDrawFun = {
-        SearchIngredientScreen(
-            navController = it
-        )
-    })
+    object SearchIngredient :
+        Screen(route = "search_ingredient", screenDrawFun = { navController, _ ->
+            SearchIngredientScreen(
+                navController = navController
+            )
+        })
+
+    object IngredientInfo : Screen(
+        route = "ingredient_info/{ingredientId}",
+        arguments = listOf(navArgument("ingredientId") { type = NavType.IntType }),
+        screenDrawFun = { navController, navBackStackEntry ->
+            val id = navBackStackEntry.arguments?.getInt("ingredientId")
+            IngredientInfoScreen(navController = navController, ingredientId = id ?: 0)
+        })
 }
 
 //TODO: Примеры экранов, переписать на другие

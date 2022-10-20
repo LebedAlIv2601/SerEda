@@ -1,4 +1,4 @@
-package com.disgust.sereda.ingredients.search.model
+package com.disgust.sereda.ingredients.screens.search.model
 
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
