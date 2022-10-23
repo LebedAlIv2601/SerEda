@@ -1,5 +1,7 @@
 package com.disgust.sereda.utils
 
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
@@ -20,5 +22,14 @@ inline fun <T : Any> ViewModel.doSingleRequest(
         } catch (e: Exception) {
             doOnError.invoke(e)
         }
+    }
+}
+
+@Composable
+inline fun DoOnInit(
+    crossinline func: () -> Unit
+) {
+    LaunchedEffect(key1 = Unit) {
+        func.invoke()
     }
 }
