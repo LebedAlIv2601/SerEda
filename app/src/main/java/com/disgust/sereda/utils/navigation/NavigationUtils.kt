@@ -18,6 +18,18 @@ fun NavGraphBuilder.createDestination(screen: Screen, navController: NavHostCont
         popEnterTransition = { EnterTransition.None },
         popExitTransition = { ExitTransition.None }
     ) {
-        screen.screenDrawFun(navController)
+        screen.screenDrawFun(navController, it)
     }
+}
+
+fun NavHostController.navigateWithArguments(
+    destination: String,
+    arguments: Map<String, String>
+) {
+    var destinationWithArgs = destination
+    for (argument in arguments) {
+        destinationWithArgs = destinationWithArgs
+            .replace("{${argument.key}}", argument.value)
+    }
+    navigate(destinationWithArgs)
 }
