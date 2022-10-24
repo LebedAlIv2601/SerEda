@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
 import androidx.navigation.NavHostController
+import com.disgust.sereda.auth.phone.interaction.PhoneEnterUIEvent
 
 @Composable
 fun PhoneEnterScreen(
@@ -40,7 +41,7 @@ fun PhoneEnterScreen(
             }),
             onValueChange = { inputText.value = it }
         )
-        Button(onClick = {}) {
+        Button(onClick = { PhoneEnterUIEvent.ButtonGetCodeClick(phone = inputText.value) }) {
             Text(text = "Get code")
         }
     }

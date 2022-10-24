@@ -9,6 +9,7 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.*
+import com.disgust.sereda.auth.phone.PhoneEnterScreen
 import com.disgust.sereda.ingredients.screens.info.IngredientInfoScreen
 import com.disgust.sereda.ingredients.screens.search.SearchIngredientScreen
 
@@ -40,6 +41,13 @@ sealed class Screen(
             val id = navBackStackEntry.arguments?.getInt("ingredientId")
             IngredientInfoScreen(navController = navController, ingredientId = id ?: 0)
         })
+
+    object PhoneEnter : Screen(
+        route = "phone_enter",
+        screenDrawFun = { navController, _ ->
+            PhoneEnterScreen(navController = navController)
+        }
+    )
 }
 
 //TODO: Примеры экранов, переписать на другие

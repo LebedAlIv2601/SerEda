@@ -1,13 +1,18 @@
 package com.disgust.sereda.auth.phone
 
-import androidx.lifecycle.ViewModel
+import com.disgust.sereda.auth.phone.interaction.PhoneEnterUIEvent
+import com.disgust.sereda.utils.base.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 
 @HiltViewModel
-class PhoneEnterViewModel : ViewModel() {
+class PhoneEnterViewModel : BaseViewModel<PhoneEnterUIEvent>() {
 
-    fun getCode(phone: String) {
+    override fun onEvent(event: PhoneEnterUIEvent) {
+        when (event) {
+            is PhoneEnterUIEvent.ButtonGetCodeClick -> {
 
+            }
+        }
     }
 
 }
