@@ -6,7 +6,7 @@ import retrofit2.http.Path
 
 interface InfoRecipeApi {
 
-    @GET("recipes/{id}/information?includeNutrition=false")
+    @GET("recipes/{id}/information?includeNutrition=true")
     suspend fun getRecipeInfo(@Path("id") id: Int): RecipeInfoResponse
 
 }
