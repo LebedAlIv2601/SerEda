@@ -8,4 +8,7 @@ sealed class IngredientsListUIEvent : BaseUIEvent {
     class SearchClick(val query: String) : IngredientsListUIEvent()
     class ListItemClick(val item: IngredientItem, val navController: NavHostController) :
         IngredientsListUIEvent()
+
+    class InputTextChange(val text: String) : IngredientsListUIEvent()
+    object KeyboardInitShow : IngredientsListUIEvent()
 }

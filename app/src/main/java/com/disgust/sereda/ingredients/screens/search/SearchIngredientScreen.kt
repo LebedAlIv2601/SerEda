@@ -8,7 +8,10 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -32,12 +35,13 @@ fun SearchIngredientScreen(
     vm: SearchIngredientViewModel = hiltViewModel()
 ) {
     val ingredientsState = vm.ingredientListState.collectAsState()
+    val inputText = vm.inputText.collectAsState()
+    val showKeyboard = vm.showKeyboard.collectAsState()
 
-    val showKeyboard = remember { mutableStateOf(true) }
-    val inputText = remember { mutableStateOf("") }
     val focusRequester = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
     val keyboard = LocalSoftwareKeyboardController.current
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -50,7 +54,7 @@ fun SearchIngredientScreen(
                 focusManager.clearFocus()
                 vm.onEvent(IngredientsListUIEvent.SearchClick(inputText.value))
             }),
-            onValueChange = { inputText.value = it },
+            onValueChange = { vm.onEvent(IngredientsListUIEvent.InputTextChange(it)) },
             modifier = Modifier.focusRequester(focusRequester)
         )
 
@@ -75,6 +79,7 @@ fun SearchIngredientScreen(
         if (showKeyboard.value) {
             focusRequester.requestFocus()
             keyboard?.show()
+            vm.onEvent(IngredientsListUIEvent.KeyboardInitShow)
         }
     }
 }
