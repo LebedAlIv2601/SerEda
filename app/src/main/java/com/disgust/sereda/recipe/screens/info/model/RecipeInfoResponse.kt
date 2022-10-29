@@ -30,7 +30,7 @@ data class RecipeInfoResponse(
     val ingredients: List<Ingredient>?,
 
     @Json(name = "nutrition")
-    val nutrition: List<Nutrition>?,
+    val nutrition: Nutrition?,
 )
 
 @JsonClass(generateAdapter = true)
@@ -103,18 +103,6 @@ data class StepRecipe(
 
     @Json(name = "equipment")
     val equipment: List<Equipment>,
-
-    @Json(name = "length")
-    val length: StepTime?
-)
-
-@JsonClass(generateAdapter = true)
-data class StepTime(
-    @Json(name = "number")
-    val time: Int,
-
-    @Json(name = "unit")
-    val unit: String
 )
 
 @JsonClass(generateAdapter = true)
