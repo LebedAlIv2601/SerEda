@@ -18,7 +18,7 @@ fun IngredientInfoScreen(
     val ingredientInfoState = vm.ingredientInfoState.collectAsState()
 
     DoOnInit {
-        vm.onEvent(IngredientInfoUIEvent.StartScreen(ingredientId))
+        vm.onUIEvent(IngredientInfoUIEvent.StartScreen(ingredientId))
     }
 
     Text(

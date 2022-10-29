@@ -2,6 +2,7 @@ package com.disgust.sereda.utils.di
 
 import com.disgust.sereda.utils.Constants.API_KEY
 import com.disgust.sereda.utils.Constants.BASE_URL
+import com.disgust.sereda.utils.FirebaseHelper
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -24,6 +25,10 @@ class DataModule {
             .client(getOkHttpClient())
             .build()
     }
+
+    @Singleton
+    @Provides
+    fun getFirebaseHelper(): FirebaseHelper = FirebaseHelper()
 
     private fun getOkHttpClient(): OkHttpClient {
         val okHttpBuilder = OkHttpClient.Builder()

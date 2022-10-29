@@ -1,5 +1,6 @@
 package com.disgust.sereda.utils.navigation
 
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Text
@@ -9,9 +10,11 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.*
+import com.disgust.sereda.auth.code.CodeEnterScreen
 import com.disgust.sereda.auth.phone.PhoneEnterScreen
 import com.disgust.sereda.ingredients.screens.info.IngredientInfoScreen
 import com.disgust.sereda.ingredients.screens.search.SearchIngredientScreen
+import com.disgust.sereda.splash.SplashScreen
 
 sealed class Screen(
     val route: String,
@@ -19,6 +22,15 @@ sealed class Screen(
     val deepLinks: List<NavDeepLink> = emptyList(),
     val screenDrawFun: @Composable (NavHostController, NavBackStackEntry) -> Unit
 ) {
+
+    @ExperimentalComposeUiApi
+    @ExperimentalAnimationApi
+    object Splash : Screen(
+        route = "splash",
+        screenDrawFun = { navController, _ ->
+            SplashScreen(navController = navController)
+        }
+    )
 
     @ExperimentalComposeUiApi
     object Screen1 :
@@ -42,10 +54,20 @@ sealed class Screen(
             IngredientInfoScreen(navController = navController, ingredientId = id ?: 0)
         })
 
+    @ExperimentalComposeUiApi
+    @ExperimentalAnimationApi
     object PhoneEnter : Screen(
         route = "phone_enter",
         screenDrawFun = { navController, _ ->
             PhoneEnterScreen(navController = navController)
+        }
+    )
+
+    @ExperimentalComposeUiApi
+    object CodeEnter : Screen(
+        route = "code_enter",
+        screenDrawFun = { navController, _ ->
+            CodeEnterScreen(navController = navController)
         }
     )
 }

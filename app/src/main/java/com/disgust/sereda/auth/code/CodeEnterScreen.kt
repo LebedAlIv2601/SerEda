@@ -1,7 +1,5 @@
-package com.disgust.sereda.auth.phone
+package com.disgust.sereda.auth.code
 
-import android.util.Log
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -23,19 +21,19 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import com.disgust.sereda.auth.phone.interaction.PhoneEnterUIEvent
-import com.disgust.sereda.auth.phone.interaction.RequestSendCodeState
-import com.disgust.sereda.auth.phone.interaction.SendCodeState
+import com.disgust.sereda.auth.code.interaction.CodeEnterUIEvent
+import com.disgust.sereda.auth.code.interaction.CodeVerificationState
+import com.disgust.sereda.auth.code.interaction.RequestVerifyCodeState
 
 @ExperimentalComposeUiApi
-@ExperimentalAnimationApi
 @Composable
-fun PhoneEnterScreen(
+fun CodeEnterScreen(
     navController: NavHostController,
-    vm: PhoneEnterViewModel = hiltViewModel()
+    vm: CodeEnterViewModel = hiltViewModel()
 ) {
-    val sendCodeState = vm.sendCodeState.collectAsState()
-    val requestSendCodeState = vm.requestSendState.collectAsState()
+
+    val codeVerificationState = vm.codeVerificationState.collectAsState()
+    val requestVerifyCodeState = vm.requestVerifyCodeState.collectAsState()
 
     val inputText = remember { mutableStateOf("") }
     val focusManager = LocalFocusManager.current
@@ -57,25 +55,25 @@ fun PhoneEnterScreen(
             }),
             onValueChange = { inputText.value = it }
         )
-        when (sendCodeState.value) {
-            is SendCodeState.Error -> Text(text = (sendCodeState.value as SendCodeState.Error).error)
-            is SendCodeState.Success -> vm.onUIEvent(
-                PhoneEnterUIEvent.SmsCodeSentSuccessfully(
+        when (codeVerificationState.value) {
+            CodeVerificationState.WRONG -> Text(text = "Неверный код")
+            CodeVerificationState.RIGHT -> vm.onUIEvent(
+                CodeEnterUIEvent.RightCodeEntered(
                     navController
                 )
             )
             else -> {}
         }
-        when (requestSendCodeState.value) {
-            is RequestSendCodeState.Error -> Text(text = (requestSendCodeState.value as RequestSendCodeState.Error).error)
+        when (requestVerifyCodeState.value) {
+            is RequestVerifyCodeState.Error ->
+                Text(text = (requestVerifyCodeState.value as RequestVerifyCodeState.Error).error)
             else -> {}
         }
         Button(onClick = {
-            Log.e("9", "getCode called")
-            vm.onUIEvent(PhoneEnterUIEvent.ButtonGetCodeClick(phone = inputText.value))
+            vm.onUIEvent(CodeEnterUIEvent.ButtonEnterCodeClick(code = inputText.value))
         }
         ) {
-            Text(text = "Get code")
+            Text(text = "Verify code")
         }
     }
 }

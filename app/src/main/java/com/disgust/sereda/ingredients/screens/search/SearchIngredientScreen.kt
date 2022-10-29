@@ -52,9 +52,9 @@ fun SearchIngredientScreen(
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
             keyboardActions = KeyboardActions(onSearch = {
                 focusManager.clearFocus()
-                vm.onEvent(IngredientsListUIEvent.SearchClick(inputText.value))
+                vm.onUIEvent(IngredientsListUIEvent.SearchClick(inputText.value))
             }),
-            onValueChange = { vm.onEvent(IngredientsListUIEvent.InputTextChange(it)) },
+            onValueChange = { vm.onUIEvent(IngredientsListUIEvent.InputTextChange(it)) },
             modifier = Modifier.focusRequester(focusRequester)
         )
 
@@ -62,7 +62,7 @@ fun SearchIngredientScreen(
             is IngredientsListState.Loading -> Text("Loading")
             is IngredientsListState.Success ->
                 IngredientsList((ingredientsState.value as IngredientsListState.Success).data) {
-                    vm.onEvent(
+                    vm.onUIEvent(
                         IngredientsListUIEvent.ListItemClick(
                             navController = navController,
                             item = it
@@ -79,7 +79,7 @@ fun SearchIngredientScreen(
         if (showKeyboard.value) {
             focusRequester.requestFocus()
             keyboard?.show()
-            vm.onEvent(IngredientsListUIEvent.KeyboardInitShow)
+            vm.onUIEvent(IngredientsListUIEvent.KeyboardInitShow)
         }
     }
 }

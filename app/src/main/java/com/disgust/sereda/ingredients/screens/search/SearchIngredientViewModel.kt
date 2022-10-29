@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import com.disgust.sereda.ingredients.data.SearchIngredientRepository
 import com.disgust.sereda.ingredients.screens.search.interaction.IngredientsListState
 import com.disgust.sereda.ingredients.screens.search.interaction.IngredientsListUIEvent
-import com.disgust.sereda.utils.base.EventHandler
+import com.disgust.sereda.utils.base.UIEventHandler
 import com.disgust.sereda.utils.doSingleRequest
 import com.disgust.sereda.utils.navigation.Screen
 import com.disgust.sereda.utils.navigation.navigateWithArguments
@@ -17,7 +17,7 @@ import javax.inject.Inject
 @HiltViewModel
 class SearchIngredientViewModel @Inject constructor(
     private val repository: SearchIngredientRepository
-) : ViewModel(), EventHandler<IngredientsListUIEvent> {
+) : ViewModel(), UIEventHandler<IngredientsListUIEvent> {
 
     private val _ingredientsListState =
         MutableStateFlow<IngredientsListState>(IngredientsListState.Waiting)
@@ -49,7 +49,7 @@ class SearchIngredientViewModel @Inject constructor(
         )
     }
 
-    override fun onEvent(event: IngredientsListUIEvent) {
+    override fun onUIEvent(event: IngredientsListUIEvent) {
         when (event) {
             is IngredientsListUIEvent.SearchClick -> {
                 if (event.query.isNotBlank()
