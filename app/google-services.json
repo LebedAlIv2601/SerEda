@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "263168925849-19amjvbdad6e7ophur4eurlf7bg0loge.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.disgust.sereda",
+            "certificate_hash": "a99894370fe0d155a28b6a54d29f028c49a3fe5b"
+          }
+        },
+        {
           "client_id": "263168925849-ij6pfqttt5s94n4126o5snr1e6rqm9lq.apps.googleusercontent.com",
           "client_type": 3
         }
