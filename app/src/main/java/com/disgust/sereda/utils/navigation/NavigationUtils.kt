@@ -33,3 +33,11 @@ fun NavHostController.navigateWithArguments(
     }
     navigate(destinationWithArgs)
 }
+
+fun NavHostController.navigateWithClearBackStack(
+    destination: String
+) {
+    navigate(destination) {
+        popUpTo(0)
+    }
+}

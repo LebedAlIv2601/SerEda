@@ -18,7 +18,7 @@ fun RecipeInfoScreen(
     val recipeInfoState = vm.recipeInfoState.collectAsState()
 
     DoOnInit {
-        vm.onEvent(RecipeInfoUIEvent.StartScreen(recipeId))
+        vm.onUIEvent(RecipeInfoUIEvent.StartScreen(recipeId))
     }
 
     Text(
