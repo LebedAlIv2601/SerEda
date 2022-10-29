@@ -15,6 +15,7 @@ import com.disgust.sereda.auth.phone.PhoneEnterScreen
 import com.disgust.sereda.ingredients.screens.info.IngredientInfoScreen
 import com.disgust.sereda.ingredients.screens.search.SearchIngredientScreen
 import com.disgust.sereda.splash.SplashScreen
+import com.disgust.sereda.recipe.screens.info.RecipeInfoScreen
 
 sealed class Screen(
     val route: String,
@@ -70,6 +71,14 @@ sealed class Screen(
             CodeEnterScreen(navController = navController)
         }
     )
+
+    object RecipeInfo : Screen(
+        route = "recipe_info/{recipeId}",
+        arguments = listOf(navArgument("recipeId") { type = NavType.IntType }),
+        screenDrawFun = { navController, navBackStackEntry ->
+            val id = navBackStackEntry.arguments?.getInt("recipeId")
+            RecipeInfoScreen(navController = navController, recipeId = id ?: 0)
+        })
 }
 
 //TODO: Примеры экранов, переписать на другие
@@ -97,6 +106,22 @@ fun Screen1Screen(
                 contentAlignment = Alignment.Center
             ) {
                 Text(text = "2")
+            }
+
+            Box(
+                modifier = Modifier
+                    .padding(8.dp)
+                    .height(50.dp)
+                    .width(50.dp)
+                    .clickable {
+                        navController.navigateWithArguments(
+                            Screen.RecipeInfo.route,
+                            mapOf("recipeId" to "716429")
+                        )
+                    },
+                contentAlignment = Alignment.Center
+            ) {
+                Text(text = "3")
             }
         }
     }

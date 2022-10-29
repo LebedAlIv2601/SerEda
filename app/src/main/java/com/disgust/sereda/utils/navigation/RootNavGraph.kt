@@ -20,5 +20,6 @@ fun RootNavGraph(navController: NavHostController) {
         createDestination(Screen.PhoneEnter, navController)
         createDestination(Screen.CodeEnter, navController)
         createDestination(Screen.Splash, navController)
+        createDestination(Screen.RecipeInfo, navController)
     }
 }
