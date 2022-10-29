@@ -91,4 +91,7 @@ dependencies {
     //Accompanist
     implementation "com.google.accompanist:accompanist-navigation-animation:0.26.5-rc"
 
+    //logging okhttp3
+    implementation("com.squareup.okhttp3:logging-interceptor:3.9.0")
+
 }
