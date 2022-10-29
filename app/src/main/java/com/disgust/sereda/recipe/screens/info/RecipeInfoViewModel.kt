@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import com.disgust.sereda.recipe.data.InfoRecipeRepository
 import com.disgust.sereda.recipe.screens.info.interaction.RecipeInfoState
 import com.disgust.sereda.recipe.screens.info.interaction.RecipeInfoUIEvent
-import com.disgust.sereda.utils.base.EventHandler
+import com.disgust.sereda.utils.base.UIEventHandler
 import com.disgust.sereda.utils.doSingleRequest
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,13 +14,13 @@ import javax.inject.Inject
 @HiltViewModel
 class RecipeInfoViewModel @Inject constructor(
     private val repository: InfoRecipeRepository
-) : ViewModel(), EventHandler<RecipeInfoUIEvent> {
+) : ViewModel(), UIEventHandler<RecipeInfoUIEvent> {
 
     private val _recipeInfoState =
         MutableStateFlow<RecipeInfoState>(RecipeInfoState.Loading)
     val recipeInfoState = _recipeInfoState.asStateFlow()
 
-    override fun onEvent(event: RecipeInfoUIEvent) {
+    override fun onUIEvent(event: RecipeInfoUIEvent) {
         when (event) {
             is RecipeInfoUIEvent.StartScreen -> getRecipeInfo(event.id)
             is RecipeInfoUIEvent.ButtonRestartClick -> getRecipeInfo(event.id)

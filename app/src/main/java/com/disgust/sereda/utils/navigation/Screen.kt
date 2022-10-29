@@ -14,8 +14,8 @@ import com.disgust.sereda.auth.code.CodeEnterScreen
 import com.disgust.sereda.auth.phone.PhoneEnterScreen
 import com.disgust.sereda.ingredients.screens.info.IngredientInfoScreen
 import com.disgust.sereda.ingredients.screens.search.SearchIngredientScreen
-import com.disgust.sereda.splash.SplashScreen
 import com.disgust.sereda.recipe.screens.info.RecipeInfoScreen
+import com.disgust.sereda.splash.SplashScreen
 
 sealed class Screen(
     val route: String,
