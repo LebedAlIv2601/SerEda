@@ -26,6 +26,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         mainActivity = this
+        setTheme(R.style.Theme_SerEda)
         super.onCreate(savedInstanceState)
         setContent {
             SerEdaTheme {
