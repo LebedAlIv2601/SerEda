@@ -19,6 +19,10 @@ class AuthRepository @Inject constructor(private val firebaseHelper: FirebaseHel
         MutableStateFlow(CodeVerificationState.WAITING)
     val codeVerificationState = _codeVerificationState.asStateFlow()
 
+    fun clearSendCodeState() {
+        _sendCodeState.value = SendCodeState.Waiting
+    }
+
     @ExperimentalAnimationApi
     @ExperimentalComposeUiApi
     fun getCode(phone: String) {
