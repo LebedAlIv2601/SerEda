@@ -26,13 +26,21 @@ class PhoneEnterViewModel @Inject constructor(private val repository: AuthReposi
         MutableStateFlow<RequestSendCodeState>(RequestSendCodeState.NoErrors)
     val requestSendState = _requestSendState.asStateFlow()
 
+    private val _inputText =
+        MutableStateFlow("")
+    val inputText = _inputText.asStateFlow()
+
     override fun onUIEvent(event: PhoneEnterUIEvent) {
         when (event) {
             is PhoneEnterUIEvent.ButtonGetCodeClick -> {
-                getCode(event.phone)
+                getCode(_inputText.value)
             }
             is PhoneEnterUIEvent.SmsCodeSentSuccessfully -> {
+                repository.clearSendCodeState()
                 event.navController.navigate(Screen.CodeEnter.route)
+            }
+            is PhoneEnterUIEvent.InputTextChange -> {
+                _inputText.value = event.text
             }
         }
     }

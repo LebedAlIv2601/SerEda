@@ -13,8 +13,6 @@ import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -37,7 +35,7 @@ fun PhoneEnterScreen(
     val sendCodeState = vm.sendCodeState.collectAsState()
     val requestSendCodeState = vm.requestSendState.collectAsState()
 
-    val inputText = remember { mutableStateOf("") }
+    val inputText = vm.inputText.collectAsState()
     val focusManager = LocalFocusManager.current
     Column(
         modifier = Modifier
@@ -55,7 +53,7 @@ fun PhoneEnterScreen(
             keyboardActions = KeyboardActions(onDone = {
                 focusManager.clearFocus()
             }),
-            onValueChange = { inputText.value = it }
+            onValueChange = { vm.onUIEvent(PhoneEnterUIEvent.InputTextChange(it)) }
         )
         when (sendCodeState.value) {
             is SendCodeState.Error -> Text(text = (sendCodeState.value as SendCodeState.Error).error)
@@ -72,7 +70,7 @@ fun PhoneEnterScreen(
         }
         Button(onClick = {
             Log.e("9", "getCode called")
-            vm.onUIEvent(PhoneEnterUIEvent.ButtonGetCodeClick(phone = inputText.value))
+            vm.onUIEvent(PhoneEnterUIEvent.ButtonGetCodeClick)
         }
         ) {
             Text(text = "Get code")
