@@ -1,6 +1,6 @@
 package com.disgust.sereda.recipe.di
 
-import com.disgust.sereda.recipe.data.InfoRecipeApi
+import com.disgust.sereda.recipe.data.RecipeApi
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -9,9 +9,9 @@ import retrofit2.Retrofit
 
 @Module
 @InstallIn(SingletonComponent::class)
-class InfoRecipeModule {
+class RecipeModule {
     @Provides
-    fun provideInfoRecipeApi(retrofit: Retrofit): InfoRecipeApi {
-        return retrofit.create(InfoRecipeApi::class.java)
+    fun provideInfoRecipeApi(retrofit: Retrofit): RecipeApi {
+        return retrofit.create(RecipeApi::class.java)
     }
 }

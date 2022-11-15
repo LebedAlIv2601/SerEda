@@ -3,7 +3,7 @@ package com.disgust.sereda.recipe.screens.info.model
 data class RecipeInfo(
     val id: Int,
     val name: String,
-    val image: String,
+    val image: String?,
     val time: Int,
     val servings: Int,
     val instructions: List<StepRecipeInstruction>?,
