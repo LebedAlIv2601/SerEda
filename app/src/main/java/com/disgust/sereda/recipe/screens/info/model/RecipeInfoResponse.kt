@@ -12,7 +12,7 @@ data class RecipeInfoResponse(
     val name: String,
 
     @Json(name = "image")
-    val image: String,
+    val image: String?,
 
     @Json(name = "readyInMinutes")
     val time: Int,
@@ -63,7 +63,7 @@ data class Ingredient(
     val measures: Measures,
 
     @Json(name = "image")
-    val imageName: String,
+    val imageName: String?,
 )
 
 @JsonClass(generateAdapter = true)

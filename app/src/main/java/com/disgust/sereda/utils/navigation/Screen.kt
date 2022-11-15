@@ -15,6 +15,7 @@ import com.disgust.sereda.auth.phone.PhoneEnterScreen
 import com.disgust.sereda.ingredients.screens.info.IngredientInfoScreen
 import com.disgust.sereda.ingredients.screens.search.SearchIngredientScreen
 import com.disgust.sereda.recipe.screens.info.RecipeInfoScreen
+import com.disgust.sereda.recipe.screens.search.SearchRecipeScreen
 import com.disgust.sereda.splash.SplashScreen
 
 sealed class Screen(
@@ -72,6 +73,14 @@ sealed class Screen(
         }
     )
 
+    @ExperimentalComposeUiApi
+    object SearchRecipe :
+        Screen(route = "search_recipe", screenDrawFun = { navController, _ ->
+            SearchRecipeScreen(
+                navController = navController
+            )
+        })
+
     object RecipeInfo : Screen(
         route = "recipe_info/{recipeId}",
         arguments = listOf(navArgument("recipeId") { type = NavType.IntType }),
@@ -105,7 +114,7 @@ fun Screen1Screen(
                     },
                 contentAlignment = Alignment.Center
             ) {
-                Text(text = "2")
+                Text(text = "Search ingredient")
             }
 
             Box(
@@ -114,14 +123,11 @@ fun Screen1Screen(
                     .height(50.dp)
                     .width(50.dp)
                     .clickable {
-                        navController.navigateWithArguments(
-                            Screen.RecipeInfo.route,
-                            mapOf("recipeId" to "716429")
-                        )
+                        navController.navigate(Screen.SearchRecipe.route)
                     },
                 contentAlignment = Alignment.Center
             ) {
-                Text(text = "3")
+                Text(text = "Search recipe")
             }
         }
     }
