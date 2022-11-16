@@ -10,12 +10,6 @@ data class RecipeListResponse(
 )
 
 @JsonClass(generateAdapter = true)
-data class RecipeRandomListResponse(
-    @Json
-    val recipes: List<RecipeItem>
-)
-
-@JsonClass(generateAdapter = true)
 data class RecipeItem(
     @Json(name = "id")
     val id: Int,
