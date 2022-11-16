@@ -4,14 +4,14 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.ui.ExperimentalComposeUiApi
 import com.disgust.sereda.auth.code.interaction.CodeVerificationState
 import com.disgust.sereda.auth.phone.interaction.SendCodeState
-import com.disgust.sereda.utils.FirebaseHelper
+import com.disgust.sereda.utils.firebase.FirebaseAuthHelper
 import com.google.firebase.FirebaseTooManyRequestsException
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
 
-class AuthRepository @Inject constructor(private val firebaseHelper: FirebaseHelper) {
+class AuthRepository @Inject constructor(private val firebaseHelper: FirebaseAuthHelper) {
 
     private val _sendCodeState = MutableStateFlow<SendCodeState>(SendCodeState.Waiting)
     val sendCodeState = _sendCodeState.asStateFlow()

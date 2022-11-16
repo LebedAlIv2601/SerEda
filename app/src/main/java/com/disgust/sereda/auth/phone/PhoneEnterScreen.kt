@@ -1,6 +1,5 @@
 package com.disgust.sereda.auth.phone
 
-import android.util.Log
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -69,7 +68,6 @@ fun PhoneEnterScreen(
             else -> {}
         }
         Button(onClick = {
-            Log.e("9", "getCode called")
             vm.onUIEvent(PhoneEnterUIEvent.ButtonGetCodeClick)
         }
         ) {
