@@ -35,7 +35,7 @@ class SearchRecipeViewModel @Inject constructor(
 
     private fun getRecipes(query: String) {
         doSingleRequest(
-            query = { repository.searchRecipes(query) },
+            query = { repository.searchRecipes(query = query) },
             doOnLoading = {
                 _recipesListState.value = RecipesListState.Loading
             },
@@ -51,7 +51,7 @@ class SearchRecipeViewModel @Inject constructor(
 
     private fun getRandomRecipes() {
         doSingleRequest(
-            query = { repository.getRandomRecipes() },
+            query = { repository.searchRecipes(sort = "random") },
             doOnLoading = {
                 _recipesListState.value = RecipesListState.Loading
             },

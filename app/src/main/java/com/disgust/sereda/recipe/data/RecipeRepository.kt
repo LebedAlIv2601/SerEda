@@ -12,10 +12,7 @@ class RecipeRepository @Inject constructor(
     suspend fun getInfoRecipe(id: Int): RecipeInfo =
         api.getRecipeInfo(id).toRecipeInfo()
 
-    suspend fun searchRecipes(query: String): List<RecipeItem> =
-        api.searchRecipes(query).results
-
-    suspend fun getRandomRecipes(): List<RecipeItem> =
-        api.getRandomRecipes().recipes
+    suspend fun searchRecipes(query: String = "", sort: String = ""): List<RecipeItem> =
+        api.searchRecipes(query, sort).results
 
 }
