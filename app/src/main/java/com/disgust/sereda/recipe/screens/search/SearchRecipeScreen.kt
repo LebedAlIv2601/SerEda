@@ -15,9 +15,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.Check
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -35,6 +33,7 @@ import com.disgust.sereda.recipe.screens.search.interaction.RecipesListState
 import com.disgust.sereda.recipe.screens.search.interaction.RecipesListUIEvent
 import com.disgust.sereda.recipe.screens.search.model.RecipeItem
 import com.disgust.sereda.utils.DoOnInit
+import com.disgust.sereda.utils.commonViews.SearchView
 
 @ExperimentalComposeUiApi
 @Composable
@@ -46,10 +45,6 @@ fun SearchRecipeScreen(
     val inputText = vm.inputText.collectAsState()
     val showKeyboard = vm.showKeyboard.collectAsState()
 
-    val focusRequester = remember { FocusRequester() }
-    val focusManager = LocalFocusManager.current
-    val keyboard = LocalSoftwareKeyboardController.current
-
     DoOnInit {
         if (recipesState.value == RecipesListState.Waiting)
             vm.onUIEvent(RecipesListUIEvent.StartScreen)
@@ -60,15 +55,18 @@ fun SearchRecipeScreen(
             .fillMaxWidth()
             .fillMaxHeight()
     ) {
-        TextField(
+        SearchView(
             value = inputText.value,
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-            keyboardActions = KeyboardActions(onSearch = {
-                focusManager.clearFocus()
+            onSearch = {
                 vm.onUIEvent(RecipesListUIEvent.SearchClick(inputText.value))
-            }),
-            onValueChange = { vm.onUIEvent(RecipesListUIEvent.InputTextChange(it)) },
-            modifier = Modifier.focusRequester(focusRequester)
+            },
+            onValueChange = {
+                vm.onUIEvent(RecipesListUIEvent.InputTextChange(it))
+            },
+            showKeyboardValue = showKeyboard.value,
+            setShowKeyboard = {
+                vm.onUIEvent(RecipesListUIEvent.KeyboardInitShow)
+            }
         )
 
         when (recipesState.value) {
@@ -94,14 +92,6 @@ fun SearchRecipeScreen(
             else -> Text("")
         }
 
-    }
-
-    LaunchedEffect(focusRequester) {
-        if (showKeyboard.value) {
-            focusRequester.requestFocus()
-            keyboard?.show()
-            vm.onUIEvent(RecipesListUIEvent.KeyboardInitShow)
-        }
     }
 }
 
