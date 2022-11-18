@@ -13,17 +13,21 @@ class FirebaseDatabaseHelper {
     private val usersDatabaseReference: DatabaseReference = database.reference.child("users")
     private val userReference = auth.currentUser?.uid?.let { usersDatabaseReference.child(it) }
 
-    fun addFavoriteRecipe(recipe: FavoriteRecipeFirebaseModel) {
+    fun addFavoriteRecipe(recipe: FavoriteRecipeFirebaseModel, doOnComplete: () -> Unit) {
         doIfUserExists {
             it.child("favoriteRecipes")
-                .updateChildren(mapOf("/${recipe.id}" to recipe.toMap()))
+                .updateChildren(mapOf("/${recipe.id}" to recipe.toMap())).addOnCompleteListener {
+                    doOnComplete.invoke()
+                }
         }
 
     }
 
-    fun deleteFavoriteRecipe(recipe: FavoriteRecipeFirebaseModel) {
+    fun deleteFavoriteRecipe(recipe: FavoriteRecipeFirebaseModel, doOnComplete: () -> Unit) {
         doIfUserExists {
-            it.child("favoriteRecipes").child("${recipe.id}").removeValue()
+            it.child("favoriteRecipes").child(recipe.id).removeValue().addOnCompleteListener {
+                doOnComplete.invoke()
+            }
         }
     }
 

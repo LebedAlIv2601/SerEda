@@ -13,4 +13,16 @@ interface FavoriteRecipeDao {
 
     @Delete
     fun deleteFavoriteRecipe(recipe: FavoriteRecipeDBModel)
+
+    @Query("DELETE FROM favorite_recipes WHERE id NOT IN (:actualRecipesIds)")
+    fun deleteOldRecipes(actualRecipesIds: List<Int>)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertRecipeList(recipes: List<FavoriteRecipeDBModel>)
+
+    @Transaction
+    fun updateFavoriteRecipes(recipes: List<FavoriteRecipeDBModel>) {
+        insertRecipeList(recipes = recipes)
+        deleteOldRecipes(recipes.map { it.id })
+    }
 }

@@ -2,8 +2,8 @@ package com.disgust.sereda.recipe.screens.search
 
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import com.disgust.sereda.recipe.commonModel.RecipeFavoriteState
 import com.disgust.sereda.recipe.data.RecipeRepository
-import com.disgust.sereda.recipe.screens.search.interaction.RecipeFavoriteState
 import com.disgust.sereda.recipe.screens.search.interaction.RecipesListState
 import com.disgust.sereda.recipe.screens.search.interaction.RecipesListUIEvent
 import com.disgust.sereda.recipe.screens.search.model.RecipeItem
@@ -52,7 +52,10 @@ class SearchRecipeViewModel @Inject constructor(
             is RecipesListUIEvent.ListItemClick -> {
                 event.navController.navigateWithArguments(
                     destination = Screen.RecipeInfo.route,
-                    arguments = mapOf("recipeId" to event.item.id.toString())
+                    arguments = mapOf(
+                        "recipeId" to event.item.id.toString(),
+                        "favoriteState" to event.item.favoriteState.ordinal.toString()
+                    )
                 )
             }
 
@@ -65,17 +68,43 @@ class SearchRecipeViewModel @Inject constructor(
             }
 
             is RecipesListUIEvent.StartScreen -> {
-                getRandomRecipes()
+                if (_recipesListState.value is RecipesListState.Waiting) {
+                    getRandomRecipes()
+                } else if (_recipesListState.value is RecipesListState.Success) {
+                    updateListWithFavoriteIds()
+                }
             }
 
             is RecipesListUIEvent.ListItemButtonAddToFavoriteClick -> {
-                if (event.recipe.favoriteState is RecipeFavoriteState.NotFavorite) {
+                if (event.recipe.favoriteState == RecipeFavoriteState.NOT_FAVORITE) {
                     addRecipeToFavorite(event.recipe)
-                } else if (event.recipe.favoriteState is RecipeFavoriteState.Favorite) {
+                } else if (event.recipe.favoriteState == RecipeFavoriteState.FAVORITE) {
                     deleteRecipeFromFavorite(event.recipe)
                 }
             }
         }
+    }
+
+
+    private fun updateListWithFavoriteIds() {
+        doSingleRequest(
+            query = { repository.getFavoriteRecipeIds() },
+            doOnSuccess = { favoriteIds ->
+                val recipesList =
+                    (_recipesListState.value as RecipesListState.Success).data.toMutableList()
+                recipesList.forEachIndexed { index, recipe ->
+                    val isFavorite = favoriteIds.find { it == recipe.id } != null
+                    if (isFavorite) {
+                        recipesList[index] =
+                            recipe.copy(favoriteState = RecipeFavoriteState.FAVORITE)
+                    } else {
+                        recipesList[index] =
+                            recipe.copy(favoriteState = RecipeFavoriteState.NOT_FAVORITE)
+                    }
+                }
+                _recipesListState.value = RecipesListState.Success(recipesList)
+            }
+        )
     }
 
     private fun updateFavoriteIds() {
@@ -117,27 +146,19 @@ class SearchRecipeViewModel @Inject constructor(
     }
 
     private fun addRecipeToFavorite(recipe: RecipeItem) {
+        changeRecipeStateInList(recipe.id, RecipeFavoriteState.FAVORITE)
         doSingleRequest(
             query = { repository.addFavoriteRecipe(recipe) },
-            doOnLoading = { changeRecipeStateInList(recipe.id, RecipeFavoriteState.Loading) },
-            doOnSuccess = {
-                changeRecipeStateInList(recipe.id, RecipeFavoriteState.Favorite)
-                updateFavoriteIds()
-            },
-            doOnError = { changeRecipeStateInList(recipe.id, RecipeFavoriteState.NotFavorite) }
+            doOnSuccess = {}
         )
     }
 
 
     private fun deleteRecipeFromFavorite(recipe: RecipeItem) {
+        changeRecipeStateInList(recipe.id, RecipeFavoriteState.NOT_FAVORITE)
         doSingleRequest(
             query = { repository.deleteFavoriteRecipe(recipe) },
-            doOnLoading = { changeRecipeStateInList(recipe.id, RecipeFavoriteState.Loading) },
-            doOnSuccess = {
-                changeRecipeStateInList(recipe.id, RecipeFavoriteState.NotFavorite)
-                updateFavoriteIds()
-            },
-            doOnError = { changeRecipeStateInList(recipe.id, RecipeFavoriteState.Favorite) }
+            doOnSuccess = {}
         )
     }
 

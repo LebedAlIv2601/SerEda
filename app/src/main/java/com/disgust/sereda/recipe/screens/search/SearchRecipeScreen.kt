@@ -5,7 +5,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
@@ -20,7 +19,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import com.disgust.sereda.recipe.screens.search.interaction.RecipeFavoriteState
+import com.disgust.sereda.recipe.commonModel.RecipeFavoriteState
 import com.disgust.sereda.recipe.screens.search.interaction.RecipesListState
 import com.disgust.sereda.recipe.screens.search.interaction.RecipesListUIEvent
 import com.disgust.sereda.recipe.screens.search.model.RecipeItem
@@ -38,8 +37,7 @@ fun SearchRecipeScreen(
     val showKeyboard = vm.showKeyboard.collectAsState()
 
     DoOnInit {
-        if (recipesState.value == RecipesListState.Waiting)
-            vm.onUIEvent(RecipesListUIEvent.StartScreen)
+        vm.onUIEvent(RecipesListUIEvent.StartScreen)
     }
 
     Column(
@@ -116,7 +114,7 @@ fun RecipesList(
                     contentAlignment = Alignment.TopEnd
                 ) {
                     when (recipe.favoriteState) {
-                        is RecipeFavoriteState.NotFavorite -> {
+                        RecipeFavoriteState.NOT_FAVORITE -> {
                             Icon(
                                 imageVector = Icons.Outlined.Add,
                                 contentDescription = "",
@@ -126,15 +124,7 @@ fun RecipesList(
                                     .clickable { onAddToFavoriteButtonClick(recipe) }
                             )
                         }
-                        is RecipeFavoriteState.Loading -> {
-                            CircularProgressIndicator(
-                                modifier = Modifier
-                                    .padding(10.dp)
-                                    .width(40.dp)
-                                    .height(40.dp)
-                            )
-                        }
-                        is RecipeFavoriteState.Favorite -> {
+                        RecipeFavoriteState.FAVORITE -> {
                             Icon(
                                 imageVector = Icons.Outlined.Check,
                                 contentDescription = "",

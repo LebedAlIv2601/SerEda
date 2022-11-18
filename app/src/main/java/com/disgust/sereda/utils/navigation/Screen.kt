@@ -14,6 +14,7 @@ import com.disgust.sereda.auth.code.CodeEnterScreen
 import com.disgust.sereda.auth.phone.PhoneEnterScreen
 import com.disgust.sereda.ingredients.screens.info.IngredientInfoScreen
 import com.disgust.sereda.ingredients.screens.search.SearchIngredientScreen
+import com.disgust.sereda.recipe.commonModel.RecipeFavoriteState
 import com.disgust.sereda.recipe.screens.info.RecipeInfoScreen
 import com.disgust.sereda.recipe.screens.search.SearchRecipeScreen
 import com.disgust.sereda.splash.SplashScreen
@@ -82,11 +83,18 @@ sealed class Screen(
         })
 
     object RecipeInfo : Screen(
-        route = "recipe_info/{recipeId}",
-        arguments = listOf(navArgument("recipeId") { type = NavType.IntType }),
+        route = "recipe_info/{recipeId}/{favoriteState}",
+        arguments = listOf(
+            navArgument("recipeId") { type = NavType.IntType },
+            navArgument("favoriteState") { type = NavType.IntType }),
         screenDrawFun = { navController, navBackStackEntry ->
             val id = navBackStackEntry.arguments?.getInt("recipeId")
-            RecipeInfoScreen(navController = navController, recipeId = id ?: 0)
+            val state = navBackStackEntry.arguments?.getInt("favoriteState")
+            RecipeInfoScreen(
+                navController = navController,
+                recipeId = id ?: 0,
+                favoriteState = state ?: RecipeFavoriteState.NOT_FAVORITE.ordinal
+            )
         })
 }
 

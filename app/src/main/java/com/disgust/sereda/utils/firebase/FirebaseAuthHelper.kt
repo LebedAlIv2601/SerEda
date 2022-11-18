@@ -16,9 +16,10 @@ import java.util.concurrent.TimeUnit
 class FirebaseAuthHelper {
     private val auth = Firebase.auth
     private val database = FirebaseDatabase.getInstance()
+    private val usersDatabaseReference: DatabaseReference = database.reference.child("users")
+
     private var storedVerificationId: String? = ""
     private var resendToken: PhoneAuthProvider.ForceResendingToken? = null
-    private val usersDatabaseReference: DatabaseReference = database.reference.child("users")
 
     private fun createCallbacks(
         onVerificationFailed: ((FirebaseException) -> Unit)? = null,

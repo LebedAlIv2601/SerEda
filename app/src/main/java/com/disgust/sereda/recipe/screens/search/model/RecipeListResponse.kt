@@ -1,6 +1,6 @@
 package com.disgust.sereda.recipe.screens.search.model
 
-import com.disgust.sereda.recipe.screens.search.interaction.RecipeFavoriteState
+import com.disgust.sereda.recipe.commonModel.RecipeFavoriteState
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
@@ -29,5 +29,5 @@ data class RecipeItem(
 
     val image: String?,
 
-    val favoriteState: RecipeFavoriteState = RecipeFavoriteState.NotFavorite
+    val favoriteState: RecipeFavoriteState = RecipeFavoriteState.NOT_FAVORITE
 )
