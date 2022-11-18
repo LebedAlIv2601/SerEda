@@ -1,20 +1,22 @@
-package com.disgust.sereda.utils
+package com.disgust.sereda.utils.firebase
 
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.ui.ExperimentalComposeUiApi
 import com.disgust.sereda.MainActivity
+import com.disgust.sereda.utils.firebase.model.User
 import com.google.android.gms.tasks.Task
 import com.google.firebase.FirebaseException
-import com.google.firebase.auth.AuthResult
-import com.google.firebase.auth.PhoneAuthCredential
-import com.google.firebase.auth.PhoneAuthOptions
-import com.google.firebase.auth.PhoneAuthProvider
+import com.google.firebase.auth.*
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.ktx.Firebase
 import java.util.concurrent.TimeUnit
 
-class FirebaseHelper {
+class FirebaseAuthHelper {
     private val auth = Firebase.auth
+    private val database = FirebaseDatabase.getInstance()
+    private val usersDatabaseReference: DatabaseReference = database.reference.child("users")
 
     private var storedVerificationId: String? = ""
     private var resendToken: PhoneAuthProvider.ForceResendingToken? = null
@@ -73,7 +75,7 @@ class FirebaseHelper {
         }
     }
 
-    fun verifyCode(code: String, completeListener: (Task<AuthResult>) -> Unit = {}) {
+    fun verifyCode(code: String, completeListener: (Task<AuthResult>) -> Unit) {
         val credential = PhoneAuthProvider.getCredential(storedVerificationId!!, code)
         signInWithPhoneAuthCredential(credential, completeListener)
     }
@@ -84,7 +86,20 @@ class FirebaseHelper {
     ) {
         auth.signInWithCredential(credential)
             .addOnCompleteListener { task ->
+                usersDatabaseReference.child(auth.currentUser?.uid ?: "").get()
+                    .addOnCompleteListener {
+                        if (!it.result.exists()) {
+                            authUser(auth.currentUser)
+                        }
+                    }
                 completeListener.invoke(task)
             }
+    }
+
+    private fun authUser(user: FirebaseUser?) {
+        if (user != null) {
+            usersDatabaseReference.child(user.uid)
+                .setValue(User(user.uid, user.phoneNumber ?: "0"))
+        }
     }
 }
