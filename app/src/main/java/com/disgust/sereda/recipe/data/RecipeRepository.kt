@@ -51,26 +51,27 @@ class RecipeRepository @Inject constructor(
         db.favoriteRecipeDao().getFavoriteRecipes().map { it.id }
 
 
+    //add recipe to favorite
     fun addFavoriteRecipe(recipe: RecipeItem) {
         db.favoriteRecipeDao().insertFavoriteRecipe(recipe.toFavoriteRecipeDBModel())
-        firebaseHelper.addFavoriteRecipe(recipe.toFavoriteRecipeFirebaseModel()) { }
-
-    }
-
-    fun deleteFavoriteRecipe(recipe: RecipeItem) {
-        db.favoriteRecipeDao().deleteFavoriteRecipe(recipe.toFavoriteRecipeDBModel())
-        firebaseHelper.deleteFavoriteRecipe(recipe.toFavoriteRecipeFirebaseModel()) { }
+        firebaseHelper.addFavoriteRecipe(recipe.toFavoriteRecipeFirebaseModel())
     }
 
     fun addFavoriteRecipe(recipe: RecipeInfo) {
         db.favoriteRecipeDao().insertFavoriteRecipe(recipe.toFavoriteRecipeDBModel())
-        firebaseHelper.addFavoriteRecipe(recipe.toFavoriteRecipeFirebaseModel()) { }
+        firebaseHelper.addFavoriteRecipe(recipe.toFavoriteRecipeFirebaseModel())
+    }
+    //end
 
+    //delete recipe from favorite
+    fun deleteFavoriteRecipe(recipe: RecipeItem) {
+        db.favoriteRecipeDao().deleteFavoriteRecipe(recipe.toFavoriteRecipeDBModel())
+        firebaseHelper.deleteFavoriteRecipe(recipe.toFavoriteRecipeFirebaseModel())
     }
 
     fun deleteFavoriteRecipe(recipe: RecipeInfo) {
         db.favoriteRecipeDao().deleteFavoriteRecipe(recipe.toFavoriteRecipeDBModel())
-        firebaseHelper.deleteFavoriteRecipe(recipe.toFavoriteRecipeFirebaseModel()) { }
+        firebaseHelper.deleteFavoriteRecipe(recipe.toFavoriteRecipeFirebaseModel())
     }
-
+    //end
 }
