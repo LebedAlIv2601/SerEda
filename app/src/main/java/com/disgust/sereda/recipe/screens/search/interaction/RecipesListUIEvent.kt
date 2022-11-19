@@ -12,4 +12,5 @@ sealed class RecipesListUIEvent : BaseUIEvent {
     class InputTextChange(val text: String) : RecipesListUIEvent()
     object KeyboardInitShow : RecipesListUIEvent()
     object StartScreen : RecipesListUIEvent()
+    class ListItemButtonAddToFavoriteClick(val recipe: RecipeItem) : RecipesListUIEvent()
 }
