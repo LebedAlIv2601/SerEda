@@ -1,9 +1,9 @@
 package com.disgust.sereda.ingredients.screens.info
 
-import androidx.lifecycle.ViewModel
 import com.disgust.sereda.ingredients.data.SearchIngredientRepository
 import com.disgust.sereda.ingredients.screens.info.interactioin.IngredientInfoState
 import com.disgust.sereda.ingredients.screens.info.interactioin.IngredientInfoUIEvent
+import com.disgust.sereda.utils.base.NavigatorViewModel
 import com.disgust.sereda.utils.base.UIEventHandler
 import com.disgust.sereda.utils.doSingleRequest
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -14,7 +14,7 @@ import javax.inject.Inject
 @HiltViewModel
 class IngredientInfoViewModel @Inject constructor(
     private val repository: SearchIngredientRepository
-) : ViewModel(), UIEventHandler<IngredientInfoUIEvent> {
+) : NavigatorViewModel(), UIEventHandler<IngredientInfoUIEvent> {
 
     private val _ingredientInfoState =
         MutableStateFlow<IngredientInfoState>(IngredientInfoState.Loading)

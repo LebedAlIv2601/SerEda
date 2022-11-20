@@ -14,8 +14,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavHostController
 import com.disgust.sereda.auth.googleAuth.interaction.GoogleAuthUIEvent
 import com.google.android.gms.common.api.ApiException
 
@@ -23,14 +21,13 @@ import com.google.android.gms.common.api.ApiException
 @ExperimentalAnimationApi
 @Composable
 fun GoogleAuthScreen(
-    navController: NavHostController,
-    vm: GoogleAuthViewModel = hiltViewModel()
+    vm: GoogleAuthViewModel
 ) {
     val authDialogLauncher =
         rememberLauncherForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) { result ->
             if (result.resultCode == RESULT_OK) {
                 try {
-                    vm.onUIEvent(GoogleAuthUIEvent.IntentResultOk(result.data, navController))
+                    vm.onUIEvent(GoogleAuthUIEvent.IntentResultOk(result.data))
                 } catch (e: ApiException) {
                     print(e)
                 }
@@ -50,5 +47,6 @@ fun GoogleAuthScreen(
         ) {
             Text(text = "Auth with google")
         }
+
     }
 }

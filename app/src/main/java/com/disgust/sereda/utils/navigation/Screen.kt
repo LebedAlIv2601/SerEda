@@ -11,101 +11,119 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.*
 import com.disgust.sereda.auth.googleAuth.GoogleAuthScreen
+import com.disgust.sereda.auth.googleAuth.GoogleAuthViewModel
 import com.disgust.sereda.ingredients.screens.info.IngredientInfoScreen
+import com.disgust.sereda.ingredients.screens.info.IngredientInfoViewModel
 import com.disgust.sereda.ingredients.screens.search.SearchIngredientScreen
+import com.disgust.sereda.ingredients.screens.search.SearchIngredientViewModel
 import com.disgust.sereda.profile.screens.profile.ProfileScreen
+import com.disgust.sereda.profile.screens.profile.ProfileViewModel
 import com.disgust.sereda.recipe.commonModel.RecipeFavoriteState
 import com.disgust.sereda.recipe.screens.info.RecipeInfoScreen
+import com.disgust.sereda.recipe.screens.info.RecipeInfoViewModel
 import com.disgust.sereda.recipe.screens.search.SearchRecipeScreen
+import com.disgust.sereda.recipe.screens.search.SearchRecipeViewModel
 import com.disgust.sereda.splash.SplashScreen
+import com.disgust.sereda.splash.SplashViewModel
+import com.disgust.sereda.utils.base.NavigatorViewModel
+import com.disgust.sereda.utils.firebase.FirebaseAuthHelper
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
-sealed class Screen(
+@ExperimentalComposeUiApi
+@ExperimentalAnimationApi
+sealed class Screen<T : NavigatorViewModel>(
     val route: String,
     val arguments: List<NamedNavArgument> = emptyList(),
     val deepLinks: List<NavDeepLink> = emptyList(),
-    val screenDrawFun: @Composable (NavHostController, NavBackStackEntry) -> Unit
+    val screenDrawFun: @Composable (T, NavBackStackEntry) -> Unit
 ) {
 
-    @ExperimentalComposeUiApi
-    @ExperimentalAnimationApi
-    object Splash : Screen(
+    object Splash : Screen<SplashViewModel>(
         route = "splash",
-        screenDrawFun = { navController, _ ->
-            SplashScreen(navController = navController)
+        screenDrawFun = { vm, _ ->
+            SplashScreen(vm = vm)
         }
     )
 
-    @ExperimentalAnimationApi
-    @ExperimentalComposeUiApi
     object Screen1 :
-        Screen(route = "screen1", screenDrawFun = { navController, _ ->
-            Screen1Screen(navController = navController)
+        Screen<Screen1ViewModel>(route = "screen1", screenDrawFun = { vm, _ ->
+            Screen1Screen(vm = vm)
         })
 
-    @ExperimentalComposeUiApi
     object SearchIngredient :
-        Screen(route = "search_ingredient", screenDrawFun = { navController, _ ->
-            SearchIngredientScreen(
-                navController = navController
-            )
+        Screen<SearchIngredientViewModel>(route = "search_ingredient", screenDrawFun = { vm, _ ->
+            SearchIngredientScreen(vm = vm)
         })
 
-    object IngredientInfo : Screen(
+    object IngredientInfo : Screen<IngredientInfoViewModel>(
         route = "ingredient_info/{ingredientId}",
         arguments = listOf(navArgument("ingredientId") { type = NavType.IntType }),
-        screenDrawFun = { navController, navBackStackEntry ->
+        screenDrawFun = { vm, navBackStackEntry ->
             val id = navBackStackEntry.arguments?.getInt("ingredientId")
-            IngredientInfoScreen(navController = navController, ingredientId = id ?: 0)
+            IngredientInfoScreen(ingredientId = id ?: 0, vm = vm)
         })
 
-    @ExperimentalComposeUiApi
-    @ExperimentalAnimationApi
-    object GoogleAuth : Screen(
+    object GoogleAuth : Screen<GoogleAuthViewModel>(
         route = "google_auth",
-        screenDrawFun = { navController, _ ->
-            GoogleAuthScreen(navController = navController)
+        screenDrawFun = { vm, _ ->
+            GoogleAuthScreen(vm = vm)
         }
     )
 
-    @ExperimentalAnimationApi
-    @ExperimentalComposeUiApi
-    object Profile : Screen(
+    object Profile : Screen<ProfileViewModel>(
         route = "profile",
-        screenDrawFun = { navController, _ ->
-            ProfileScreen(navController = navController)
+        screenDrawFun = { vm, _ ->
+            ProfileScreen(vm = vm)
         }
     )
 
-    @ExperimentalComposeUiApi
     object SearchRecipe :
-        Screen(route = "search_recipe", screenDrawFun = { navController, _ ->
-            SearchRecipeScreen(
-                navController = navController
-            )
+        Screen<SearchRecipeViewModel>(route = "search_recipe", screenDrawFun = { vm, _ ->
+            SearchRecipeScreen(vm = vm)
         })
 
-    object RecipeInfo : Screen(
+    object RecipeInfo : Screen<RecipeInfoViewModel>(
         route = "recipe_info/{recipeId}/{favoriteState}",
         arguments = listOf(
             navArgument("recipeId") { type = NavType.IntType },
             navArgument("favoriteState") { type = NavType.IntType }),
-        screenDrawFun = { navController, navBackStackEntry ->
+        screenDrawFun = { vm, navBackStackEntry ->
             val id = navBackStackEntry.arguments?.getInt("recipeId")
             val state = navBackStackEntry.arguments?.getInt("favoriteState")
             RecipeInfoScreen(
-                navController = navController,
                 recipeId = id ?: 0,
-                favoriteState = state ?: RecipeFavoriteState.NOT_FAVORITE.ordinal
+                favoriteState = state ?: RecipeFavoriteState.NOT_FAVORITE.ordinal,
+                vm = vm
             )
         })
 }
 
 //TODO: Примеры экранов, переписать на другие
+
+@ExperimentalAnimationApi
+@ExperimentalComposeUiApi
+@HiltViewModel
+class Screen1ViewModel @Inject constructor(firebaseAuthHelper: FirebaseAuthHelper) :
+    NavigatorViewModel() {
+    fun navigateToProfile() {
+        navigate(Screen.Profile.route)
+    }
+
+    fun navigateToSearchRecipe() {
+        navigate(Screen.SearchRecipe.route)
+    }
+
+    fun navigateToSearchIngredient() {
+        navigate(Screen.SearchIngredient.route)
+    }
+}
+
 @ExperimentalAnimationApi
 @ExperimentalComposeUiApi
 @Composable
 fun Screen1Screen(
-    navController: NavHostController
+    vm: Screen1ViewModel
 ) {
     Box(
         modifier = Modifier
@@ -121,7 +139,7 @@ fun Screen1Screen(
                     .height(50.dp)
                     .width(50.dp)
                     .clickable {
-                        navController.navigate(Screen.SearchIngredient.route)
+                        vm.navigateToSearchIngredient()
                     },
                 contentAlignment = Alignment.Center
             ) {
@@ -134,7 +152,7 @@ fun Screen1Screen(
                     .height(50.dp)
                     .width(50.dp)
                     .clickable {
-                        navController.navigate(Screen.SearchRecipe.route)
+                        vm.navigateToSearchRecipe()
                     },
                 contentAlignment = Alignment.Center
             ) {
@@ -147,7 +165,7 @@ fun Screen1Screen(
                     .height(50.dp)
                     .width(50.dp)
                     .clickable {
-                        navController.navigate(Screen.Profile.route)
+                        vm.navigateToProfile()
                     },
                 contentAlignment = Alignment.Center
             ) {

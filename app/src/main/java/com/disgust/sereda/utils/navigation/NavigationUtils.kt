@@ -3,12 +3,19 @@ package com.disgust.sereda.utils.navigation
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
+import com.disgust.sereda.utils.NavigatorViewModelScreen
+import com.disgust.sereda.utils.base.NavigatorViewModel
 import com.google.accompanist.navigation.animation.composable
 
+@ExperimentalComposeUiApi
 @ExperimentalAnimationApi
-fun NavGraphBuilder.createDestination(screen: Screen, navController: NavHostController) {
+inline fun <reified T : NavigatorViewModel> NavGraphBuilder.createDestination(
+    screen: Screen<T>,
+    navController: NavHostController
+) {
     composable(
         route = screen.route,
         arguments = screen.arguments,
@@ -17,8 +24,10 @@ fun NavGraphBuilder.createDestination(screen: Screen, navController: NavHostCont
         exitTransition = { ExitTransition.None },
         popEnterTransition = { EnterTransition.None },
         popExitTransition = { ExitTransition.None }
-    ) {
-        screen.screenDrawFun(navController, it)
+    ) { navBackStackEntry ->
+        NavigatorViewModelScreen<T>(navController = navController) { vm ->
+            screen.screenDrawFun(vm, navBackStackEntry)
+        }
     }
 }
 

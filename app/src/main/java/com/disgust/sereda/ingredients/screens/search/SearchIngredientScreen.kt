@@ -1,5 +1,6 @@
 package com.disgust.sereda.ingredients.screens.search
 
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -11,18 +12,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavHostController
 import com.disgust.sereda.ingredients.screens.search.interaction.IngredientsListState
 import com.disgust.sereda.ingredients.screens.search.interaction.IngredientsListUIEvent
 import com.disgust.sereda.ingredients.screens.search.model.IngredientItem
 import com.disgust.sereda.utils.commonViews.SearchView
 
+@ExperimentalAnimationApi
 @ExperimentalComposeUiApi
 @Composable
 fun SearchIngredientScreen(
-    navController: NavHostController,
-    vm: SearchIngredientViewModel = hiltViewModel()
+    vm: SearchIngredientViewModel
 ) {
     val ingredientsState = vm.ingredientListState.collectAsState()
     val inputText = vm.inputText.collectAsState()
@@ -53,7 +52,6 @@ fun SearchIngredientScreen(
                 IngredientsList((ingredientsState.value as IngredientsListState.Success).data) {
                     vm.onUIEvent(
                         IngredientsListUIEvent.ListItemClick(
-                            navController = navController,
                             item = it
                         )
                     )
@@ -61,7 +59,6 @@ fun SearchIngredientScreen(
             is IngredientsListState.Error -> Text("Error")
             else -> Text("")
         }
-
     }
 }
 

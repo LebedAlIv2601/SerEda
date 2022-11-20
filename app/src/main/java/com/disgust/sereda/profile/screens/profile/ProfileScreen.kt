@@ -12,8 +12,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavHostController
 import com.disgust.sereda.profile.screens.profile.interaction.ProfileUIEvent
 import com.disgust.sereda.profile.screens.profile.interaction.UserInfoState
 import com.disgust.sereda.utils.DoOnInit
@@ -22,10 +20,8 @@ import com.disgust.sereda.utils.DoOnInit
 @ExperimentalAnimationApi
 @Composable
 fun ProfileScreen(
-    navController: NavHostController,
-    vm: ProfileViewModel = hiltViewModel()
+    vm: ProfileViewModel
 ) {
-
     val userInfoState = vm.userInfoState.collectAsState()
 
     DoOnInit {
@@ -40,7 +36,9 @@ fun ProfileScreen(
             is UserInfoState.Success -> {
                 Column(modifier = Modifier.fillMaxSize()) {
                     Text(text = userStateValue.userInfo.toString())
-                    Button(onClick = { vm.onUIEvent(ProfileUIEvent.ButtonSignOutClick(navController)) }) {
+                    Button(onClick = {
+                        vm.onUIEvent(ProfileUIEvent.ButtonSignOutClick)
+                    }) {
                         Text(text = "Sign Out")
                     }
                 }
@@ -50,4 +48,5 @@ fun ProfileScreen(
             }
         }
     }
+
 }

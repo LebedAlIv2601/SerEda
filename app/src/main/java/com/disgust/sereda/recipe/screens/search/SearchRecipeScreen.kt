@@ -1,5 +1,6 @@
 package com.disgust.sereda.recipe.screens.search
 
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -17,8 +18,6 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavHostController
 import com.disgust.sereda.recipe.commonModel.RecipeFavoriteState
 import com.disgust.sereda.recipe.screens.search.interaction.RecipesListState
 import com.disgust.sereda.recipe.screens.search.interaction.RecipesListUIEvent
@@ -26,11 +25,11 @@ import com.disgust.sereda.recipe.screens.search.model.RecipeItem
 import com.disgust.sereda.utils.DoOnInit
 import com.disgust.sereda.utils.commonViews.SearchView
 
+@ExperimentalAnimationApi
 @ExperimentalComposeUiApi
 @Composable
 fun SearchRecipeScreen(
-    navController: NavHostController,
-    vm: SearchRecipeViewModel = hiltViewModel()
+    vm: SearchRecipeViewModel
 ) {
     val recipesState = vm.recipesListState.collectAsState()
     val inputText = vm.inputText.collectAsState()
@@ -67,7 +66,6 @@ fun SearchRecipeScreen(
                     onItemClick = {
                         vm.onUIEvent(
                             RecipesListUIEvent.ListItemClick(
-                                navController = navController,
                                 item = it
                             )
                         )
@@ -81,7 +79,6 @@ fun SearchRecipeScreen(
             is RecipesListState.Error -> Text("Error")
             else -> Text("")
         }
-
     }
 }
 
