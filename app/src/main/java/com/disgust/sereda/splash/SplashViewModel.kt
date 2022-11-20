@@ -29,7 +29,7 @@ class SplashViewModel @Inject constructor(private val repository: SplashReposito
                             if (it) {
                                 Screen.Screen1.route
                             } else {
-                                Screen.PhoneEnter.route
+                                Screen.GoogleAuth.route
                             }
                         )
                     }

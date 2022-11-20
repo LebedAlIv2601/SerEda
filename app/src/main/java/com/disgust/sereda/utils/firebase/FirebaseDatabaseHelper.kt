@@ -1,10 +1,13 @@
 package com.disgust.sereda.utils.firebase
 
 import com.disgust.sereda.utils.firebase.model.FavoriteRecipeFirebaseModel
+import com.disgust.sereda.utils.firebase.model.ProfileUserFirebaseModel
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.ktx.Firebase
+import kotlinx.coroutines.tasks.await
 
 class FirebaseDatabaseHelper {
 
@@ -48,6 +51,16 @@ class FirebaseDatabaseHelper {
         }
     }
 
+    @Suppress("UNCHECKED_CAST")
+    suspend fun getUserData(): ProfileUserFirebaseModel {
+        val userData = userReference?.get()?.await()
+        val userMap = userData?.value as HashMap<String, Any?>
+        return ProfileUserFirebaseModel(
+            email = userMap["email"].toString(),
+            favoriteRecipes = getListOfFavoriteRecipes(userData)
+        )
+    }
+
     private inline fun doIfUserExists(crossinline function: (DatabaseReference) -> Unit) {
         userReference?.let {
             it.get().addOnCompleteListener { task ->
@@ -56,5 +69,21 @@ class FirebaseDatabaseHelper {
                 }
             }
         }
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    private fun getListOfFavoriteRecipes(userData: DataSnapshot?): List<FavoriteRecipeFirebaseModel> {
+        val favoriteRecipes = mutableListOf<FavoriteRecipeFirebaseModel>()
+        val userMap = userData?.value as HashMap<String, Any?>
+        (userMap["favoriteRecipes"] as HashMap<String, HashMap<String, Any?>>).forEach {
+            favoriteRecipes.add(
+                FavoriteRecipeFirebaseModel(
+                    id = it.value["id"].toString(),
+                    name = it.value["name"].toString(),
+                    image = it.value["image"].toString()
+                )
+            )
+        }
+        return favoriteRecipes
     }
 }

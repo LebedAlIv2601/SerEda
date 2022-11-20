@@ -1,13 +1,14 @@
 package com.disgust.sereda.auth.data
 
+import android.content.Intent
+import com.disgust.sereda.auth.googleAuth.interaction.OneTapSignInState
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.ui.ExperimentalComposeUiApi
 import com.disgust.sereda.auth.code.interaction.CodeVerificationState
 import com.disgust.sereda.auth.phone.interaction.SendCodeState
 import com.disgust.sereda.utils.firebase.FirebaseAuthHelper
-import com.google.firebase.FirebaseTooManyRequestsException
-import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
+import com.google.firebase.auth.AuthCredential
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
@@ -15,44 +16,23 @@ import javax.inject.Inject
 @ExperimentalMaterialApi
 class AuthRepository @Inject constructor(private val firebaseHelper: FirebaseAuthHelper) {
 
-    private val _sendCodeState = MutableStateFlow<SendCodeState>(SendCodeState.Waiting)
-    val sendCodeState = _sendCodeState.asStateFlow()
-    private val _codeVerificationState =
-        MutableStateFlow(CodeVerificationState.WAITING)
-    val codeVerificationState = _codeVerificationState.asStateFlow()
+    private val _oneTapSignInState = MutableStateFlow<OneTapSignInState>(OneTapSignInState.Waiting)
+    val oneTapSignInState = _oneTapSignInState.asStateFlow()
 
-    fun clearSendCodeState() {
-        _sendCodeState.value = SendCodeState.Waiting
+    suspend fun oneTapSignIn() {
+        _oneTapSignInState.value = OneTapSignInState.Loading
+        firebaseHelper.oneTapSignInWithGoogle {
+            _oneTapSignInState.value = OneTapSignInState.Success(it)
+        }
     }
 
-    @ExperimentalAnimationApi
-    @ExperimentalComposeUiApi
-    fun getCode(phone: String) {
-        _sendCodeState.value = SendCodeState.Loading
-        firebaseHelper.getCode(
-            phone = phone,
-            onVerificationFailed = { e ->
-                if (e is FirebaseAuthInvalidCredentialsException) {
-                    _sendCodeState.value =
-                        SendCodeState.Error("Something went wong. Please, try again")
-                } else if (e is FirebaseTooManyRequestsException) {
-                    _sendCodeState.value =
-                        SendCodeState.Error("Something went wong. Please, try again later")
-                }
-            },
-            onCodeSent = { _, _ ->
-                _sendCodeState.value = SendCodeState.Success
-            }
-        )
+    suspend fun signInWithGoogle(googleCredential: AuthCredential) {
+        firebaseHelper.firebaseSignInWithGoogle(googleCredential) {
+
+        }
     }
 
-    fun verifyCode(code: String) =
-        firebaseHelper.verifyCode(code = code, completeListener = { task ->
-            _codeVerificationState.value = if (task.isSuccessful) {
-                CodeVerificationState.RIGHT
-            } else {
-                CodeVerificationState.WRONG
-            }
-        })
+    fun getCredentialFromIntent(intent: Intent?) =
+        firebaseHelper.getCredentialFromIntent(intent)
 
 }

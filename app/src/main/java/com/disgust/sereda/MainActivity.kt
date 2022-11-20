@@ -17,17 +17,7 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
-    // Не использовать, опасная штука с возможной утечкой памяти.
-    // Используется ТОЛЬКО для Firebase, потому что ему зачем-то нужно
-    // передавать активность при регистрации через номер телефона
-    companion object {
-        private var mainActivity: MainActivity? = null
-
-        fun getInstance(): MainActivity? = mainActivity
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
-        mainActivity = this
         setTheme(R.style.Theme_SerEda)
         super.onCreate(savedInstanceState)
         setContent {
@@ -36,20 +26,5 @@ class MainActivity : ComponentActivity() {
                 RootNavGraph(navController = navController)
             }
         }
-    }
-
-    override fun onResume() {
-        super.onResume()
-        mainActivity = this
-    }
-
-    override fun onRestart() {
-        super.onRestart()
-        mainActivity = this
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        mainActivity = null
     }
 }

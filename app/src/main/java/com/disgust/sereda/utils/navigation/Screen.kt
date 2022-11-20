@@ -11,10 +11,10 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.*
-import com.disgust.sereda.auth.code.CodeEnterScreen
-import com.disgust.sereda.auth.phone.PhoneEnterScreen
+import com.disgust.sereda.auth.googleAuth.GoogleAuthScreen
 import com.disgust.sereda.ingredients.screens.info.IngredientInfoScreen
 import com.disgust.sereda.ingredients.screens.search.SearchIngredientScreen
+import com.disgust.sereda.profile.screens.profile.ProfileScreen
 import com.disgust.sereda.recipe.commonModel.RecipeFavoriteState
 import com.disgust.sereda.recipe.screens.info.RecipeInfoScreen
 import com.disgust.sereda.recipe.screens.search.SearchRecipeScreen
@@ -37,6 +37,7 @@ sealed class Screen(
         }
     )
 
+    @ExperimentalAnimationApi
     @ExperimentalMaterialApi
     @ExperimentalComposeUiApi
     object Screen1 :
@@ -74,19 +75,20 @@ sealed class Screen(
     @ExperimentalMaterialApi
     @ExperimentalComposeUiApi
     @ExperimentalAnimationApi
-    object PhoneEnter : Screen(
-        route = "phone_enter",
+    object GoogleAuth : Screen(
+        route = "google_auth",
         screenDrawFun = { navController, _ ->
-            PhoneEnterScreen(navController = navController)
+            GoogleAuthScreen(navController = navController)
         }
     )
 
+    @ExperimentalAnimationApi
     @ExperimentalMaterialApi
     @ExperimentalComposeUiApi
-    object CodeEnter : Screen(
-        route = "code_enter",
+    object Profile : Screen(
+        route = "profile",
         screenDrawFun = { navController, _ ->
-            CodeEnterScreen(navController = navController)
+            ProfileScreen(navController = navController)
         }
     )
 
@@ -116,6 +118,7 @@ sealed class Screen(
 }
 
 //TODO: Примеры экранов, переписать на другие
+@ExperimentalAnimationApi
 @ExperimentalMaterialApi
 @ExperimentalComposeUiApi
 @Composable
@@ -154,6 +157,19 @@ fun Screen1Screen(
                 contentAlignment = Alignment.Center
             ) {
                 Text(text = "Search recipe")
+            }
+
+            Box(
+                modifier = Modifier
+                    .padding(8.dp)
+                    .height(50.dp)
+                    .width(50.dp)
+                    .clickable {
+                        navController.navigate(Screen.Profile.route)
+                    },
+                contentAlignment = Alignment.Center
+            ) {
+                Text(text = "Profile")
             }
         }
     }

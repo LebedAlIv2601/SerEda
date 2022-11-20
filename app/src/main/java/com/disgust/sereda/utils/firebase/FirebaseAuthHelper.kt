@@ -1,107 +1,72 @@
 package com.disgust.sereda.utils.firebase
 
+import android.content.Intent
+import com.disgust.sereda.utils.Constants
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.ui.ExperimentalComposeUiApi
 import com.disgust.sereda.MainActivity
 import com.disgust.sereda.utils.firebase.model.User
-import com.google.android.gms.tasks.Task
-import com.google.firebase.FirebaseException
-import com.google.firebase.auth.*
+import com.google.android.gms.auth.api.identity.BeginSignInRequest
+import com.google.android.gms.auth.api.identity.BeginSignInResult
+import com.google.android.gms.auth.api.identity.SignInClient
+import com.google.firebase.auth.AuthCredential
+import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.ktx.Firebase
-import java.util.concurrent.TimeUnit
+import kotlinx.coroutines.tasks.await
+import javax.inject.Named
 
+
+class FirebaseAuthHelper(
+    private val oneTapClient: SignInClient,
+    database: FirebaseDatabase,
+    @Named(Constants.SIGN_IN_REQUEST)
+    private val signInRequest: BeginSignInRequest,
+    @Named(Constants.SIGN_UP_REQUEST)
+    private val signUpRequest: BeginSignInRequest
+) {
 @ExperimentalMaterialApi
 class FirebaseAuthHelper {
     private val auth = Firebase.auth
-    private val database = FirebaseDatabase.getInstance()
     private val usersDatabaseReference: DatabaseReference = database.reference.child("users")
-
-    private var storedVerificationId: String? = ""
-    private var resendToken: PhoneAuthProvider.ForceResendingToken? = null
-
-    private fun createCallbacks(
-        onVerificationFailed: ((FirebaseException) -> Unit)? = null,
-        onCodeSent: ((String, PhoneAuthProvider.ForceResendingToken) -> Unit)? = null,
-        onVerificationCompleted: ((credential: PhoneAuthCredential) -> Unit)? = null
-    ) =
-        object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
-
-            override fun onVerificationCompleted(credential: PhoneAuthCredential) {
-                onVerificationCompleted?.invoke(credential)
-                signInWithPhoneAuthCredential(credential)
-            }
-
-            override fun onVerificationFailed(e: FirebaseException) {
-                onVerificationFailed?.invoke(e)
-            }
-
-            override fun onCodeSent(
-                verificationId: String,
-                token: PhoneAuthProvider.ForceResendingToken
-            ) {
-                storedVerificationId = verificationId
-                resendToken = token
-                onCodeSent?.invoke(verificationId, token)
-            }
-        }
 
     fun isAuth() = auth.currentUser != null
 
-    @ExperimentalAnimationApi
-    @ExperimentalComposeUiApi
-    fun getCode(
-        phone: String,
-        onVerificationFailed: ((FirebaseException) -> Unit)? = null,
-        onCodeSent: ((String, PhoneAuthProvider.ForceResendingToken) -> Unit)? = null,
-        onVerificationCompleted: ((credential: PhoneAuthCredential) -> Unit)? = null
+    fun signOut() {
+        auth.signOut()
+    }
+
+    suspend fun oneTapSignInWithGoogle(
+        onSuccess: (BeginSignInResult) -> Unit
     ) {
-        val mainActivity = MainActivity.getInstance()
-        if (mainActivity != null) {
-            val options = PhoneAuthOptions.newBuilder(auth)
-                .setPhoneNumber(phone)
-                .setTimeout(30L, TimeUnit.SECONDS)
-                .setActivity(mainActivity)
-                .setCallbacks(
-                    createCallbacks(
-                        onVerificationFailed,
-                        onCodeSent,
-                        onVerificationCompleted
-                    )
-                )
-                .build()
-            PhoneAuthProvider.verifyPhoneNumber(options)
+        try {
+            val signInResult = oneTapClient.beginSignIn(signInRequest).await()
+            onSuccess.invoke(signInResult)
+        } catch (e: Exception) {
+            val signUpResult = oneTapClient.beginSignIn(signUpRequest).await()
+            onSuccess.invoke(signUpResult)
         }
     }
 
-    fun verifyCode(code: String, completeListener: (Task<AuthResult>) -> Unit) {
-        val credential = PhoneAuthProvider.getCredential(storedVerificationId!!, code)
-        signInWithPhoneAuthCredential(credential, completeListener)
+    suspend fun firebaseSignInWithGoogle(googleCredential: AuthCredential, onSuccess: () -> Unit) {
+        val authResult = auth.signInWithCredential(googleCredential).await()
+        val isNewUser = authResult.additionalUserInfo?.isNewUser ?: false
+        if (isNewUser) {
+            authUser(auth.currentUser)
+        }
+        onSuccess()
     }
 
-    private fun signInWithPhoneAuthCredential(
-        credential: PhoneAuthCredential,
-        completeListener: (Task<AuthResult>) -> Unit = {}
-    ) {
-        auth.signInWithCredential(credential)
-            .addOnCompleteListener { task ->
-                usersDatabaseReference.child(auth.currentUser?.uid ?: "").get()
-                    .addOnCompleteListener {
-                        if (!it.result.exists()) {
-                            authUser(auth.currentUser)
-                        }
-                    }
-                completeListener.invoke(task)
-            }
-    }
+    fun getCredentialFromIntent(intent: Intent?) =
+        oneTapClient.getSignInCredentialFromIntent(intent)
 
-    private fun authUser(user: FirebaseUser?) {
+    private suspend fun authUser(user: FirebaseUser?) {
         if (user != null) {
             usersDatabaseReference.child(user.uid)
-                .setValue(User(user.uid, user.phoneNumber ?: "0"))
+                .setValue(User(user.uid, user.email ?: "null")).await()
         }
     }
 }
