@@ -29,6 +29,10 @@ class FirebaseAuthHelper(
 
     fun isAuth() = auth.currentUser != null
 
+    fun signOut() {
+        auth.signOut()
+    }
+
     suspend fun oneTapSignInWithGoogle(
         onSuccess: (BeginSignInResult) -> Unit
     ) {
