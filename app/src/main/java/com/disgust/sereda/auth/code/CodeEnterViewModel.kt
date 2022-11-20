@@ -1,5 +1,6 @@
 package com.disgust.sereda.auth.code
 
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.lifecycle.ViewModel
 import com.disgust.sereda.auth.code.interaction.CodeEnterUIEvent
@@ -14,6 +15,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
 
+@ExperimentalMaterialApi
 @ExperimentalComposeUiApi
 @HiltViewModel
 class CodeEnterViewModel @Inject constructor(private val repository: AuthRepository) : ViewModel(),

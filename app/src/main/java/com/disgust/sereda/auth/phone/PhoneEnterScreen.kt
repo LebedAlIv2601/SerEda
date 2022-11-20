@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Button
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.runtime.Composable
@@ -24,6 +25,7 @@ import com.disgust.sereda.auth.phone.interaction.PhoneEnterUIEvent
 import com.disgust.sereda.auth.phone.interaction.RequestSendCodeState
 import com.disgust.sereda.auth.phone.interaction.SendCodeState
 
+@ExperimentalMaterialApi
 @ExperimentalComposeUiApi
 @ExperimentalAnimationApi
 @Composable

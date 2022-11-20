@@ -1,6 +1,7 @@
 package com.disgust.sereda.utils.firebase
 
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.ui.ExperimentalComposeUiApi
 import com.disgust.sereda.MainActivity
 import com.disgust.sereda.utils.firebase.model.User
@@ -13,6 +14,7 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.ktx.Firebase
 import java.util.concurrent.TimeUnit
 
+@ExperimentalMaterialApi
 class FirebaseAuthHelper {
     private val auth = Firebase.auth
     private val database = FirebaseDatabase.getInstance()

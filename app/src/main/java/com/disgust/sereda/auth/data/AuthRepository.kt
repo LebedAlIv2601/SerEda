@@ -1,6 +1,7 @@
 package com.disgust.sereda.auth.data
 
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.ui.ExperimentalComposeUiApi
 import com.disgust.sereda.auth.code.interaction.CodeVerificationState
 import com.disgust.sereda.auth.phone.interaction.SendCodeState
@@ -11,6 +12,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
 
+@ExperimentalMaterialApi
 class AuthRepository @Inject constructor(private val firebaseHelper: FirebaseAuthHelper) {
 
     private val _sendCodeState = MutableStateFlow<SendCodeState>(SendCodeState.Waiting)

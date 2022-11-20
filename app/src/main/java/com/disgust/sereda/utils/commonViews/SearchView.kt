@@ -21,7 +21,9 @@ fun SearchView(
     onSearch: () -> Unit,
     onValueChange: (String) -> Unit,
     showKeyboardValue: Boolean,
-    setShowKeyboard: () -> Unit
+    hideKeyboardValue: Boolean = false,
+    setShowKeyboard: () -> Unit,
+    setHideKeyboard: () -> Unit = {}
 ) {
     val focusRequester = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
@@ -37,6 +39,12 @@ fun SearchView(
         onValueChange = onValueChange,
         modifier = Modifier.focusRequester(focusRequester)
     )
+
+    if (hideKeyboardValue) {
+        focusManager.clearFocus()
+        keyboard?.hide()
+        setHideKeyboard()
+    }
 
     LaunchedEffect(focusRequester) {
         if (showKeyboardValue) {

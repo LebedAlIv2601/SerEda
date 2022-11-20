@@ -1,6 +1,8 @@
 package com.disgust.sereda.recipe.screens.search
 
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.lifecycle.ViewModel
 import com.disgust.sereda.recipe.commonModel.RecipeFavoriteState
 import com.disgust.sereda.recipe.data.RecipeRepository
@@ -8,6 +10,7 @@ import com.disgust.sereda.recipe.screens.search.interaction.RecipesListState
 import com.disgust.sereda.recipe.screens.search.interaction.RecipesListUIEvent
 import com.disgust.sereda.recipe.screens.search.model.RecipeItem
 import com.disgust.sereda.utils.base.UIEventHandler
+import com.disgust.sereda.utils.db.filters.FilterRecipeDBModel
 import com.disgust.sereda.utils.doSingleRequest
 import com.disgust.sereda.utils.navigation.Screen
 import com.disgust.sereda.utils.navigation.navigateWithArguments
@@ -16,6 +19,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
 
+@ExperimentalMaterialApi
+@ExperimentalComposeUiApi
 @HiltViewModel
 class SearchRecipeViewModel @Inject constructor(
     private val repository: RecipeRepository
@@ -29,11 +34,19 @@ class SearchRecipeViewModel @Inject constructor(
         MutableStateFlow(false)
     val showKeyboard = _showKeyboard.asStateFlow()
 
+    private val _hideKeyboard =
+        MutableStateFlow(false)
+    val hideKeyboard = _hideKeyboard.asStateFlow()
+
     private val _inputText =
         MutableStateFlow("")
     val inputText = _inputText.asStateFlow()
 
     private val lastQuery = mutableStateOf("")
+
+    private val _ingredientsListFilters =
+        MutableStateFlow(listOf<FilterRecipeDBModel>())
+    val ingredientListFilters = _ingredientsListFilters.asStateFlow()
 
     init {
         updateFavoriteIds()
@@ -68,6 +81,7 @@ class SearchRecipeViewModel @Inject constructor(
             }
 
             is RecipesListUIEvent.StartScreen -> {
+                getFilters()
                 if (_recipesListState.value is RecipesListState.Waiting) {
                     getRandomRecipes()
                 } else if (_recipesListState.value is RecipesListState.Success) {
@@ -82,9 +96,78 @@ class SearchRecipeViewModel @Inject constructor(
                     deleteRecipeFromFavorite(event.recipe)
                 }
             }
+
+            is RecipesListUIEvent.FiltersApplyButtonClick -> {
+                applyFilters(event.query)
+            }
+
+            is RecipesListUIEvent.FiltersSearchIngredientButtonClick -> {
+                event.navController.navigate(Screen.SearchIngredient.route)
+            }
+
+            is RecipesListUIEvent.FiltersDeleteAll -> {
+                allDeleteFilters()
+            }
+
+            is RecipesListUIEvent.FiltersDeleteItem -> {
+                itemDeleteFilters(event.item)
+            }
+
+            is RecipesListUIEvent.FiltersOpenButtonClick -> {
+                _hideKeyboard.value = true
+            }
+
+            is RecipesListUIEvent.KeyboardSetHide -> {
+                _hideKeyboard.value = false
+            }
+
         }
     }
 
+    private fun allDeleteFilters() {
+        doSingleRequest(
+            query = { repository.deleteAllFiltersRecipe() },
+            doOnSuccess = { getFilters() }
+        )
+    }
+
+    private fun itemDeleteFilters(item: FilterRecipeDBModel) {
+        doSingleRequest(
+            query = { repository.deleteFilterRecipe(item) },
+            doOnSuccess = { getFilters() }
+        )
+    }
+
+    private fun getFilters() {
+        doSingleRequest(
+            query = { repository.getFiltersRecipe() },
+            doOnSuccess = { _ingredientsListFilters.value = it }
+        )
+    }
+
+    private fun applyFilters(query: String) {
+        doSingleRequest(
+            query = {
+                repository.searchRecipes(
+                    query = query,
+                    sort = if (query.isNotBlank()) "" else "random",
+                    includeIngredients = _ingredientsListFilters.value.filter { it.isInclude }
+                        .toString(),
+                    excludeIngredients = _ingredientsListFilters.value.filter { !it.isInclude }
+                        .toString()
+                )
+            },
+            doOnLoading = {
+                _recipesListState.value = RecipesListState.Loading
+            },
+            doOnSuccess = {
+                _recipesListState.value = RecipesListState.Success(it)
+            },
+            doOnError = {
+                _recipesListState.value = RecipesListState.Error(it)
+            }
+        )
+    }
 
     private fun updateListWithFavoriteIds() {
         doSingleRequest(

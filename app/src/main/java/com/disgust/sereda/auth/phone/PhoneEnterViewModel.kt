@@ -1,6 +1,7 @@
 package com.disgust.sereda.auth.phone
 
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.lifecycle.ViewModel
 import com.disgust.sereda.auth.data.AuthRepository
@@ -14,6 +15,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
 
+@ExperimentalMaterialApi
 @ExperimentalComposeUiApi
 @ExperimentalAnimationApi
 @HiltViewModel

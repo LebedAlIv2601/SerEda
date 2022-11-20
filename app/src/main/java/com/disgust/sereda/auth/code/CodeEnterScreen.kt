@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Button
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.runtime.Composable
@@ -25,6 +26,7 @@ import com.disgust.sereda.auth.code.interaction.CodeEnterUIEvent
 import com.disgust.sereda.auth.code.interaction.CodeVerificationState
 import com.disgust.sereda.auth.code.interaction.RequestVerifyCodeState
 
+@ExperimentalMaterialApi
 @ExperimentalComposeUiApi
 @Composable
 fun CodeEnterScreen(
