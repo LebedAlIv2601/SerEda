@@ -10,8 +10,7 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.*
-import com.disgust.sereda.auth.code.CodeEnterScreen
-import com.disgust.sereda.auth.phone.PhoneEnterScreen
+import com.disgust.sereda.auth.googleAuth.GoogleAuthScreen
 import com.disgust.sereda.ingredients.screens.info.IngredientInfoScreen
 import com.disgust.sereda.ingredients.screens.search.SearchIngredientScreen
 import com.disgust.sereda.recipe.commonModel.RecipeFavoriteState
@@ -59,18 +58,10 @@ sealed class Screen(
 
     @ExperimentalComposeUiApi
     @ExperimentalAnimationApi
-    object PhoneEnter : Screen(
-        route = "phone_enter",
+    object GoogleAuth : Screen(
+        route = "google_auth",
         screenDrawFun = { navController, _ ->
-            PhoneEnterScreen(navController = navController)
-        }
-    )
-
-    @ExperimentalComposeUiApi
-    object CodeEnter : Screen(
-        route = "code_enter",
-        screenDrawFun = { navController, _ ->
-            CodeEnterScreen(navController = navController)
+            GoogleAuthScreen(navController = navController)
         }
     )
 
