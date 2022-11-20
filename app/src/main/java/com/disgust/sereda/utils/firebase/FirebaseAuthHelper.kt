@@ -18,7 +18,7 @@ import javax.inject.Named
 
 class FirebaseAuthHelper(
     private val oneTapClient: SignInClient,
-    private val database: FirebaseDatabase,
+    database: FirebaseDatabase,
     @Named(Constants.SIGN_IN_REQUEST)
     private val signInRequest: BeginSignInRequest,
     @Named(Constants.SIGN_UP_REQUEST)
