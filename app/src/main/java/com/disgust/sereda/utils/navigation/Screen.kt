@@ -59,7 +59,7 @@ sealed class Screen(
     @ExperimentalComposeUiApi
     @ExperimentalAnimationApi
     object GoogleAuth : Screen(
-        route = "phone_enter",
+        route = "google_auth",
         screenDrawFun = { navController, _ ->
             GoogleAuthScreen(navController = navController)
         }
