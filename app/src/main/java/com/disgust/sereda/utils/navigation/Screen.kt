@@ -13,6 +13,7 @@ import androidx.navigation.*
 import com.disgust.sereda.auth.googleAuth.GoogleAuthScreen
 import com.disgust.sereda.ingredients.screens.info.IngredientInfoScreen
 import com.disgust.sereda.ingredients.screens.search.SearchIngredientScreen
+import com.disgust.sereda.profile.screens.profile.ProfileScreen
 import com.disgust.sereda.recipe.commonModel.RecipeFavoriteState
 import com.disgust.sereda.recipe.screens.info.RecipeInfoScreen
 import com.disgust.sereda.recipe.screens.search.SearchRecipeScreen
@@ -34,6 +35,7 @@ sealed class Screen(
         }
     )
 
+    @ExperimentalAnimationApi
     @ExperimentalComposeUiApi
     object Screen1 :
         Screen(route = "screen1", screenDrawFun = { navController, _ ->
@@ -65,6 +67,15 @@ sealed class Screen(
         }
     )
 
+    @ExperimentalAnimationApi
+    @ExperimentalComposeUiApi
+    object Profile : Screen(
+        route = "profile",
+        screenDrawFun = { navController, _ ->
+            ProfileScreen(navController = navController)
+        }
+    )
+
     @ExperimentalComposeUiApi
     object SearchRecipe :
         Screen(route = "search_recipe", screenDrawFun = { navController, _ ->
@@ -90,6 +101,7 @@ sealed class Screen(
 }
 
 //TODO: Примеры экранов, переписать на другие
+@ExperimentalAnimationApi
 @ExperimentalComposeUiApi
 @Composable
 fun Screen1Screen(
@@ -127,6 +139,19 @@ fun Screen1Screen(
                 contentAlignment = Alignment.Center
             ) {
                 Text(text = "Search recipe")
+            }
+
+            Box(
+                modifier = Modifier
+                    .padding(8.dp)
+                    .height(50.dp)
+                    .width(50.dp)
+                    .clickable {
+                        navController.navigate(Screen.Profile.route)
+                    },
+                contentAlignment = Alignment.Center
+            ) {
+                Text(text = "Profile")
             }
         }
     }

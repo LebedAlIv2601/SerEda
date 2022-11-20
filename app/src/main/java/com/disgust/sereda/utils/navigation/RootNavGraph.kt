@@ -21,5 +21,6 @@ fun RootNavGraph(navController: NavHostController) {
         createDestination(Screen.Splash, navController)
         createDestination(Screen.RecipeInfo, navController)
         createDestination(Screen.SearchRecipe, navController)
+        createDestination(Screen.Profile, navController)
     }
 }
