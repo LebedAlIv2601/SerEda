@@ -1,11 +1,8 @@
 package com.disgust.sereda.utils.firebase
 
 import android.content.Intent
-import com.disgust.sereda.utils.Constants
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.ui.ExperimentalComposeUiApi
-import com.disgust.sereda.MainActivity
+import com.disgust.sereda.utils.Constants
 import com.disgust.sereda.utils.firebase.model.User
 import com.google.android.gms.auth.api.identity.BeginSignInRequest
 import com.google.android.gms.auth.api.identity.BeginSignInResult
@@ -19,7 +16,7 @@ import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.tasks.await
 import javax.inject.Named
 
-
+@ExperimentalMaterialApi
 class FirebaseAuthHelper(
     private val oneTapClient: SignInClient,
     database: FirebaseDatabase,
@@ -28,8 +25,6 @@ class FirebaseAuthHelper(
     @Named(Constants.SIGN_UP_REQUEST)
     private val signUpRequest: BeginSignInRequest
 ) {
-@ExperimentalMaterialApi
-class FirebaseAuthHelper {
     private val auth = Firebase.auth
     private val usersDatabaseReference: DatabaseReference = database.reference.child("users")
 

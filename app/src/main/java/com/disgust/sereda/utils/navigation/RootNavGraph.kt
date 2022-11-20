@@ -14,7 +14,7 @@ import com.google.accompanist.navigation.animation.AnimatedNavHost
 fun RootNavGraph(navController: NavHostController) {
     AnimatedNavHost(
         navController = navController,
-        startDestination = Screen.Screen1.route
+        startDestination = Screen.Splash.route
     ) {
         createDestination(Screen.Screen1, navController)
         createDestination(Screen.SearchIngredient, navController)

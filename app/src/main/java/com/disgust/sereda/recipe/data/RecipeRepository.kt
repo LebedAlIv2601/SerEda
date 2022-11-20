@@ -87,11 +87,6 @@ class RecipeRepository @Inject constructor(
     //end
 
     fun getFiltersRecipe(): List<FilterRecipeDBModel> =
-        db.filtersRecipeDao().getFiltersRecipe()
+        db.filtersRecipeDao().getFilterRecipeByIngredients()
 
-    fun deleteAllFiltersRecipe() =
-        db.filtersRecipeDao().deleteAllFiltersRecipe()
-
-    fun deleteFilterRecipe(filter: FilterRecipeDBModel) =
-        db.filtersRecipeDao().deleteFilterRecipe(filter)
 }

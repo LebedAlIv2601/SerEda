@@ -45,7 +45,7 @@ class SearchRecipeViewModel @Inject constructor(
     private val lastQuery = mutableStateOf("")
 
     private val _ingredientsListFilters =
-        MutableStateFlow(listOf<FilterRecipeDBModel>())
+        MutableStateFlow(mutableListOf<FilterRecipeDBModel>())
     val ingredientListFilters = _ingredientsListFilters.asStateFlow()
 
     init {
@@ -106,11 +106,12 @@ class SearchRecipeViewModel @Inject constructor(
             }
 
             is RecipesListUIEvent.FiltersDeleteAll -> {
-                allDeleteFilters()
+                _ingredientsListFilters.value = mutableListOf()
             }
 
             is RecipesListUIEvent.FiltersDeleteItem -> {
-                itemDeleteFilters(event.item)
+                _ingredientsListFilters.value = _ingredientsListFilters.value
+                    .filter { it != event.item }.toMutableList()
             }
 
             is RecipesListUIEvent.FiltersOpenButtonClick -> {
@@ -124,24 +125,12 @@ class SearchRecipeViewModel @Inject constructor(
         }
     }
 
-    private fun allDeleteFilters() {
-        doSingleRequest(
-            query = { repository.deleteAllFiltersRecipe() },
-            doOnSuccess = { getFilters() }
-        )
-    }
-
-    private fun itemDeleteFilters(item: FilterRecipeDBModel) {
-        doSingleRequest(
-            query = { repository.deleteFilterRecipe(item) },
-            doOnSuccess = { getFilters() }
-        )
-    }
-
     private fun getFilters() {
         doSingleRequest(
             query = { repository.getFiltersRecipe() },
-            doOnSuccess = { _ingredientsListFilters.value = it }
+            doOnSuccess = {
+                _ingredientsListFilters.value = (_ingredientsListFilters.value + it).toMutableList()
+            }
         )
     }
 

@@ -17,4 +17,11 @@ interface FiltersRecipeDao {
     @Query("DELETE FROM filters_recipes")
     fun deleteAllFiltersRecipe()
 
+    @Transaction
+    fun getFilterRecipeByIngredients(): List<FilterRecipeDBModel> {
+        val list = getFiltersRecipe()
+        deleteAllFiltersRecipe()
+        return list
+    }
+
 }
