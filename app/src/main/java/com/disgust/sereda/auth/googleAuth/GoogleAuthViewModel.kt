@@ -1,7 +1,6 @@
 package com.disgust.sereda.auth.googleAuth
 
 import android.content.Intent
-import android.util.Log
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.IntentSenderRequest
@@ -43,8 +42,7 @@ class GoogleAuthViewModel @Inject constructor(private val repository: AuthReposi
     private fun oneTapSignIn(launcher: ManagedActivityResultLauncher<IntentSenderRequest, ActivityResult>) {
         doSingleRequest(
             query = { repository.oneTapSignIn() },
-            doOnSuccess = { launchAuthDialog(launcher) },
-            doOnError = { it.message?.let { it1 -> Log.e("gh", it1) } }
+            doOnSuccess = { launchAuthDialog(launcher) }
         )
     }
 
