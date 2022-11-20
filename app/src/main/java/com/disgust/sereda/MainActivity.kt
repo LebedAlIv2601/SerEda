@@ -15,15 +15,6 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
-    // Не использовать, опасная штука с возможной утечкой памяти.
-    // Используется ТОЛЬКО для Firebase, потому что ему зачем-то нужно
-    // передавать активность при регистрации через номер телефона
-    companion object {
-        private var mainActivity: MainActivity? = null
-
-        fun getInstance(): MainActivity? = mainActivity
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         mainActivity = this
         setTheme(R.style.Theme_SerEda)
@@ -49,5 +40,15 @@ class MainActivity : ComponentActivity() {
     override fun onDestroy() {
         super.onDestroy()
         mainActivity = null
+    }
+
+
+    // Не использовать, опасная штука с возможной утечкой памяти.
+    // Используется ТОЛЬКО для Firebase, потому что ему зачем-то нужно
+    // передавать активность при регистрации через номер телефона
+    companion object {
+        private var mainActivity: MainActivity? = null
+
+        fun getInstance(): MainActivity? = mainActivity
     }
 }
