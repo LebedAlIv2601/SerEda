@@ -3,6 +3,7 @@ package com.disgust.sereda.utils.navigation
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -26,6 +27,7 @@ sealed class Screen(
     val screenDrawFun: @Composable (NavHostController, NavBackStackEntry) -> Unit
 ) {
 
+    @ExperimentalMaterialApi
     @ExperimentalComposeUiApi
     @ExperimentalAnimationApi
     object Splash : Screen(
@@ -36,12 +38,14 @@ sealed class Screen(
     )
 
     @ExperimentalAnimationApi
+    @ExperimentalMaterialApi
     @ExperimentalComposeUiApi
     object Screen1 :
         Screen(route = "screen1", screenDrawFun = { navController, _ ->
             Screen1Screen(navController = navController)
         })
 
+    @ExperimentalMaterialApi
     @ExperimentalComposeUiApi
     object SearchIngredient :
         Screen(route = "search_ingredient", screenDrawFun = { navController, _ ->
@@ -50,14 +54,25 @@ sealed class Screen(
             )
         })
 
+    @ExperimentalComposeUiApi
+    @ExperimentalMaterialApi
     object IngredientInfo : Screen(
-        route = "ingredient_info/{ingredientId}",
-        arguments = listOf(navArgument("ingredientId") { type = NavType.IntType }),
+        route = "ingredient_info/{ingredientId}/{ingredientName}",
+        arguments = listOf(
+            navArgument("ingredientId") { type = NavType.IntType },
+            navArgument("ingredientName") { type = NavType.StringType }
+        ),
         screenDrawFun = { navController, navBackStackEntry ->
             val id = navBackStackEntry.arguments?.getInt("ingredientId")
-            IngredientInfoScreen(navController = navController, ingredientId = id ?: 0)
+            val name = navBackStackEntry.arguments?.getString("ingredientName")
+            IngredientInfoScreen(
+                navController = navController,
+                ingredientId = id ?: 0,
+                ingredientName = name ?: ""
+            )
         })
 
+    @ExperimentalMaterialApi
     @ExperimentalComposeUiApi
     @ExperimentalAnimationApi
     object GoogleAuth : Screen(
@@ -68,6 +83,7 @@ sealed class Screen(
     )
 
     @ExperimentalAnimationApi
+    @ExperimentalMaterialApi
     @ExperimentalComposeUiApi
     object Profile : Screen(
         route = "profile",
@@ -76,6 +92,7 @@ sealed class Screen(
         }
     )
 
+    @ExperimentalMaterialApi
     @ExperimentalComposeUiApi
     object SearchRecipe :
         Screen(route = "search_recipe", screenDrawFun = { navController, _ ->
@@ -102,6 +119,7 @@ sealed class Screen(
 
 //TODO: Примеры экранов, переписать на другие
 @ExperimentalAnimationApi
+@ExperimentalMaterialApi
 @ExperimentalComposeUiApi
 @Composable
 fun Screen1Screen(

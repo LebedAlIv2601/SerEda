@@ -1,6 +1,7 @@
 package com.disgust.sereda.splash
 
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.lifecycle.ViewModel
 import com.disgust.sereda.splash.data.SplashRepository
@@ -12,6 +13,7 @@ import com.disgust.sereda.utils.navigation.navigateWithClearBackStack
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
+@ExperimentalMaterialApi
 @ExperimentalComposeUiApi
 @ExperimentalAnimationApi
 @HiltViewModel

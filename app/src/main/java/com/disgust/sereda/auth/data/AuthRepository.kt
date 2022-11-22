@@ -1,6 +1,7 @@
 package com.disgust.sereda.auth.data
 
 import android.content.Intent
+import androidx.compose.material.ExperimentalMaterialApi
 import com.disgust.sereda.auth.googleAuth.interaction.OneTapSignInState
 import com.disgust.sereda.utils.firebase.FirebaseAuthHelper
 import com.google.firebase.auth.AuthCredential
@@ -8,6 +9,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
 
+@ExperimentalMaterialApi
 class AuthRepository @Inject constructor(private val firebaseHelper: FirebaseAuthHelper) {
 
     private val _oneTapSignInState = MutableStateFlow<OneTapSignInState>(OneTapSignInState.Waiting)
