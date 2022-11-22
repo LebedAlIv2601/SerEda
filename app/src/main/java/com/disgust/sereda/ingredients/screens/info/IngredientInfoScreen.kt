@@ -42,10 +42,7 @@ fun IngredientInfoScreen(
             IconButton(
                 onClick = {
                     vm.onUIEvent(
-                        IngredientInfoUIEvent.IngredientAddButtonClick(
-                            navController,
-                            (ingredientInfoState.value as IngredientInfoState.Success).data
-                        )
+                        IngredientInfoUIEvent.IngredientAddButtonClick(navController)
                     )
                 },
                 enabled = enabledButtonFilters.value
@@ -59,10 +56,7 @@ fun IngredientInfoScreen(
             IconButton(
                 onClick = {
                     vm.onUIEvent(
-                        IngredientInfoUIEvent.IngredientExcludeButtonClick(
-                            navController,
-                            (ingredientInfoState.value as IngredientInfoState.Success).data
-                        )
+                        IngredientInfoUIEvent.IngredientExcludeButtonClick(navController)
                     )
                 },
                 enabled = enabledButtonFilters.value

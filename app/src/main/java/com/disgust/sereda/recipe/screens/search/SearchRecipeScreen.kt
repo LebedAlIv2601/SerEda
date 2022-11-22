@@ -65,10 +65,10 @@ fun SearchRecipeScreen(
                 },
                 onClose = {
                     scope.launch { state.hide() }
-                    vm.onUIEvent(RecipesListUIEvent.FiltersDeleteAll())
+                    vm.onUIEvent(RecipesListUIEvent.FiltersDeleteAll)
                 },
                 onDeleteAll = {
-                    vm.onUIEvent(RecipesListUIEvent.FiltersDeleteAll())
+                    vm.onUIEvent(RecipesListUIEvent.FiltersDeleteAll)
                 },
                 onDeleteItem = {
                     vm.onUIEvent(RecipesListUIEvent.FiltersDeleteItem(it))
@@ -99,7 +99,7 @@ fun SearchRecipeScreen(
 
                 IconButton(
                     onClick = {
-                        vm.onUIEvent(RecipesListUIEvent.FiltersOpenButtonClick())
+                        vm.onUIEvent(RecipesListUIEvent.FiltersOpenButtonClick)
                         scope.launch { state.animateTo(ModalBottomSheetValue.Expanded) }
                     }
                 ) {

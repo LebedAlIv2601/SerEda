@@ -98,7 +98,7 @@ class SearchRecipeViewModel @Inject constructor(
             }
 
             is RecipesListUIEvent.FiltersApplyButtonClick -> {
-                applyFilters(event.query)
+                getRecipes(event.query)
             }
 
             is RecipesListUIEvent.FiltersSearchIngredientButtonClick -> {
@@ -107,11 +107,13 @@ class SearchRecipeViewModel @Inject constructor(
 
             is RecipesListUIEvent.FiltersDeleteAll -> {
                 _ingredientsListFilters.value = mutableListOf()
+                getRecipes(lastQuery.value)
             }
 
             is RecipesListUIEvent.FiltersDeleteItem -> {
                 _ingredientsListFilters.value = _ingredientsListFilters.value
                     .filter { it != event.item }.toMutableList()
+                getRecipes(lastQuery.value)
             }
 
             is RecipesListUIEvent.FiltersOpenButtonClick -> {
@@ -130,30 +132,6 @@ class SearchRecipeViewModel @Inject constructor(
             query = { repository.getFiltersRecipe() },
             doOnSuccess = {
                 _ingredientsListFilters.value = (_ingredientsListFilters.value + it).toMutableList()
-            }
-        )
-    }
-
-    private fun applyFilters(query: String) {
-        doSingleRequest(
-            query = {
-                repository.searchRecipes(
-                    query = query,
-                    sort = if (query.isNotBlank()) "" else "random",
-                    includeIngredients = _ingredientsListFilters.value.filter { it.isInclude }
-                        .toString(),
-                    excludeIngredients = _ingredientsListFilters.value.filter { !it.isInclude }
-                        .toString()
-                )
-            },
-            doOnLoading = {
-                _recipesListState.value = RecipesListState.Loading
-            },
-            doOnSuccess = {
-                _recipesListState.value = RecipesListState.Success(it)
-            },
-            doOnError = {
-                _recipesListState.value = RecipesListState.Error(it)
             }
         )
     }
@@ -188,7 +166,14 @@ class SearchRecipeViewModel @Inject constructor(
 
     private fun getRecipes(query: String) {
         doSingleRequest(
-            query = { repository.searchRecipes(query = query) },
+            query = {
+                repository.searchRecipes(
+                    query = query,
+                    includeIngredients = _ingredientsListFilters.value.filter { it.isInclude }
+                        .toString(),
+                    excludeIngredients = _ingredientsListFilters.value.filter { !it.isInclude }
+                        .toString())
+            },
             doOnLoading = {
                 _recipesListState.value = RecipesListState.Loading
             },

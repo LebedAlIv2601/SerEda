@@ -20,7 +20,7 @@ sealed class RecipesListUIEvent : BaseUIEvent {
     class FiltersSearchIngredientButtonClick(val navController: NavHostController) :
         RecipesListUIEvent()
 
-    class FiltersOpenButtonClick() : RecipesListUIEvent()
-    class FiltersDeleteAll() : RecipesListUIEvent()
+    object FiltersOpenButtonClick : RecipesListUIEvent()
+    object FiltersDeleteAll : RecipesListUIEvent()
     class FiltersDeleteItem(val item: FilterRecipeDBModel) : RecipesListUIEvent()
 }

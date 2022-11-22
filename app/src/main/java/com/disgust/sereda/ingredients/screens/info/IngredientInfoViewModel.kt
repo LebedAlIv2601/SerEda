@@ -36,7 +36,7 @@ class IngredientInfoViewModel @Inject constructor(
             is IngredientInfoUIEvent.ButtonRestartClick -> {}
 
             is IngredientInfoUIEvent.IngredientAddButtonClick -> {
-                val data = event.data
+                val data = (_ingredientInfoState.value as IngredientInfoState.Success).data
                 addFilterRecipe(
                     FilterRecipeDBModel(
                         id = data.id,
@@ -49,7 +49,7 @@ class IngredientInfoViewModel @Inject constructor(
             }
 
             is IngredientInfoUIEvent.IngredientExcludeButtonClick -> {
-                val data = event.data
+                val data = (_ingredientInfoState.value as IngredientInfoState.Success).data
                 addFilterRecipe(
                     FilterRecipeDBModel(
                         id = data.id,
