@@ -17,38 +17,18 @@ class FirebaseDatabaseHelper {
     private val userReference = auth.currentUser?.uid?.let { usersDatabaseReference.child(it) }
 
     fun addFavoriteRecipe(recipe: FavoriteRecipeFirebaseModel) {
-        doIfUserExists {
-            it.child("favoriteRecipes")
-                .updateChildren(mapOf("/${recipe.id}" to recipe.toMap()))
-        }
+        userReference?.child("favoriteRecipes")
+            ?.updateChildren(mapOf("/${recipe.id}" to recipe.toMap()))
     }
 
     fun deleteFavoriteRecipe(recipe: FavoriteRecipeFirebaseModel) {
-        doIfUserExists {
-            it.child("favoriteRecipes").child(recipe.id).removeValue()
-        }
+        userReference?.child("favoriteRecipes")?.child(recipe.id)?.removeValue()
     }
 
     @Suppress("UNCHECKED_CAST")
-    fun getFavoriteRecipes(doOnComplete: (List<FavoriteRecipeFirebaseModel>) -> Unit) {
-        val list = mutableListOf<FavoriteRecipeFirebaseModel>()
-        doIfUserExists {
-            it.child("favoriteRecipes").get().addOnCompleteListener { task ->
-                if (task.result.exists()) {
-                    val result = task.result.value as HashMap<String, HashMap<String, Any?>>
-                    result.forEach { map ->
-                        list.add(
-                            FavoriteRecipeFirebaseModel(
-                                id = map.value["id"].toString(),
-                                name = map.value["name"].toString(),
-                                image = map.value["image"].toString()
-                            )
-                        )
-                    }
-                    doOnComplete(list)
-                }
-            }
-        }
+    suspend fun getFavoriteRecipes(): List<FavoriteRecipeFirebaseModel> {
+        val userData = userReference?.get()?.await()
+        return getListOfFavoriteRecipes(userData)
     }
 
     @Suppress("UNCHECKED_CAST")
@@ -59,16 +39,6 @@ class FirebaseDatabaseHelper {
             email = userMap["email"].toString(),
             favoriteRecipes = getListOfFavoriteRecipes(userData)
         )
-    }
-
-    private inline fun doIfUserExists(crossinline function: (DatabaseReference) -> Unit) {
-        userReference?.let {
-            it.get().addOnCompleteListener { task ->
-                if (task.result.exists()) {
-                    function.invoke(it)
-                }
-            }
-        }
     }
 
     @Suppress("UNCHECKED_CAST")

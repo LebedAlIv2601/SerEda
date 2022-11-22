@@ -6,10 +6,6 @@ import com.disgust.sereda.recipe.screens.search.model.RecipeItem
 import com.disgust.sereda.utils.db.SerEdaDatabase
 import com.disgust.sereda.utils.db.filters.FilterRecipeDBModel
 import com.disgust.sereda.utils.firebase.FirebaseDatabaseHelper
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -19,8 +15,6 @@ class RecipeRepository @Inject constructor(
     private val db: SerEdaDatabase,
     private val firebaseHelper: FirebaseDatabaseHelper
 ) {
-
-    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
     suspend fun getInfoRecipe(id: Int): RecipeInfo {
         return api.getRecipeInfo(id).toRecipeInfo()
@@ -49,13 +43,10 @@ class RecipeRepository @Inject constructor(
         return recipes
     }
 
-    fun updateFavoriteRecipeIds() {
-        firebaseHelper.getFavoriteRecipes { list ->
-            scope.launch {
-                db.favoriteRecipeDao()
-                    .updateFavoriteRecipes(list.map { it.toFavoriteRecipeDBModel() })
-            }
-        }
+    suspend fun updateFavoriteRecipeIds() {
+        val list = firebaseHelper.getFavoriteRecipes()
+        db.favoriteRecipeDao()
+            .updateFavoriteRecipes(list.map { it.toFavoriteRecipeDBModel() })
     }
 
     fun getFavoriteRecipeIds(): List<Int> =
