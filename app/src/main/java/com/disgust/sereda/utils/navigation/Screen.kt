@@ -3,6 +3,7 @@ package com.disgust.sereda.utils.navigation
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -39,6 +40,9 @@ sealed class Screen<T : NavigatorViewModel>(
     val screenDrawFun: @Composable (T, NavBackStackEntry) -> Unit
 ) {
 
+    @ExperimentalMaterialApi
+    @ExperimentalComposeUiApi
+    @ExperimentalAnimationApi
     object Splash : Screen<SplashViewModel>(
         route = "splash",
         screenDrawFun = { vm, _ ->
@@ -46,24 +50,42 @@ sealed class Screen<T : NavigatorViewModel>(
         }
     )
 
+    @ExperimentalAnimationApi
+    @ExperimentalMaterialApi
+    @ExperimentalComposeUiApi
     object Screen1 :
         Screen<Screen1ViewModel>(route = "screen1", screenDrawFun = { vm, _ ->
             Screen1Screen(vm = vm)
         })
 
+    @ExperimentalMaterialApi
+    @ExperimentalComposeUiApi
     object SearchIngredient :
         Screen<SearchIngredientViewModel>(route = "search_ingredient", screenDrawFun = { vm, _ ->
             SearchIngredientScreen(vm = vm)
         })
 
+    @ExperimentalComposeUiApi
+    @ExperimentalMaterialApi
     object IngredientInfo : Screen<IngredientInfoViewModel>(
-        route = "ingredient_info/{ingredientId}",
-        arguments = listOf(navArgument("ingredientId") { type = NavType.IntType }),
+        route = "ingredient_info/{ingredientId}/{ingredientName}",
+        arguments = listOf(
+            navArgument("ingredientId") { type = NavType.IntType },
+            navArgument("ingredientName") { type = NavType.StringType }
+        ),
         screenDrawFun = { vm, navBackStackEntry ->
             val id = navBackStackEntry.arguments?.getInt("ingredientId")
-            IngredientInfoScreen(ingredientId = id ?: 0, vm = vm)
+            val name = navBackStackEntry.arguments?.getString("ingredientName")
+            IngredientInfoScreen(
+                vm = vm,
+                ingredientId = id ?: 0,
+                ingredientName = name ?: ""
+            )
         })
 
+    @ExperimentalMaterialApi
+    @ExperimentalComposeUiApi
+    @ExperimentalAnimationApi
     object GoogleAuth : Screen<GoogleAuthViewModel>(
         route = "google_auth",
         screenDrawFun = { vm, _ ->
@@ -71,6 +93,9 @@ sealed class Screen<T : NavigatorViewModel>(
         }
     )
 
+    @ExperimentalAnimationApi
+    @ExperimentalMaterialApi
+    @ExperimentalComposeUiApi
     object Profile : Screen<ProfileViewModel>(
         route = "profile",
         screenDrawFun = { vm, _ ->
@@ -78,6 +103,8 @@ sealed class Screen<T : NavigatorViewModel>(
         }
     )
 
+    @ExperimentalMaterialApi
+    @ExperimentalComposeUiApi
     object SearchRecipe :
         Screen<SearchRecipeViewModel>(route = "search_recipe", screenDrawFun = { vm, _ ->
             SearchRecipeScreen(vm = vm)
@@ -101,6 +128,7 @@ sealed class Screen<T : NavigatorViewModel>(
 
 //TODO: Примеры экранов, переписать на другие
 
+@ExperimentalMaterialApi
 @ExperimentalAnimationApi
 @ExperimentalComposeUiApi
 @HiltViewModel
@@ -120,6 +148,7 @@ class Screen1ViewModel @Inject constructor(firebaseAuthHelper: FirebaseAuthHelpe
 }
 
 @ExperimentalAnimationApi
+@ExperimentalMaterialApi
 @ExperimentalComposeUiApi
 @Composable
 fun Screen1Screen(

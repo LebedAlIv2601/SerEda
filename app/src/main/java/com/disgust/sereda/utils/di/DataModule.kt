@@ -1,6 +1,7 @@
 package com.disgust.sereda.utils.di
 
 import android.content.Context
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.room.Room
 import com.disgust.sereda.R
 import com.disgust.sereda.utils.Constants.API_KEY
@@ -38,6 +39,7 @@ class DataModule {
             .build()
     }
 
+    @ExperimentalMaterialApi
     @Singleton
     @Provides
     fun provideFirebaseAuthHelper(

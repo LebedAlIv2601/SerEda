@@ -5,6 +5,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -18,6 +19,7 @@ import com.disgust.sereda.ingredients.screens.search.model.IngredientItem
 import com.disgust.sereda.utils.commonViews.SearchView
 
 @ExperimentalAnimationApi
+@ExperimentalMaterialApi
 @ExperimentalComposeUiApi
 @Composable
 fun SearchIngredientScreen(

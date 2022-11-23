@@ -1,11 +1,13 @@
 package com.disgust.sereda.utils.navigation
 
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.navigation.NavHostController
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 
+@ExperimentalMaterialApi
 @ExperimentalComposeUiApi
 @ExperimentalAnimationApi
 @Composable

@@ -14,6 +14,8 @@ interface RecipeApi {
     @GET("recipes/complexSearch")
     suspend fun searchRecipes(
         @Query("query") query: String,
-        @Query("sort") sort: String
+        @Query("sort") sort: String,
+        @Query("includeIngredients") includeIngredients: String,
+        @Query("excludeIngredients") excludeIngredients: String
     ): RecipeListResponse
 }

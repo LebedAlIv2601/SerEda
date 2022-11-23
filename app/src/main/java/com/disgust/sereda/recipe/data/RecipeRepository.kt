@@ -4,11 +4,8 @@ import com.disgust.sereda.recipe.commonModel.RecipeFavoriteState
 import com.disgust.sereda.recipe.screens.info.model.RecipeInfo
 import com.disgust.sereda.recipe.screens.search.model.RecipeItem
 import com.disgust.sereda.utils.db.SerEdaDatabase
+import com.disgust.sereda.utils.db.filters.FilterRecipeDBModel
 import com.disgust.sereda.utils.firebase.FirebaseDatabaseHelper
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -19,16 +16,24 @@ class RecipeRepository @Inject constructor(
     private val firebaseHelper: FirebaseDatabaseHelper
 ) {
 
-    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
-
     suspend fun getInfoRecipe(id: Int): RecipeInfo {
         return api.getRecipeInfo(id).toRecipeInfo()
     }
 
-    suspend fun searchRecipes(query: String = "", sort: String = ""): List<RecipeItem> {
+    suspend fun searchRecipes(
+        query: String = "",
+        sort: String = "",
+        includeIngredients: String = "",
+        excludeIngredients: String = ""
+    ): List<RecipeItem> {
         val favoriteIds = getFavoriteRecipeIds()
         val recipes =
-            api.searchRecipes(query, sort).results.map { it.toRecipeItem() }.toMutableList()
+            api.searchRecipes(
+                query,
+                sort,
+                includeIngredients,
+                excludeIngredients
+            ).results.map { it.toRecipeItem() }.toMutableList()
         recipes.forEachIndexed { index, recipe ->
             val isFavorite = favoriteIds.find { it == recipe.id } != null
             if (isFavorite) {
@@ -38,13 +43,10 @@ class RecipeRepository @Inject constructor(
         return recipes
     }
 
-    fun updateFavoriteRecipeIds() {
-        firebaseHelper.getFavoriteRecipes { list ->
-            scope.launch {
-                db.favoriteRecipeDao()
-                    .updateFavoriteRecipes(list.map { it.toFavoriteRecipeDBModel() })
-            }
-        }
+    suspend fun updateFavoriteRecipeIds() {
+        val list = firebaseHelper.getFavoriteRecipes()
+        db.favoriteRecipeDao()
+            .updateFavoriteRecipes(list.map { it.toFavoriteRecipeDBModel() })
     }
 
     fun getFavoriteRecipeIds(): List<Int> =
@@ -74,4 +76,8 @@ class RecipeRepository @Inject constructor(
         firebaseHelper.deleteFavoriteRecipe(recipe.toFavoriteRecipeFirebaseModel())
     }
     //end
+
+    fun getFiltersRecipe(): List<FilterRecipeDBModel> =
+        db.filtersRecipeDao().getFilterRecipeByIngredients()
+
 }

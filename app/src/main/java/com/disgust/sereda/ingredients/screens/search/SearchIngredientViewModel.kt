@@ -1,6 +1,7 @@
 package com.disgust.sereda.ingredients.screens.search
 
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.ExperimentalComposeUiApi
 import com.disgust.sereda.ingredients.data.SearchIngredientRepository
@@ -15,8 +16,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
 
-@ExperimentalAnimationApi
+@ExperimentalMaterialApi
 @ExperimentalComposeUiApi
+@ExperimentalAnimationApi
 @HiltViewModel
 class SearchIngredientViewModel @Inject constructor(
     private val repository: SearchIngredientRepository
@@ -65,7 +67,10 @@ class SearchIngredientViewModel @Inject constructor(
             is IngredientsListUIEvent.ListItemClick -> {
                 navigateWithArguments(
                     destination = Screen.IngredientInfo.route,
-                    arguments = mapOf("ingredientId" to event.item.id.toString())
+                    arguments = mapOf(
+                        "ingredientId" to event.item.id.toString(),
+                        "ingredientName" to event.item.name
+                    )
                 )
             }
 
