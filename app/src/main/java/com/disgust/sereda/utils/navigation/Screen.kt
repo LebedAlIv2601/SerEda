@@ -1,15 +1,9 @@
 package com.disgust.sereda.utils.navigation
 
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.navigation.*
 import com.disgust.sereda.auth.googleAuth.GoogleAuthScreen
 import com.disgust.sereda.auth.googleAuth.GoogleAuthViewModel
@@ -53,18 +47,12 @@ sealed class Screen<T : NavigatorViewModel>(
     @ExperimentalAnimationApi
     @ExperimentalMaterialApi
     @ExperimentalComposeUiApi
-    object Screen1 :
-        Screen<Screen1ViewModel>(route = "screen1", screenDrawFun = { vm, _ ->
-            Screen1Screen(vm = vm)
-        })
-
-    @ExperimentalMaterialApi
-    @ExperimentalComposeUiApi
     object SearchIngredient :
         Screen<SearchIngredientViewModel>(route = "search_ingredient", screenDrawFun = { vm, _ ->
             SearchIngredientScreen(vm = vm)
         })
 
+    @ExperimentalAnimationApi
     @ExperimentalComposeUiApi
     @ExperimentalMaterialApi
     object IngredientInfo : Screen<IngredientInfoViewModel>(
@@ -103,6 +91,7 @@ sealed class Screen<T : NavigatorViewModel>(
         }
     )
 
+    @ExperimentalAnimationApi
     @ExperimentalMaterialApi
     @ExperimentalComposeUiApi
     object SearchRecipe :
@@ -124,82 +113,4 @@ sealed class Screen<T : NavigatorViewModel>(
                 vm = vm
             )
         })
-}
-
-//TODO: Примеры экранов, переписать на другие
-
-@ExperimentalMaterialApi
-@ExperimentalAnimationApi
-@ExperimentalComposeUiApi
-@HiltViewModel
-class Screen1ViewModel @Inject constructor(firebaseAuthHelper: FirebaseAuthHelper) :
-    NavigatorViewModel() {
-    fun navigateToProfile() {
-        navigate(Screen.Profile.route)
-    }
-
-    fun navigateToSearchRecipe() {
-        navigate(Screen.SearchRecipe.route)
-    }
-
-    fun navigateToSearchIngredient() {
-        navigate(Screen.SearchIngredient.route)
-    }
-}
-
-@ExperimentalAnimationApi
-@ExperimentalMaterialApi
-@ExperimentalComposeUiApi
-@Composable
-fun Screen1Screen(
-    vm: Screen1ViewModel
-) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .fillMaxHeight(),
-        contentAlignment = Alignment.Center
-    ) {
-        Column() {
-            Text(text = "1 screen")
-            Box(
-                modifier = Modifier
-                    .padding(8.dp)
-                    .height(50.dp)
-                    .width(50.dp)
-                    .clickable {
-                        vm.navigateToSearchIngredient()
-                    },
-                contentAlignment = Alignment.Center
-            ) {
-                Text(text = "Search ingredient")
-            }
-
-            Box(
-                modifier = Modifier
-                    .padding(8.dp)
-                    .height(50.dp)
-                    .width(50.dp)
-                    .clickable {
-                        vm.navigateToSearchRecipe()
-                    },
-                contentAlignment = Alignment.Center
-            ) {
-                Text(text = "Search recipe")
-            }
-
-            Box(
-                modifier = Modifier
-                    .padding(8.dp)
-                    .height(50.dp)
-                    .width(50.dp)
-                    .clickable {
-                        vm.navigateToProfile()
-                    },
-                contentAlignment = Alignment.Center
-            ) {
-                Text(text = "Profile")
-            }
-        }
-    }
 }

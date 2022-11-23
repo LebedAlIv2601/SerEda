@@ -26,7 +26,7 @@ class SplashViewModel @Inject constructor(private val repository: SplashReposito
                     doOnSuccess = {
                         navigateWithClearBackStack(
                             if (it) {
-                                Screen.Screen1.route
+                                Screen.SearchRecipe.route
                             } else {
                                 Screen.GoogleAuth.route
                             }

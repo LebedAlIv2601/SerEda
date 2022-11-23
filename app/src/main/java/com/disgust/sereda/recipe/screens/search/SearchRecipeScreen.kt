@@ -9,6 +9,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.Check
 import androidx.compose.runtime.Composable
@@ -105,6 +106,17 @@ fun SearchRecipeScreen(
                     Icon(
                         Icons.Default.Menu,
                         contentDescription = "Filters"
+                    )
+                }
+
+                IconButton(
+                    onClick = {
+                        vm.onUIEvent(RecipesListUIEvent.ProfileButtonClick(navController))
+                    }
+                ) {
+                    Icon(
+                        Icons.Default.Person,
+                        contentDescription = "Профиль"
                     )
                 }
 

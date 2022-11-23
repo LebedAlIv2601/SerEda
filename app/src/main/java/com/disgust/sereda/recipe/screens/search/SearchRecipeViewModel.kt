@@ -19,6 +19,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
 
+@ExperimentalAnimationApi
 @ExperimentalMaterialApi
 @ExperimentalComposeUiApi
 @ExperimentalAnimationApi
@@ -123,6 +124,10 @@ class SearchRecipeViewModel @Inject constructor(
 
             is RecipesListUIEvent.KeyboardSetHide -> {
                 _hideKeyboard.value = false
+            }
+
+            is RecipesListUIEvent.ProfileButtonClick -> {
+                event.navController.navigate(Screen.Profile.route)
             }
 
         }

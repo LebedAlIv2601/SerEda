@@ -51,7 +51,7 @@ class GoogleAuthViewModel @Inject constructor(private val repository: AuthReposi
         val googleCredentials = GoogleAuthProvider.getCredential(googleIdToken, null)
         doSingleRequest(
             query = { repository.signInWithGoogle(googleCredentials) },
-            doOnSuccess = { navigateWithClearBackStack(Screen.Screen1.route) }
+            doOnSuccess = { navigateWithClearBackStack(Screen.SearchRecipe.route) }
         )
     }
 
