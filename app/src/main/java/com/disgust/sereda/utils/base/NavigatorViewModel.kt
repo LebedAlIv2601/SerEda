@@ -15,27 +15,27 @@ abstract class NavigatorViewModel : ViewModel() {
         }
     }
 
-    fun navigate(destination: String) {
+    protected fun navigate(destination: String) {
         navController?.navigate(destination)
     }
 
-    fun navigateWithArguments(destination: String, arguments: Map<String, String>) {
+    protected fun navigateWithArguments(destination: String, arguments: Map<String, String>) {
         navController?.navigateWithArguments(destination, arguments)
     }
 
-    fun navigateWithClearBackStack(destination: String) {
+    protected fun navigateWithClearBackStack(destination: String) {
         navController?.navigateWithClearBackStack(destination)
     }
 
-    fun navigateUp() {
+    protected fun navigateUp() {
         navController?.navigateUp()
     }
 
-    fun popBackStack() {
+    protected fun popBackStack() {
         navController?.popBackStack()
     }
 
-    fun popBackStack(destination: String, isInclusive: Boolean) {
+    protected fun popBackStack(destination: String, isInclusive: Boolean) {
         navController?.popBackStack(destination, isInclusive)
     }
 }

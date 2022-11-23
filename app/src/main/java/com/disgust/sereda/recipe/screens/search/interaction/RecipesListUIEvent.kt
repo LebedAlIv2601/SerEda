@@ -18,7 +18,6 @@ sealed class RecipesListUIEvent : BaseUIEvent {
 
     class FiltersApplyButtonClick(val query: String) : RecipesListUIEvent()
     object FiltersSearchIngredientButtonClick : RecipesListUIEvent()
-
     object FiltersOpenButtonClick : RecipesListUIEvent()
     object FiltersDeleteAll : RecipesListUIEvent()
     class FiltersDeleteItem(val item: FilterRecipeDBModel) : RecipesListUIEvent()
