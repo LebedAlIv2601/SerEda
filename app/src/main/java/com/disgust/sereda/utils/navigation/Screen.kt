@@ -21,12 +21,10 @@ import com.disgust.sereda.recipe.screens.search.SearchRecipeViewModel
 import com.disgust.sereda.splash.SplashScreen
 import com.disgust.sereda.splash.SplashViewModel
 import com.disgust.sereda.utils.base.NavigatorViewModel
-import com.disgust.sereda.utils.firebase.FirebaseAuthHelper
-import dagger.hilt.android.lifecycle.HiltViewModel
-import javax.inject.Inject
 
-@ExperimentalComposeUiApi
 @ExperimentalAnimationApi
+@ExperimentalMaterialApi
+@ExperimentalComposeUiApi
 sealed class Screen<T : NavigatorViewModel>(
     val route: String,
     val arguments: List<NamedNavArgument> = emptyList(),
@@ -34,9 +32,6 @@ sealed class Screen<T : NavigatorViewModel>(
     val screenDrawFun: @Composable (T, NavBackStackEntry) -> Unit
 ) {
 
-    @ExperimentalMaterialApi
-    @ExperimentalComposeUiApi
-    @ExperimentalAnimationApi
     object Splash : Screen<SplashViewModel>(
         route = "splash",
         screenDrawFun = { vm, _ ->
@@ -44,17 +39,11 @@ sealed class Screen<T : NavigatorViewModel>(
         }
     )
 
-    @ExperimentalAnimationApi
-    @ExperimentalMaterialApi
-    @ExperimentalComposeUiApi
     object SearchIngredient :
         Screen<SearchIngredientViewModel>(route = "search_ingredient", screenDrawFun = { vm, _ ->
             SearchIngredientScreen(vm = vm)
         })
 
-    @ExperimentalAnimationApi
-    @ExperimentalComposeUiApi
-    @ExperimentalMaterialApi
     object IngredientInfo : Screen<IngredientInfoViewModel>(
         route = "ingredient_info/{ingredientId}/{ingredientName}",
         arguments = listOf(
@@ -71,9 +60,6 @@ sealed class Screen<T : NavigatorViewModel>(
             )
         })
 
-    @ExperimentalMaterialApi
-    @ExperimentalComposeUiApi
-    @ExperimentalAnimationApi
     object GoogleAuth : Screen<GoogleAuthViewModel>(
         route = "google_auth",
         screenDrawFun = { vm, _ ->
@@ -81,9 +67,6 @@ sealed class Screen<T : NavigatorViewModel>(
         }
     )
 
-    @ExperimentalAnimationApi
-    @ExperimentalMaterialApi
-    @ExperimentalComposeUiApi
     object Profile : Screen<ProfileViewModel>(
         route = "profile",
         screenDrawFun = { vm, _ ->
@@ -91,9 +74,6 @@ sealed class Screen<T : NavigatorViewModel>(
         }
     )
 
-    @ExperimentalAnimationApi
-    @ExperimentalMaterialApi
-    @ExperimentalComposeUiApi
     object SearchRecipe :
         Screen<SearchRecipeViewModel>(route = "search_recipe", screenDrawFun = { vm, _ ->
             SearchRecipeScreen(vm = vm)
