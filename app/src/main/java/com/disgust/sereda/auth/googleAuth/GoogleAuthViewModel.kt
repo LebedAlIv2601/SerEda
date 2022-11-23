@@ -35,7 +35,7 @@ class GoogleAuthViewModel @Inject constructor(private val repository: AuthReposi
             }
             is GoogleAuthUIEvent.IntentResultOk -> {
                 signInWithGoogle(event.intent) {
-                    event.navController.navigateWithClearBackStack(Screen.Screen1.route)
+                    event.navController.navigateWithClearBackStack(Screen.SearchRecipe.route)
                 }
             }
         }
