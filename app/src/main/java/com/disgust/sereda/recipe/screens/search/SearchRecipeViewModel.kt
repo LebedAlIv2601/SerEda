@@ -22,7 +22,6 @@ import javax.inject.Inject
 @ExperimentalAnimationApi
 @ExperimentalMaterialApi
 @ExperimentalComposeUiApi
-@ExperimentalAnimationApi
 @HiltViewModel
 class SearchRecipeViewModel @Inject constructor(
     private val repository: RecipeRepository
@@ -127,7 +126,7 @@ class SearchRecipeViewModel @Inject constructor(
             }
 
             is RecipesListUIEvent.ProfileButtonClick -> {
-                event.navController.navigate(Screen.Profile.route)
+                navigate(Screen.Profile.route)
             }
 
         }

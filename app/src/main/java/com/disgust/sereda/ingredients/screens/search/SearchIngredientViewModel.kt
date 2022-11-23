@@ -19,7 +19,6 @@ import javax.inject.Inject
 @ExperimentalAnimationApi
 @ExperimentalMaterialApi
 @ExperimentalComposeUiApi
-@ExperimentalAnimationApi
 @HiltViewModel
 class SearchIngredientViewModel @Inject constructor(
     private val repository: SearchIngredientRepository

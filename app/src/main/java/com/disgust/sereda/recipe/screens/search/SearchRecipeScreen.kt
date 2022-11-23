@@ -111,7 +111,7 @@ fun SearchRecipeScreen(
 
                 IconButton(
                     onClick = {
-                        vm.onUIEvent(RecipesListUIEvent.ProfileButtonClick(navController))
+                        vm.onUIEvent(RecipesListUIEvent.ProfileButtonClick)
                     }
                 ) {
                     Icon(
