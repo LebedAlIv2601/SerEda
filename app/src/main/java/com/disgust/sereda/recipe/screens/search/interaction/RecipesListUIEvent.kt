@@ -16,8 +16,7 @@ sealed class RecipesListUIEvent : BaseUIEvent {
     class ListItemButtonAddToFavoriteClick(val recipe: RecipeItem) : RecipesListUIEvent()
 
     class FiltersApplyButtonClick(val query: String) : RecipesListUIEvent()
-    class FiltersSearchIngredientButtonClick(val navController: NavHostController) :
-        RecipesListUIEvent()
+    object FiltersSearchIngredientButtonClick : RecipesListUIEvent()
 
     object FiltersOpenButtonClick : RecipesListUIEvent()
     object FiltersDeleteAll : RecipesListUIEvent()

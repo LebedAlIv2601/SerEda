@@ -8,6 +8,7 @@ import com.disgust.sereda.utils.Constants.API_KEY
 import com.disgust.sereda.utils.Constants.BASE_URL
 import com.disgust.sereda.utils.Constants.SIGN_IN_REQUEST
 import com.disgust.sereda.utils.Constants.SIGN_UP_REQUEST
+import com.disgust.sereda.utils.db.Migrations
 import com.disgust.sereda.utils.db.SerEdaDatabase
 import com.disgust.sereda.utils.firebase.FirebaseAuthHelper
 import com.disgust.sereda.utils.firebase.FirebaseDatabaseHelper
@@ -117,6 +118,7 @@ class DataModule {
         app,
         SerEdaDatabase::class.java,
         "ser_eda_db"
-    ).build()
+    ).addMigrations(Migrations.MIGRATION_1_2)
+        .build()
 
 }

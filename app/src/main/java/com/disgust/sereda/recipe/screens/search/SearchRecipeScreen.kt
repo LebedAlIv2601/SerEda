@@ -60,7 +60,7 @@ fun SearchRecipeScreen(
                     vm.onUIEvent(RecipesListUIEvent.FiltersApplyButtonClick(inputText.value))
                 },
                 onSearchIngredient = {
-                    vm.onUIEvent(RecipesListUIEvent.FiltersSearchIngredientButtonClick(navController))
+                    vm.onUIEvent(RecipesListUIEvent.FiltersSearchIngredientButtonClick)
                 },
                 onClose = {
                     scope.launch { state.hide() }
@@ -110,26 +110,27 @@ fun SearchRecipeScreen(
 
             }
 
-        when (recipesState.value) {
-            is RecipesListState.Loading -> Text("Loading")
-            is RecipesListState.Success ->
-                RecipesList(
-                    recipes = (recipesState.value as RecipesListState.Success).data,
-                    onItemClick = {
-                        vm.onUIEvent(
-                            RecipesListUIEvent.ListItemClick(
-                                item = it
+            when (val recipesValue = recipesState.value) {
+                is RecipesListState.Loading -> Text("Loading")
+                is RecipesListState.Success ->
+                    RecipesList(
+                        recipes = recipesValue.data,
+                        onItemClick = {
+                            vm.onUIEvent(
+                                RecipesListUIEvent.ListItemClick(
+                                    item = it
+                                )
                             )
-                        )
-                    },
-                    onAddToFavoriteButtonClick = {
-                        vm.onUIEvent(
-                            RecipesListUIEvent.ListItemButtonAddToFavoriteClick(it)
-                        )
-                    }
-                )
-            is RecipesListState.Error -> Text("Error")
-            else -> Text("")
+                        },
+                        onAddToFavoriteButtonClick = {
+                            vm.onUIEvent(
+                                RecipesListUIEvent.ListItemButtonAddToFavoriteClick(it)
+                            )
+                        }
+                    )
+                is RecipesListState.Error -> Text(recipesValue.exception.toString())
+                else -> Text("")
+            }
         }
     }
 }

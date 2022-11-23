@@ -4,7 +4,6 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.ExperimentalComposeUiApi
-import androidx.lifecycle.ViewModel
 import com.disgust.sereda.recipe.commonModel.RecipeFavoriteState
 import com.disgust.sereda.recipe.data.RecipeRepository
 import com.disgust.sereda.recipe.screens.search.interaction.RecipesListState
@@ -104,7 +103,7 @@ class SearchRecipeViewModel @Inject constructor(
             }
 
             is RecipesListUIEvent.FiltersSearchIngredientButtonClick -> {
-                event.navController.navigate(Screen.SearchIngredient.route)
+                navigate(Screen.SearchIngredient.route)
             }
 
             is RecipesListUIEvent.FiltersDeleteAll -> {

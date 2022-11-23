@@ -1,8 +1,8 @@
 package com.disgust.sereda.ingredients.screens.info
 
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.ui.ExperimentalComposeUiApi
-import androidx.lifecycle.ViewModel
 import com.disgust.sereda.ingredients.data.SearchIngredientRepository
 import com.disgust.sereda.ingredients.screens.info.interactioin.IngredientInfoState
 import com.disgust.sereda.ingredients.screens.info.interactioin.IngredientInfoUIEvent
@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
 
+@ExperimentalAnimationApi
 @ExperimentalComposeUiApi
 @ExperimentalMaterialApi
 @HiltViewModel
@@ -46,7 +47,7 @@ class IngredientInfoViewModel @Inject constructor(
                         isInclude = true
                     )
                 )
-                event.navController.popBackStack(Screen.SearchRecipe.route, false)
+                popBackStack(Screen.SearchRecipe.route, false)
             }
 
             is IngredientInfoUIEvent.IngredientExcludeButtonClick -> {
@@ -59,7 +60,7 @@ class IngredientInfoViewModel @Inject constructor(
                         isInclude = false
                     )
                 )
-                event.navController.popBackStack(Screen.SearchRecipe.route, false)
+                popBackStack(Screen.SearchRecipe.route, false)
             }
         }
     }

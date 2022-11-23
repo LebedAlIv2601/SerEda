@@ -26,4 +26,16 @@ abstract class NavigatorViewModel : ViewModel() {
     fun navigateWithClearBackStack(destination: String) {
         navController?.navigateWithClearBackStack(destination)
     }
+
+    fun navigateUp() {
+        navController?.navigateUp()
+    }
+
+    fun popBackStack() {
+        navController?.popBackStack()
+    }
+
+    fun popBackStack(destination: String, isInclusive: Boolean) {
+        navController?.popBackStack(destination, isInclusive)
+    }
 }
