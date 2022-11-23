@@ -1,5 +1,6 @@
 package com.disgust.sereda.recipe.screens.search
 
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -19,6 +20,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
 
+@ExperimentalAnimationApi
 @ExperimentalMaterialApi
 @ExperimentalComposeUiApi
 @HiltViewModel
@@ -122,6 +124,10 @@ class SearchRecipeViewModel @Inject constructor(
 
             is RecipesListUIEvent.KeyboardSetHide -> {
                 _hideKeyboard.value = false
+            }
+
+            is RecipesListUIEvent.ProfileButtonClick -> {
+                event.navController.navigate(Screen.Profile.route)
             }
 
         }

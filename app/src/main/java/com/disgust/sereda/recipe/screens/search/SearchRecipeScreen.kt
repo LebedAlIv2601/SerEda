@@ -1,5 +1,6 @@
 package com.disgust.sereda.recipe.screens.search
 
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -8,6 +9,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.Check
 import androidx.compose.runtime.Composable
@@ -28,6 +30,7 @@ import com.disgust.sereda.utils.DoOnInit
 import com.disgust.sereda.utils.commonViews.SearchView
 import kotlinx.coroutines.launch
 
+@ExperimentalAnimationApi
 @ExperimentalMaterialApi
 @ExperimentalComposeUiApi
 @Composable
@@ -106,6 +109,17 @@ fun SearchRecipeScreen(
                     Icon(
                         Icons.Default.Menu,
                         contentDescription = "Filters"
+                    )
+                }
+
+                IconButton(
+                    onClick = {
+                        vm.onUIEvent(RecipesListUIEvent.ProfileButtonClick(navController))
+                    }
+                ) {
+                    Icon(
+                        Icons.Default.Person,
+                        contentDescription = "Профиль"
                     )
                 }
 

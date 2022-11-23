@@ -16,7 +16,6 @@ fun RootNavGraph(navController: NavHostController) {
         navController = navController,
         startDestination = Screen.Splash.route
     ) {
-        createDestination(Screen.Screen1, navController)
         createDestination(Screen.SearchIngredient, navController)
         createDestination(Screen.IngredientInfo, navController)
         createDestination(Screen.GoogleAuth, navController)
