@@ -20,8 +20,6 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavHostController
 import com.disgust.sereda.recipe.commonModel.RecipeFavoriteState
 import com.disgust.sereda.recipe.screens.search.interaction.RecipesListState
 import com.disgust.sereda.recipe.screens.search.interaction.RecipesListUIEvent
@@ -35,8 +33,7 @@ import kotlinx.coroutines.launch
 @ExperimentalComposeUiApi
 @Composable
 fun SearchRecipeScreen(
-    navController: NavHostController,
-    vm: SearchRecipeViewModel = hiltViewModel()
+    vm: SearchRecipeViewModel
 ) {
     val recipesState = vm.recipesListState.collectAsState()
     val inputText = vm.inputText.collectAsState()
@@ -64,7 +61,7 @@ fun SearchRecipeScreen(
                     vm.onUIEvent(RecipesListUIEvent.FiltersApplyButtonClick(inputText.value))
                 },
                 onSearchIngredient = {
-                    vm.onUIEvent(RecipesListUIEvent.FiltersSearchIngredientButtonClick(navController))
+                    vm.onUIEvent(RecipesListUIEvent.FiltersSearchIngredientButtonClick)
                 },
                 onClose = {
                     scope.launch { state.hide() }
@@ -114,7 +111,7 @@ fun SearchRecipeScreen(
 
                 IconButton(
                     onClick = {
-                        vm.onUIEvent(RecipesListUIEvent.ProfileButtonClick(navController))
+                        vm.onUIEvent(RecipesListUIEvent.ProfileButtonClick)
                     }
                 ) {
                     Icon(
@@ -125,15 +122,14 @@ fun SearchRecipeScreen(
 
             }
 
-            when (recipesState.value) {
+            when (val recipesValue = recipesState.value) {
                 is RecipesListState.Loading -> Text("Loading")
                 is RecipesListState.Success ->
                     RecipesList(
-                        recipes = (recipesState.value as RecipesListState.Success).data,
+                        recipes = recipesValue.data,
                         onItemClick = {
                             vm.onUIEvent(
                                 RecipesListUIEvent.ListItemClick(
-                                    navController = navController,
                                     item = it
                                 )
                             )
@@ -144,7 +140,7 @@ fun SearchRecipeScreen(
                             )
                         }
                     )
-                is RecipesListState.Error -> Text("Error")
+                is RecipesListState.Error -> Text(recipesValue.exception.toString())
                 else -> Text("")
             }
         }

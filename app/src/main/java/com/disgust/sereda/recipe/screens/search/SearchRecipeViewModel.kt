@@ -4,17 +4,16 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.ExperimentalComposeUiApi
-import androidx.lifecycle.ViewModel
 import com.disgust.sereda.recipe.commonModel.RecipeFavoriteState
 import com.disgust.sereda.recipe.data.RecipeRepository
 import com.disgust.sereda.recipe.screens.search.interaction.RecipesListState
 import com.disgust.sereda.recipe.screens.search.interaction.RecipesListUIEvent
 import com.disgust.sereda.recipe.screens.search.model.RecipeItem
+import com.disgust.sereda.utils.base.NavigatorViewModel
 import com.disgust.sereda.utils.base.UIEventHandler
 import com.disgust.sereda.utils.db.filters.FilterRecipeDBModel
 import com.disgust.sereda.utils.doSingleRequest
 import com.disgust.sereda.utils.navigation.Screen
-import com.disgust.sereda.utils.navigation.navigateWithArguments
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -26,7 +25,7 @@ import javax.inject.Inject
 @HiltViewModel
 class SearchRecipeViewModel @Inject constructor(
     private val repository: RecipeRepository
-) : ViewModel(), UIEventHandler<RecipesListUIEvent> {
+) : NavigatorViewModel(), UIEventHandler<RecipesListUIEvent> {
 
     private val _recipesListState =
         MutableStateFlow<RecipesListState>(RecipesListState.Waiting)
@@ -65,7 +64,7 @@ class SearchRecipeViewModel @Inject constructor(
             }
 
             is RecipesListUIEvent.ListItemClick -> {
-                event.navController.navigateWithArguments(
+                navigateWithArguments(
                     destination = Screen.RecipeInfo.route,
                     arguments = mapOf(
                         "recipeId" to event.item.id.toString(),
@@ -104,7 +103,7 @@ class SearchRecipeViewModel @Inject constructor(
             }
 
             is RecipesListUIEvent.FiltersSearchIngredientButtonClick -> {
-                event.navController.navigate(Screen.SearchIngredient.route)
+                navigate(Screen.SearchIngredient.route)
             }
 
             is RecipesListUIEvent.FiltersDeleteAll -> {
@@ -127,7 +126,7 @@ class SearchRecipeViewModel @Inject constructor(
             }
 
             is RecipesListUIEvent.ProfileButtonClick -> {
-                event.navController.navigate(Screen.Profile.route)
+                navigate(Screen.Profile.route)
             }
 
         }

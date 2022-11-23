@@ -7,14 +7,13 @@ import androidx.activity.result.IntentSenderRequest
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.ui.ExperimentalComposeUiApi
-import androidx.lifecycle.ViewModel
 import com.disgust.sereda.auth.data.AuthRepository
 import com.disgust.sereda.auth.googleAuth.interaction.GoogleAuthUIEvent
 import com.disgust.sereda.auth.googleAuth.interaction.OneTapSignInState
+import com.disgust.sereda.utils.base.NavigatorViewModel
 import com.disgust.sereda.utils.base.UIEventHandler
 import com.disgust.sereda.utils.doSingleRequest
 import com.disgust.sereda.utils.navigation.Screen
-import com.disgust.sereda.utils.navigation.navigateWithClearBackStack
 import com.google.firebase.auth.GoogleAuthProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
@@ -24,7 +23,7 @@ import javax.inject.Inject
 @ExperimentalAnimationApi
 @HiltViewModel
 class GoogleAuthViewModel @Inject constructor(private val repository: AuthRepository) :
-    ViewModel(), UIEventHandler<GoogleAuthUIEvent> {
+    NavigatorViewModel(), UIEventHandler<GoogleAuthUIEvent> {
 
     private val oneTapSignInState = repository.oneTapSignInState
 
@@ -34,9 +33,7 @@ class GoogleAuthViewModel @Inject constructor(private val repository: AuthReposi
                 oneTapSignIn(event.launcher)
             }
             is GoogleAuthUIEvent.IntentResultOk -> {
-                signInWithGoogle(event.intent) {
-                    event.navController.navigateWithClearBackStack(Screen.SearchRecipe.route)
-                }
+                signInWithGoogle(event.intent)
             }
         }
     }
@@ -48,13 +45,13 @@ class GoogleAuthViewModel @Inject constructor(private val repository: AuthReposi
         )
     }
 
-    private fun signInWithGoogle(intent: Intent?, onSuccess: () -> Unit) {
+    private fun signInWithGoogle(intent: Intent?) {
         val credentials = repository.getCredentialFromIntent(intent)
         val googleIdToken = credentials.googleIdToken
         val googleCredentials = GoogleAuthProvider.getCredential(googleIdToken, null)
         doSingleRequest(
             query = { repository.signInWithGoogle(googleCredentials) },
-            doOnSuccess = { onSuccess.invoke() }
+            doOnSuccess = { navigateWithClearBackStack(Screen.SearchRecipe.route) }
         )
     }
 

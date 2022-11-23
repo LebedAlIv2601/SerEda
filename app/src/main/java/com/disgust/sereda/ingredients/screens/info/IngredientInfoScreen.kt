@@ -1,5 +1,6 @@
 package com.disgust.sereda.ingredients.screens.info
 
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
@@ -12,18 +13,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavHostController
 import com.disgust.sereda.ingredients.screens.info.interactioin.IngredientInfoState
 import com.disgust.sereda.ingredients.screens.info.interactioin.IngredientInfoUIEvent
 import com.disgust.sereda.utils.DoOnInit
 
+@ExperimentalAnimationApi
 @ExperimentalMaterialApi
 @ExperimentalComposeUiApi
 @Composable
 fun IngredientInfoScreen(
-    navController: NavHostController,
-    vm: IngredientInfoViewModel = hiltViewModel(),
+    vm: IngredientInfoViewModel,
     ingredientId: Int,
     ingredientName: String
 ) {
@@ -42,7 +41,7 @@ fun IngredientInfoScreen(
             IconButton(
                 onClick = {
                     vm.onUIEvent(
-                        IngredientInfoUIEvent.IngredientAddButtonClick(navController)
+                        IngredientInfoUIEvent.IngredientAddButtonClick
                     )
                 },
                 enabled = enabledButtonFilters.value
@@ -56,7 +55,7 @@ fun IngredientInfoScreen(
             IconButton(
                 onClick = {
                     vm.onUIEvent(
-                        IngredientInfoUIEvent.IngredientExcludeButtonClick(navController)
+                        IngredientInfoUIEvent.IngredientExcludeButtonClick
                     )
                 },
                 enabled = enabledButtonFilters.value

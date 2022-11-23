@@ -3,10 +3,10 @@ package com.disgust.sereda.ingredients.screens.info
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.ui.ExperimentalComposeUiApi
-import androidx.lifecycle.ViewModel
 import com.disgust.sereda.ingredients.data.SearchIngredientRepository
 import com.disgust.sereda.ingredients.screens.info.interactioin.IngredientInfoState
 import com.disgust.sereda.ingredients.screens.info.interactioin.IngredientInfoUIEvent
+import com.disgust.sereda.utils.base.NavigatorViewModel
 import com.disgust.sereda.utils.base.UIEventHandler
 import com.disgust.sereda.utils.db.filters.FilterRecipeDBModel
 import com.disgust.sereda.utils.doSingleRequest
@@ -22,7 +22,7 @@ import javax.inject.Inject
 @HiltViewModel
 class IngredientInfoViewModel @Inject constructor(
     private val repository: SearchIngredientRepository
-) : ViewModel(), UIEventHandler<IngredientInfoUIEvent> {
+) : NavigatorViewModel(), UIEventHandler<IngredientInfoUIEvent> {
 
     private val _ingredientInfoState =
         MutableStateFlow<IngredientInfoState>(IngredientInfoState.Loading)
@@ -47,7 +47,7 @@ class IngredientInfoViewModel @Inject constructor(
                         isInclude = true
                     )
                 )
-                event.navController.popBackStack(Screen.SearchRecipe.route, false)
+                popBackStack(Screen.SearchRecipe.route, false)
             }
 
             is IngredientInfoUIEvent.IngredientExcludeButtonClick -> {
@@ -60,7 +60,7 @@ class IngredientInfoViewModel @Inject constructor(
                         isInclude = false
                     )
                 )
-                event.navController.popBackStack(Screen.SearchRecipe.route, false)
+                popBackStack(Screen.SearchRecipe.route, false)
             }
         }
     }

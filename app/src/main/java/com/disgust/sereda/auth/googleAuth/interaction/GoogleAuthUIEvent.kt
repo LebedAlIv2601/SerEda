@@ -4,7 +4,6 @@ import android.content.Intent
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.IntentSenderRequest
-import androidx.navigation.NavHostController
 import com.disgust.sereda.utils.base.BaseUIEvent
 
 sealed class GoogleAuthUIEvent : BaseUIEvent {
@@ -13,7 +12,6 @@ sealed class GoogleAuthUIEvent : BaseUIEvent {
     ) : GoogleAuthUIEvent()
 
     class IntentResultOk(
-        val intent: Intent?,
-        val navController: NavHostController
+        val intent: Intent?
     ) : GoogleAuthUIEvent()
 }

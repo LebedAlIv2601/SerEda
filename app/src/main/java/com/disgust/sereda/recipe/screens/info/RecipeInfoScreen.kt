@@ -12,8 +12,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavHostController
 import com.disgust.sereda.recipe.commonModel.RecipeFavoriteState
 import com.disgust.sereda.recipe.screens.info.interaction.RecipeInfoState
 import com.disgust.sereda.recipe.screens.info.interaction.RecipeInfoUIEvent
@@ -23,8 +21,7 @@ import com.disgust.sereda.utils.commonViews.ImageRecipeView
 
 @Composable
 fun RecipeInfoScreen(
-    navController: NavHostController,
-    vm: RecipeInfoViewModel = hiltViewModel(),
+    vm: RecipeInfoViewModel,
     recipeId: Int,
     favoriteState: Int
 ) {
