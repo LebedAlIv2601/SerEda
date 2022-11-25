@@ -4,14 +4,6 @@ import com.disgust.sereda.favorite.favoriteList.model.FavoriteRecipe
 import com.disgust.sereda.utils.db.favoriteRecipes.FavoriteRecipeDBModel
 import com.disgust.sereda.utils.firebase.model.FavoriteRecipeFirebaseModel
 
-fun FavoriteRecipeFirebaseModel.toFavoriteRecipe(): FavoriteRecipe {
-    return FavoriteRecipe(
-        id = id.toInt(),
-        name = name,
-        image = image
-    )
-}
-
 fun FavoriteRecipeDBModel.toFavoriteRecipe(): FavoriteRecipe {
     return FavoriteRecipe(
         id = id,
