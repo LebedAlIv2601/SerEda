@@ -11,11 +11,3 @@ sealed class FavoriteRecipesListState : BaseState() {
     class NotUpdated(val data: List<FavoriteRecipe>) : FavoriteRecipesListState()
     class Error(val exception: Exception) : FavoriteRecipesListState()
 }
-
-//inline fun <reified T> FavoriteRecipesListState.isState(
-//    doIfTrue: (T) -> Unit
-//) {
-//    if (this is T){
-//        doIfTrue(this)
-//    }
-//}
