@@ -1,4 +1,4 @@
-package com.disgust.sereda.utils.commonViews
+package com.disgust.sereda.utils.components
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.painterResource

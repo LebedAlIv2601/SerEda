@@ -1,6 +1,6 @@
 package com.disgust.sereda.recipe.screens.info.model
 
-import com.disgust.sereda.recipe.commonModel.RecipeFavoriteState
+import com.disgust.sereda.utils.commonModel.RecipeFavoriteState
 
 data class RecipeInfo(
     val id: Int,

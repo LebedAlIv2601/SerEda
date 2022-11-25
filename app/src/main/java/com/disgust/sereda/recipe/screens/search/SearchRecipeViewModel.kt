@@ -4,13 +4,13 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.ExperimentalComposeUiApi
-import com.disgust.sereda.recipe.commonModel.RecipeFavoriteState
 import com.disgust.sereda.recipe.data.RecipeRepository
 import com.disgust.sereda.recipe.screens.search.interaction.RecipesListState
 import com.disgust.sereda.recipe.screens.search.interaction.RecipesListUIEvent
 import com.disgust.sereda.recipe.screens.search.model.RecipeItem
 import com.disgust.sereda.utils.base.NavigatorViewModel
 import com.disgust.sereda.utils.base.UIEventHandler
+import com.disgust.sereda.utils.commonModel.RecipeFavoriteState
 import com.disgust.sereda.utils.db.filters.FilterRecipeDBModel
 import com.disgust.sereda.utils.doSingleRequest
 import com.disgust.sereda.utils.navigation.Screen
@@ -129,6 +129,9 @@ class SearchRecipeViewModel @Inject constructor(
                 navigate(Screen.Profile.route)
             }
 
+            is RecipesListUIEvent.FavoriteListButtonClick -> {
+                navigate(Screen.Favorite.route)
+            }
         }
     }
 
@@ -145,19 +148,20 @@ class SearchRecipeViewModel @Inject constructor(
         doSingleRequest(
             query = { repository.getFavoriteRecipeIds() },
             doOnSuccess = { favoriteIds ->
-                val recipesList =
-                    (_recipesListState.value as RecipesListState.Success).data.toMutableList()
-                recipesList.forEachIndexed { index, recipe ->
-                    val isFavorite = favoriteIds.find { it == recipe.id } != null
-                    if (isFavorite) {
-                        recipesList[index] =
-                            recipe.copy(favoriteState = RecipeFavoriteState.FAVORITE)
-                    } else {
-                        recipesList[index] =
-                            recipe.copy(favoriteState = RecipeFavoriteState.NOT_FAVORITE)
+                _recipesListState.value.doAsStateIfPossible<RecipesListState.Success> { state ->
+                    val recipesList = state.data.toMutableList()
+                    recipesList.forEachIndexed { index, recipe ->
+                        val isFavorite = favoriteIds.find { it == recipe.id } != null
+                        if (isFavorite) {
+                            recipesList[index] =
+                                recipe.copy(favoriteState = RecipeFavoriteState.FAVORITE)
+                        } else {
+                            recipesList[index] =
+                                recipe.copy(favoriteState = RecipeFavoriteState.NOT_FAVORITE)
+                        }
                     }
+                    _recipesListState.value = RecipesListState.Success(recipesList)
                 }
-                _recipesListState.value = RecipesListState.Success(recipesList)
             }
         )
     }
@@ -225,8 +229,8 @@ class SearchRecipeViewModel @Inject constructor(
     }
 
     private fun changeRecipeStateInList(recipeId: Int, favoriteState: RecipeFavoriteState) {
-        if (_recipesListState.value is RecipesListState.Success) {
-            val list = (_recipesListState.value as RecipesListState.Success).data.toMutableList()
+        _recipesListState.value.doAsStateIfPossible<RecipesListState.Success> { state ->
+            val list = state.data.toMutableList()
             val recipe = list.find { it.id == recipeId }
             if (recipe != null) {
                 val recipeIndex = list.indexOf(recipe)

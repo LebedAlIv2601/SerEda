@@ -1,12 +1,12 @@
 package com.disgust.sereda.recipe.screens.info
 
-import com.disgust.sereda.recipe.commonModel.RecipeFavoriteState
 import com.disgust.sereda.recipe.data.RecipeRepository
 import com.disgust.sereda.recipe.screens.info.interaction.RecipeInfoState
 import com.disgust.sereda.recipe.screens.info.interaction.RecipeInfoUIEvent
 import com.disgust.sereda.recipe.screens.info.model.RecipeInfo
 import com.disgust.sereda.utils.base.NavigatorViewModel
 import com.disgust.sereda.utils.base.UIEventHandler
+import com.disgust.sereda.utils.commonModel.RecipeFavoriteState
 import com.disgust.sereda.utils.doSingleRequest
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -27,8 +27,8 @@ class RecipeInfoViewModel @Inject constructor(
             is RecipeInfoUIEvent.StartScreen -> getRecipeInfo(event.id, event.state)
             is RecipeInfoUIEvent.ButtonRestartClick -> getRecipeInfo(event.id)
             is RecipeInfoUIEvent.ButtonAddToFavoriteClick -> {
-                if (_recipeInfoState.value is RecipeInfoState.Success) {
-                    val recipe = (_recipeInfoState.value as RecipeInfoState.Success).data
+                _recipeInfoState.value.doAsStateIfPossible<RecipeInfoState.Success> { state ->
+                    val recipe = state.data
                     if (recipe.favoriteState == RecipeFavoriteState.FAVORITE) {
                         deleteRecipeFromFavorite(recipe)
                     } else if (recipe.favoriteState == RecipeFavoriteState.NOT_FAVORITE) {
@@ -74,9 +74,9 @@ class RecipeInfoViewModel @Inject constructor(
     }
 
     private fun changeRecipeState(favoriteState: RecipeFavoriteState) {
-        if (_recipeInfoState.value is RecipeInfoState.Success) {
+        _recipeInfoState.value.doAsStateIfPossible<RecipeInfoState.Success> {
             _recipeInfoState.value = RecipeInfoState.Success(
-                (_recipeInfoState.value as RecipeInfoState.Success).data.copy(favoriteState = favoriteState)
+                it.data.copy(favoriteState = favoriteState)
             )
         }
     }

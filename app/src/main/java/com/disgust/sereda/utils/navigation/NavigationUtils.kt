@@ -3,6 +3,7 @@ package com.disgust.sereda.utils.navigation
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
@@ -10,6 +11,7 @@ import com.disgust.sereda.utils.NavigatorViewModelScreen
 import com.disgust.sereda.utils.base.NavigatorViewModel
 import com.google.accompanist.navigation.animation.composable
 
+@ExperimentalMaterialApi
 @ExperimentalComposeUiApi
 @ExperimentalAnimationApi
 inline fun <reified T : NavigatorViewModel> NavGraphBuilder.createDestination(

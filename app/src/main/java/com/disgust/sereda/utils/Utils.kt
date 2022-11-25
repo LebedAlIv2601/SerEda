@@ -8,6 +8,9 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
 import com.disgust.sereda.utils.base.NavigatorViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -25,6 +28,33 @@ inline fun <T : Any> ViewModel.doSingleRequest(
         } catch (e: Exception) {
             doOnError.invoke(e)
         }
+    }
+}
+
+inline fun <T : Any> ViewModel.subscribeToFlowOnIO(
+    crossinline flowToCollect: suspend () -> Flow<T>,
+    crossinline doOnLoading: () -> Unit = {},
+    crossinline doOnCollect: (T) -> Unit,
+    crossinline doOnError: (Exception) -> Unit = {}
+) {
+    viewModelScope.launch {
+        doOnLoading.invoke()
+        flowToCollect()
+            .flowOn(Dispatchers.IO)
+            .handleErrors { doOnError(it) }
+            .collect {
+                doOnCollect(it)
+            }
+    }
+}
+
+inline fun <T> Flow<T>.handleErrors(
+    crossinline onError: (Exception) -> Unit
+): Flow<T> = flow {
+    try {
+        collect { value -> emit(value) }
+    } catch (e: Exception) {
+        onError.invoke(e)
     }
 }
 

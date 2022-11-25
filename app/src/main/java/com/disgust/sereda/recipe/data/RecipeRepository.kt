@@ -1,8 +1,8 @@
 package com.disgust.sereda.recipe.data
 
-import com.disgust.sereda.recipe.commonModel.RecipeFavoriteState
 import com.disgust.sereda.recipe.screens.info.model.RecipeInfo
 import com.disgust.sereda.recipe.screens.search.model.RecipeItem
+import com.disgust.sereda.utils.commonModel.RecipeFavoriteState
 import com.disgust.sereda.utils.db.SerEdaDatabase
 import com.disgust.sereda.utils.db.filters.FilterRecipeDBModel
 import com.disgust.sereda.utils.firebase.FirebaseDatabaseHelper
