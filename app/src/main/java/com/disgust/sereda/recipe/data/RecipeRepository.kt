@@ -6,6 +6,7 @@ import com.disgust.sereda.utils.commonModel.RecipeFavoriteState
 import com.disgust.sereda.utils.db.SerEdaDatabase
 import com.disgust.sereda.utils.db.filters.FilterRecipeDBModel
 import com.disgust.sereda.utils.firebase.FirebaseDatabaseHelper
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -49,9 +50,8 @@ class RecipeRepository @Inject constructor(
             .updateFavoriteRecipes(list.map { it.toFavoriteRecipeDBModel() })
     }
 
-    fun getFavoriteRecipeIds(): List<Int> =
-        db.favoriteRecipeDao().getFavoriteRecipes().map { it.id }
-
+    fun getFavoriteRecipeIdsFlow() =
+        db.favoriteRecipeDao().getFavoriteRecipesFlow().map { it.map { item -> item.id } }
 
     //add recipe to favorite
     fun addFavoriteRecipe(recipe: RecipeItem) {
@@ -80,4 +80,6 @@ class RecipeRepository @Inject constructor(
     fun getFiltersRecipe(): List<FilterRecipeDBModel> =
         db.filtersRecipeDao().getFilterRecipeByIngredients()
 
+    private fun getFavoriteRecipeIds(): List<Int> =
+        db.favoriteRecipeDao().getFavoriteRecipes().map { it.id }
 }

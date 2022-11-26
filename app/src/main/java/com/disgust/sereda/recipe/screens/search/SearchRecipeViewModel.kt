@@ -14,6 +14,7 @@ import com.disgust.sereda.utils.commonModel.RecipeFavoriteState
 import com.disgust.sereda.utils.db.filters.FilterRecipeDBModel
 import com.disgust.sereda.utils.doSingleRequest
 import com.disgust.sereda.utils.navigation.Screen
+import com.disgust.sereda.utils.subscribeToFlowOnIO
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -50,6 +51,7 @@ class SearchRecipeViewModel @Inject constructor(
     val ingredientListFilters = _ingredientsListFilters.asStateFlow()
 
     init {
+        subscribeToFavoriteRecipesIds()
         updateFavoriteIds()
     }
 
@@ -85,8 +87,6 @@ class SearchRecipeViewModel @Inject constructor(
                 getFilters()
                 if (_recipesListState.value is RecipesListState.Waiting) {
                     getRandomRecipes()
-                } else if (_recipesListState.value is RecipesListState.Success) {
-                    updateListWithFavoriteIds()
                 }
             }
 
@@ -144,26 +144,28 @@ class SearchRecipeViewModel @Inject constructor(
         )
     }
 
-    private fun updateListWithFavoriteIds() {
-        doSingleRequest(
-            query = { repository.getFavoriteRecipeIds() },
-            doOnSuccess = { favoriteIds ->
-                _recipesListState.value.doAsStateIfPossible<RecipesListState.Success> { state ->
-                    val recipesList = state.data.toMutableList()
-                    recipesList.forEachIndexed { index, recipe ->
-                        val isFavorite = favoriteIds.find { it == recipe.id } != null
-                        if (isFavorite) {
-                            recipesList[index] =
-                                recipe.copy(favoriteState = RecipeFavoriteState.FAVORITE)
-                        } else {
-                            recipesList[index] =
-                                recipe.copy(favoriteState = RecipeFavoriteState.NOT_FAVORITE)
-                        }
-                    }
-                    _recipesListState.value = RecipesListState.Success(recipesList)
+    private fun subscribeToFavoriteRecipesIds() {
+        subscribeToFlowOnIO(
+            flowToCollect = { repository.getFavoriteRecipeIdsFlow() },
+            doOnCollect = { updateListWithFavoriteIds(it) }
+        )
+    }
+
+    private fun updateListWithFavoriteIds(favoriteIds: List<Int>) {
+        _recipesListState.value.doAsStateIfPossible<RecipesListState.Success> { state ->
+            val recipesList = state.data.toMutableList()
+            recipesList.forEachIndexed { index, recipe ->
+                val isFavorite = favoriteIds.find { it == recipe.id } != null
+                if (isFavorite) {
+                    recipesList[index] =
+                        recipe.copy(favoriteState = RecipeFavoriteState.FAVORITE)
+                } else {
+                    recipesList[index] =
+                        recipe.copy(favoriteState = RecipeFavoriteState.NOT_FAVORITE)
                 }
             }
-        )
+            _recipesListState.value = RecipesListState.Success(recipesList)
+        }
     }
 
     private fun updateFavoriteIds() {
@@ -212,7 +214,6 @@ class SearchRecipeViewModel @Inject constructor(
     }
 
     private fun addRecipeToFavorite(recipe: RecipeItem) {
-        changeRecipeStateInList(recipe.id, RecipeFavoriteState.FAVORITE)
         doSingleRequest(
             query = { repository.addFavoriteRecipe(recipe) },
             doOnSuccess = {}
@@ -221,22 +222,9 @@ class SearchRecipeViewModel @Inject constructor(
 
 
     private fun deleteRecipeFromFavorite(recipe: RecipeItem) {
-        changeRecipeStateInList(recipe.id, RecipeFavoriteState.NOT_FAVORITE)
         doSingleRequest(
             query = { repository.deleteFavoriteRecipe(recipe) },
             doOnSuccess = {}
         )
-    }
-
-    private fun changeRecipeStateInList(recipeId: Int, favoriteState: RecipeFavoriteState) {
-        _recipesListState.value.doAsStateIfPossible<RecipesListState.Success> { state ->
-            val list = state.data.toMutableList()
-            val recipe = list.find { it.id == recipeId }
-            if (recipe != null) {
-                val recipeIndex = list.indexOf(recipe)
-                list[recipeIndex] = recipe.copy(favoriteState = favoriteState)
-                _recipesListState.value = RecipesListState.Success(list)
-            }
-        }
     }
 }
