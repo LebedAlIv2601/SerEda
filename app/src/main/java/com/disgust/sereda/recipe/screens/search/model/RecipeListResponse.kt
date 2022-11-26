@@ -1,6 +1,6 @@
 package com.disgust.sereda.recipe.screens.search.model
 
-import com.disgust.sereda.recipe.commonModel.RecipeFavoriteState
+import com.disgust.sereda.utils.commonModel.RecipeFavoriteState
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 

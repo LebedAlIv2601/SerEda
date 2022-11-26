@@ -1,4 +1,4 @@
-package com.disgust.sereda.recipe.commonModel
+package com.disgust.sereda.utils.commonModel
 
 enum class RecipeFavoriteState {
     NOT_FAVORITE,

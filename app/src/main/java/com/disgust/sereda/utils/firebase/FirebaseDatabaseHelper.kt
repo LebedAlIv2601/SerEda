@@ -45,14 +45,17 @@ class FirebaseDatabaseHelper {
     private fun getListOfFavoriteRecipes(userData: DataSnapshot?): List<FavoriteRecipeFirebaseModel> {
         val favoriteRecipes = mutableListOf<FavoriteRecipeFirebaseModel>()
         val userMap = userData?.value as HashMap<String, Any?>
-        (userMap["favoriteRecipes"] as HashMap<String, HashMap<String, Any?>>).forEach {
-            favoriteRecipes.add(
-                FavoriteRecipeFirebaseModel(
-                    id = it.value["id"].toString(),
-                    name = it.value["name"].toString(),
-                    image = it.value["image"].toString()
+        val favoriteRecipesReference = userMap["favoriteRecipes"]
+        if (favoriteRecipesReference != null) {
+            (userMap["favoriteRecipes"] as HashMap<String, HashMap<String, Any?>>).forEach {
+                favoriteRecipes.add(
+                    FavoriteRecipeFirebaseModel(
+                        id = it.value["id"].toString(),
+                        name = it.value["name"].toString(),
+                        image = it.value["image"].toString()
+                    )
                 )
-            )
+            }
         }
         return favoriteRecipes
     }
