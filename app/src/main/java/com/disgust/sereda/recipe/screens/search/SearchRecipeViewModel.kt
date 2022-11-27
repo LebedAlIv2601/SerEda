@@ -214,7 +214,8 @@ class SearchRecipeViewModel @Inject constructor(
                         .toString(),
                     excludeIngredients = filtersRecipe.value.ingredientsList?.filter { !it.isInclude }
                         .toString(),
-                    diet = filtersRecipe.value.dietsList.toString())
+                    diet = filtersRecipe.value.dietsList?.map { it.value }.toString()
+                )
             },
             doOnLoading = {
                 _recipesListState.value = RecipesListState.Loading
