@@ -2,9 +2,9 @@ package com.disgust.sereda.recipe.data
 
 import com.disgust.sereda.recipe.commonModel.RecipeFavoriteState
 import com.disgust.sereda.recipe.screens.info.model.RecipeInfo
+import com.disgust.sereda.recipe.screens.search.model.IngredientFilter
 import com.disgust.sereda.recipe.screens.search.model.RecipeItem
 import com.disgust.sereda.utils.db.SerEdaDatabase
-import com.disgust.sereda.utils.db.filters.FilterRecipeDBModel
 import com.disgust.sereda.utils.firebase.FirebaseDatabaseHelper
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -24,7 +24,8 @@ class RecipeRepository @Inject constructor(
         query: String = "",
         sort: String = "",
         includeIngredients: String = "",
-        excludeIngredients: String = ""
+        excludeIngredients: String = "",
+        diet: String = ""
     ): List<RecipeItem> {
         val favoriteIds = getFavoriteRecipeIds()
         val recipes =
@@ -32,7 +33,8 @@ class RecipeRepository @Inject constructor(
                 query,
                 sort,
                 includeIngredients,
-                excludeIngredients
+                excludeIngredients,
+                diet
             ).results.map { it.toRecipeItem() }.toMutableList()
         recipes.forEachIndexed { index, recipe ->
             val isFavorite = favoriteIds.find { it == recipe.id } != null
@@ -77,7 +79,9 @@ class RecipeRepository @Inject constructor(
     }
     //end
 
-    fun getFiltersRecipe(): List<FilterRecipeDBModel> =
-        db.filtersRecipeDao().getFilterRecipeByIngredients()
+    fun getFiltersIngredientsRecipe(): List<IngredientFilter> =
+        db.filtersRecipeDao().getFilterRecipeByIngredients().map {
+            it.toIngredientFilter()
+        }
 
 }

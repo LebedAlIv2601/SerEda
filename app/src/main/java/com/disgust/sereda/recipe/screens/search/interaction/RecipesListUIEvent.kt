@@ -1,8 +1,9 @@
 package com.disgust.sereda.recipe.screens.search.interaction
 
+import com.disgust.sereda.recipe.screens.search.model.Diet
+import com.disgust.sereda.recipe.screens.search.model.IngredientFilter
 import com.disgust.sereda.recipe.screens.search.model.RecipeItem
 import com.disgust.sereda.utils.base.BaseUIEvent
-import com.disgust.sereda.utils.db.filters.FilterRecipeDBModel
 
 sealed class RecipesListUIEvent : BaseUIEvent {
     class SearchClick(val query: String) : RecipesListUIEvent()
@@ -19,6 +20,7 @@ sealed class RecipesListUIEvent : BaseUIEvent {
     class FiltersApplyButtonClick(val query: String) : RecipesListUIEvent()
     object FiltersSearchIngredientButtonClick : RecipesListUIEvent()
     object FiltersOpenButtonClick : RecipesListUIEvent()
-    object FiltersDeleteAll : RecipesListUIEvent()
-    class FiltersDeleteItem(val item: FilterRecipeDBModel) : RecipesListUIEvent()
+    object FiltersDeleteAllIngredients : RecipesListUIEvent()
+    class FiltersDeleteIngredient(val item: IngredientFilter) : RecipesListUIEvent()
+    class FiltersSetDiet(val diet: Diet, val isAdd: Boolean) : RecipesListUIEvent()
 }

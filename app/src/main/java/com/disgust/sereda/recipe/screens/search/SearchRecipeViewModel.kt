@@ -8,10 +8,12 @@ import com.disgust.sereda.recipe.commonModel.RecipeFavoriteState
 import com.disgust.sereda.recipe.data.RecipeRepository
 import com.disgust.sereda.recipe.screens.search.interaction.RecipesListState
 import com.disgust.sereda.recipe.screens.search.interaction.RecipesListUIEvent
+import com.disgust.sereda.recipe.screens.search.model.Diet
+import com.disgust.sereda.recipe.screens.search.model.FiltersRecipe
+import com.disgust.sereda.recipe.screens.search.model.IngredientFilter
 import com.disgust.sereda.recipe.screens.search.model.RecipeItem
 import com.disgust.sereda.utils.base.NavigatorViewModel
 import com.disgust.sereda.utils.base.UIEventHandler
-import com.disgust.sereda.utils.db.filters.FilterRecipeDBModel
 import com.disgust.sereda.utils.doSingleRequest
 import com.disgust.sereda.utils.navigation.Screen
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -45,9 +47,17 @@ class SearchRecipeViewModel @Inject constructor(
 
     private val lastQuery = mutableStateOf("")
 
-    private val _ingredientsListFilters =
-        MutableStateFlow(mutableListOf<FilterRecipeDBModel>())
-    val ingredientListFilters = _ingredientsListFilters.asStateFlow()
+    private val filtersRecipe =
+        MutableStateFlow(FiltersRecipe(null, null))
+    private val builderFilters = FiltersRecipe.Builder()
+
+    private val _ingredientsList =
+        MutableStateFlow(listOf<IngredientFilter>())
+    val ingredientsList = _ingredientsList.asStateFlow()
+
+    private val _dietsList =
+        MutableStateFlow(listOf<Diet>())
+    val dietList = _dietsList.asStateFlow()
 
     init {
         updateFavoriteIds()
@@ -82,7 +92,7 @@ class SearchRecipeViewModel @Inject constructor(
             }
 
             is RecipesListUIEvent.StartScreen -> {
-                getFilters()
+                getFiltersIngredients()
                 if (_recipesListState.value is RecipesListState.Waiting) {
                     getRandomRecipes()
                 } else if (_recipesListState.value is RecipesListState.Success) {
@@ -99,26 +109,35 @@ class SearchRecipeViewModel @Inject constructor(
             }
 
             is RecipesListUIEvent.FiltersApplyButtonClick -> {
-                getRecipes(event.query)
+                val oldFilters = filtersRecipe.value
+                filtersRecipe.value = builderFilters.build()
+                if (oldFilters != filtersRecipe.value)
+                    getRecipes(query = event.query)
             }
 
             is RecipesListUIEvent.FiltersSearchIngredientButtonClick -> {
                 navigate(Screen.SearchIngredient.route)
             }
 
-            is RecipesListUIEvent.FiltersDeleteAll -> {
-                _ingredientsListFilters.value = mutableListOf()
-                getRecipes(lastQuery.value)
+            is RecipesListUIEvent.FiltersDeleteAllIngredients -> {
+                builderFilters.setIngredientsList(mutableListOf())
+                _ingredientsList.value = mutableListOf()
             }
 
-            is RecipesListUIEvent.FiltersDeleteItem -> {
-                _ingredientsListFilters.value = _ingredientsListFilters.value
-                    .filter { it != event.item }.toMutableList()
-                getRecipes(lastQuery.value)
+            is RecipesListUIEvent.FiltersDeleteIngredient -> {
+                builderFilters.deleteIngredient(event.item)
+                _ingredientsList.value = builderFilters.ingredientsList
             }
 
             is RecipesListUIEvent.FiltersOpenButtonClick -> {
                 _hideKeyboard.value = true
+                _ingredientsList.value = filtersRecipe.value.ingredientsList ?: listOf()
+                _dietsList.value = filtersRecipe.value.dietsList ?: listOf()
+                builderFilters
+                    .setIngredientsList(
+                        filtersRecipe.value.ingredientsList?.toMutableList() ?: mutableListOf()
+                    )
+                    .setDietsList(filtersRecipe.value.dietsList?.toMutableList() ?: mutableListOf())
             }
 
             is RecipesListUIEvent.KeyboardSetHide -> {
@@ -129,14 +148,25 @@ class SearchRecipeViewModel @Inject constructor(
                 navigate(Screen.Profile.route)
             }
 
+            is RecipesListUIEvent.FiltersSetDiet -> {
+                if (event.isAdd) {
+                    builderFilters.addDiet(event.diet)
+                    _dietsList.value = builderFilters.dietsList.map { it }
+                } else {
+                    builderFilters.deleteDiet(event.diet)
+                    _dietsList.value = builderFilters.dietsList.map { it }
+                }
+            }
+
         }
     }
 
-    private fun getFilters() {
+    private fun getFiltersIngredients() {
         doSingleRequest(
-            query = { repository.getFiltersRecipe() },
+            query = { repository.getFiltersIngredientsRecipe() },
             doOnSuccess = {
-                _ingredientsListFilters.value = (_ingredientsListFilters.value + it).toMutableList()
+                builderFilters.addIngredient(it.first())
+                _ingredientsList.value = _ingredientsList.value + it
             }
         )
     }
@@ -174,10 +204,11 @@ class SearchRecipeViewModel @Inject constructor(
             query = {
                 repository.searchRecipes(
                     query = query,
-                    includeIngredients = _ingredientsListFilters.value.filter { it.isInclude }
+                    includeIngredients = filtersRecipe.value.ingredientsList?.filter { it.isInclude }
                         .toString(),
-                    excludeIngredients = _ingredientsListFilters.value.filter { !it.isInclude }
-                        .toString())
+                    excludeIngredients = filtersRecipe.value.ingredientsList?.filter { !it.isInclude }
+                        .toString(),
+                    diet = filtersRecipe.value.dietsList.toString())
             },
             doOnLoading = {
                 _recipesListState.value = RecipesListState.Loading
@@ -194,7 +225,9 @@ class SearchRecipeViewModel @Inject constructor(
 
     private fun getRandomRecipes() {
         doSingleRequest(
-            query = { repository.searchRecipes(sort = "random") },
+            query = {
+                repository.searchRecipes(sort = "random")
+            },
             doOnLoading = {
                 _recipesListState.value = RecipesListState.Loading
             },
