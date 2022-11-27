@@ -46,7 +46,8 @@ fun SearchRecipeScreen(
     )
     val scope = rememberCoroutineScope()
 
-    val ingredientListFilters = vm.ingredientListFilters.collectAsState()
+    val ingredientsList = vm.ingredientsList.collectAsState()
+    val dietsList = vm.dietList.collectAsState()
 
     DoOnInit {
         vm.onUIEvent(RecipesListUIEvent.StartScreen)
@@ -66,15 +67,18 @@ fun SearchRecipeScreen(
                 },
                 onClose = {
                     scope.launch { state.hide() }
-                    vm.onUIEvent(RecipesListUIEvent.FiltersDeleteAll)
                 },
                 onDeleteAll = {
-                    vm.onUIEvent(RecipesListUIEvent.FiltersDeleteAll)
+                    vm.onUIEvent(RecipesListUIEvent.FiltersDeleteAllIngredients)
                 },
                 onDeleteItem = {
-                    vm.onUIEvent(RecipesListUIEvent.FiltersDeleteItem(it))
+                    vm.onUIEvent(RecipesListUIEvent.FiltersDeleteIngredient(it))
                 },
-                ingredientListFilters = ingredientListFilters.value
+                ingredientListFilters = ingredientsList.value,
+                setDiet = { diet, isAdd ->
+                    vm.onUIEvent(RecipesListUIEvent.FiltersSetDiet(diet, isAdd))
+                },
+                dietsList = dietsList.value
             )
         }) {
 

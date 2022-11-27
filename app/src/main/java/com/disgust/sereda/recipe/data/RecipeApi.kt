@@ -16,6 +16,7 @@ interface RecipeApi {
         @Query("query") query: String,
         @Query("sort") sort: String,
         @Query("includeIngredients") includeIngredients: String,
-        @Query("excludeIngredients") excludeIngredients: String
+        @Query("excludeIngredients") excludeIngredients: String,
+        @Query("diet") diet: String
     ): RecipeListResponse
 }
