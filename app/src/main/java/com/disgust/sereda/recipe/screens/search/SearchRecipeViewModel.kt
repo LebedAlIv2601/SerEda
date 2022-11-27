@@ -14,7 +14,6 @@ import com.disgust.sereda.recipe.screens.search.model.RecipeItem
 import com.disgust.sereda.utils.base.NavigatorViewModel
 import com.disgust.sereda.utils.base.UIEventHandler
 import com.disgust.sereda.utils.commonModel.RecipeFavoriteState
-import com.disgust.sereda.utils.db.filters.FilterRecipeDBModel
 import com.disgust.sereda.utils.doSingleRequest
 import com.disgust.sereda.utils.navigation.Screen
 import com.disgust.sereda.utils.subscribeToFlowOnIO
@@ -164,8 +163,6 @@ class SearchRecipeViewModel @Inject constructor(
         }
     }
 
-        }
-    }
 
     private fun getFiltersIngredients() {
         doSingleRequest(
