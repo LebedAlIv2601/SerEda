@@ -38,29 +38,33 @@ class IngredientInfoViewModel @Inject constructor(
             is IngredientInfoUIEvent.ButtonRestartClick -> {}
 
             is IngredientInfoUIEvent.IngredientAddButtonClick -> {
-                val data = (_ingredientInfoState.value as IngredientInfoState.Success).data
-                addFilterRecipe(
-                    FilterRecipeDBModel(
-                        id = data.id,
-                        name = data.name,
-                        image = data.image,
-                        isInclude = true
+                _ingredientInfoState.value.doAsStateIfPossible<IngredientInfoState.Success> {
+                    val data = it.data
+                    addFilterRecipe(
+                        FilterRecipeDBModel(
+                            id = data.id,
+                            name = data.name,
+                            image = data.image,
+                            isInclude = true
+                        )
                     )
-                )
-                popBackStack(Screen.SearchRecipe.route, false)
+                    popBackStack(Screen.SearchRecipe.route, false)
+                }
             }
 
             is IngredientInfoUIEvent.IngredientExcludeButtonClick -> {
-                val data = (_ingredientInfoState.value as IngredientInfoState.Success).data
-                addFilterRecipe(
-                    FilterRecipeDBModel(
-                        id = data.id,
-                        name = data.name,
-                        image = data.image,
-                        isInclude = false
+                _ingredientInfoState.value.doAsStateIfPossible<IngredientInfoState.Success> {
+                    val data = it.data
+                    addFilterRecipe(
+                        FilterRecipeDBModel(
+                            id = data.id,
+                            name = data.name,
+                            image = data.image,
+                            isInclude = false
+                        )
                     )
-                )
-                popBackStack(Screen.SearchRecipe.route, false)
+                    popBackStack(Screen.SearchRecipe.route, false)
+                }
             }
         }
     }

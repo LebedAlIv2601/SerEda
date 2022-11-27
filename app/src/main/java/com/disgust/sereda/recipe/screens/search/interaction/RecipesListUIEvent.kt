@@ -16,6 +16,7 @@ sealed class RecipesListUIEvent : BaseUIEvent {
     object StartScreen : RecipesListUIEvent()
     class ListItemButtonAddToFavoriteClick(val recipe: RecipeItem) : RecipesListUIEvent()
     object ProfileButtonClick : RecipesListUIEvent()
+    object FavoriteListButtonClick : RecipesListUIEvent()
 
     class FiltersApplyButtonClick(val query: String) : RecipesListUIEvent()
     object FiltersSearchIngredientButtonClick : RecipesListUIEvent()

@@ -16,7 +16,7 @@ import androidx.compose.ui.unit.dp
 import com.disgust.sereda.ingredients.screens.search.interaction.IngredientsListState
 import com.disgust.sereda.ingredients.screens.search.interaction.IngredientsListUIEvent
 import com.disgust.sereda.ingredients.screens.search.model.IngredientItem
-import com.disgust.sereda.utils.commonViews.SearchView
+import com.disgust.sereda.utils.components.SearchView
 
 @ExperimentalAnimationApi
 @ExperimentalMaterialApi

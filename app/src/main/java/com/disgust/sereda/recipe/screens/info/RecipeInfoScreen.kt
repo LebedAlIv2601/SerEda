@@ -12,12 +12,12 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.disgust.sereda.recipe.commonModel.RecipeFavoriteState
 import com.disgust.sereda.recipe.screens.info.interaction.RecipeInfoState
 import com.disgust.sereda.recipe.screens.info.interaction.RecipeInfoUIEvent
 import com.disgust.sereda.utils.DoOnInit
-import com.disgust.sereda.utils.commonViews.ImageIngredientView
-import com.disgust.sereda.utils.commonViews.ImageRecipeView
+import com.disgust.sereda.utils.commonModel.RecipeFavoriteState
+import com.disgust.sereda.utils.components.ImageIngredientView
+import com.disgust.sereda.utils.components.ImageRecipeView
 
 @Composable
 fun RecipeInfoScreen(

@@ -7,13 +7,14 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.navigation.*
 import com.disgust.sereda.auth.googleAuth.GoogleAuthScreen
 import com.disgust.sereda.auth.googleAuth.GoogleAuthViewModel
+import com.disgust.sereda.favorite.favoriteList.FavoriteScreen
+import com.disgust.sereda.favorite.favoriteList.FavoriteViewModel
 import com.disgust.sereda.ingredients.screens.info.IngredientInfoScreen
 import com.disgust.sereda.ingredients.screens.info.IngredientInfoViewModel
 import com.disgust.sereda.ingredients.screens.search.SearchIngredientScreen
 import com.disgust.sereda.ingredients.screens.search.SearchIngredientViewModel
 import com.disgust.sereda.profile.screens.profile.ProfileScreen
 import com.disgust.sereda.profile.screens.profile.ProfileViewModel
-import com.disgust.sereda.recipe.commonModel.RecipeFavoriteState
 import com.disgust.sereda.recipe.screens.info.RecipeInfoScreen
 import com.disgust.sereda.recipe.screens.info.RecipeInfoViewModel
 import com.disgust.sereda.recipe.screens.search.SearchRecipeScreen
@@ -21,6 +22,7 @@ import com.disgust.sereda.recipe.screens.search.SearchRecipeViewModel
 import com.disgust.sereda.splash.SplashScreen
 import com.disgust.sereda.splash.SplashViewModel
 import com.disgust.sereda.utils.base.NavigatorViewModel
+import com.disgust.sereda.utils.commonModel.RecipeFavoriteState
 
 @ExperimentalAnimationApi
 @ExperimentalMaterialApi
@@ -93,4 +95,11 @@ sealed class Screen<T : NavigatorViewModel>(
                 vm = vm
             )
         })
+
+    object Favorite : Screen<FavoriteViewModel>(
+        route = "favorite",
+        screenDrawFun = { vm, _ ->
+            FavoriteScreen(vm = vm)
+        }
+    )
 }

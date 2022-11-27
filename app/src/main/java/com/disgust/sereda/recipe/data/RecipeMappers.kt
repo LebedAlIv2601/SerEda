@@ -1,12 +1,12 @@
 package com.disgust.sereda.recipe.data
 
-import com.disgust.sereda.recipe.commonModel.RecipeFavoriteState
 import com.disgust.sereda.recipe.screens.info.model.RecipeInfo
 import com.disgust.sereda.recipe.screens.info.model.RecipeInfoResponse
 import com.disgust.sereda.recipe.screens.info.model.StepRecipeInstruction
 import com.disgust.sereda.recipe.screens.search.model.IngredientFilter
 import com.disgust.sereda.recipe.screens.search.model.RecipeItem
 import com.disgust.sereda.recipe.screens.search.model.RecipeItemResponse
+import com.disgust.sereda.utils.commonModel.RecipeFavoriteState
 import com.disgust.sereda.utils.db.favoriteRecipes.FavoriteRecipeDBModel
 import com.disgust.sereda.utils.db.filters.FilterRecipeDBModel
 import com.disgust.sereda.utils.firebase.model.FavoriteRecipeFirebaseModel

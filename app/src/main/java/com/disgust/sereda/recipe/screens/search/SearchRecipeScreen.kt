@@ -10,6 +10,7 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.Check
 import androidx.compose.runtime.Composable
@@ -20,12 +21,12 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.disgust.sereda.recipe.commonModel.RecipeFavoriteState
 import com.disgust.sereda.recipe.screens.search.interaction.RecipesListState
 import com.disgust.sereda.recipe.screens.search.interaction.RecipesListUIEvent
 import com.disgust.sereda.recipe.screens.search.model.RecipeItem
 import com.disgust.sereda.utils.DoOnInit
-import com.disgust.sereda.utils.commonViews.SearchView
+import com.disgust.sereda.utils.commonModel.RecipeFavoriteState
+import com.disgust.sereda.utils.components.SearchView
 import kotlinx.coroutines.launch
 
 @ExperimentalAnimationApi
@@ -105,7 +106,8 @@ fun SearchRecipeScreen(
                     onClick = {
                         vm.onUIEvent(RecipesListUIEvent.FiltersOpenButtonClick)
                         scope.launch { state.animateTo(ModalBottomSheetValue.Expanded) }
-                    }
+                    },
+                    modifier = Modifier.size(40.dp)
                 ) {
                     Icon(
                         Icons.Default.Menu,
@@ -116,11 +118,24 @@ fun SearchRecipeScreen(
                 IconButton(
                     onClick = {
                         vm.onUIEvent(RecipesListUIEvent.ProfileButtonClick)
-                    }
+                    },
+                    modifier = Modifier.size(40.dp)
                 ) {
                     Icon(
                         Icons.Default.Person,
                         contentDescription = "Профиль"
+                    )
+                }
+
+                IconButton(
+                    onClick = {
+                        vm.onUIEvent(RecipesListUIEvent.FavoriteListButtonClick)
+                    },
+                    modifier = Modifier.size(40.dp)
+                ) {
+                    Icon(
+                        Icons.Default.Star,
+                        contentDescription = "Избранное"
                     )
                 }
 

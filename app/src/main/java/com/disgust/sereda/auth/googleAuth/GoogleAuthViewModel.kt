@@ -58,14 +58,10 @@ class GoogleAuthViewModel @Inject constructor(private val repository: AuthReposi
     private fun launchAuthDialog(
         launcher: ManagedActivityResultLauncher<IntentSenderRequest, ActivityResult>
     ) {
-        when (val oneTapState = oneTapSignInState.value) {
-            is OneTapSignInState.Success -> {
-                val intent =
-                    IntentSenderRequest.Builder(oneTapState.signInResult.pendingIntent.intentSender)
-                        .build()
-                launcher.launch(intent)
-            }
-            else -> {}
+        oneTapSignInState.value.doAsStateIfPossible<OneTapSignInState.Success> {
+            val intent = IntentSenderRequest.Builder(it.signInResult.pendingIntent.intentSender)
+                .build()
+            launcher.launch(intent)
         }
     }
 }
