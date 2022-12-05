@@ -18,6 +18,9 @@ interface FavoriteRecipeDao {
     @Delete
     fun deleteFavoriteRecipe(recipe: FavoriteRecipeDBModel)
 
+    @Query("DELETE FROM favorite_recipes")
+    fun clearFavoriteRecipes()
+
     @Query("DELETE FROM favorite_recipes WHERE id NOT IN (:actualRecipesIds)")
     fun deleteOldRecipes(actualRecipesIds: List<Int>)
 
