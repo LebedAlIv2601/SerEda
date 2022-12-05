@@ -66,7 +66,6 @@ class SearchRecipeViewModel @Inject constructor(
 
     init {
         subscribeToFavoriteRecipesIds()
-        updateFavoriteIds()
     }
 
     override fun onUIEvent(event: RecipesListUIEvent) {
@@ -98,6 +97,7 @@ class SearchRecipeViewModel @Inject constructor(
             }
 
             is RecipesListUIEvent.StartScreen -> {
+                updateFavoriteIds()
                 getFiltersIngredients()
                 if (_recipesListState.value is RecipesListState.Waiting) {
                     getRandomRecipes()
