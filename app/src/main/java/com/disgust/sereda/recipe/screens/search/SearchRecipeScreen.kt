@@ -26,6 +26,7 @@ import com.disgust.sereda.recipe.screens.search.interaction.RecipesListUIEvent
 import com.disgust.sereda.recipe.screens.search.model.RecipeItem
 import com.disgust.sereda.utils.DoOnInit
 import com.disgust.sereda.utils.commonModel.RecipeFavoriteState
+import com.disgust.sereda.utils.commonModel.UserNotAuthDialogState
 import com.disgust.sereda.utils.components.SearchView
 import kotlinx.coroutines.launch
 
@@ -40,6 +41,7 @@ fun SearchRecipeScreen(
     val inputText = vm.inputText.collectAsState()
     val showKeyboard = vm.showKeyboard.collectAsState()
     val hideKeyboard = vm.hideKeyboard.collectAsState()
+    val userNotAuthDialogState = vm.userNotAuthDialogState.collectAsState()
 
     val state = rememberModalBottomSheetState(
         ModalBottomSheetValue.Hidden, skipHalfExpanded = true
@@ -51,6 +53,26 @@ fun SearchRecipeScreen(
 
     DoOnInit {
         vm.onUIEvent(RecipesListUIEvent.StartScreen)
+    }
+
+    if (userNotAuthDialogState.value == UserNotAuthDialogState.SHOWN) {
+        AlertDialog(
+            onDismissRequest = {
+                vm.onUIEvent(RecipesListUIEvent.UserNotAuthDialogDismiss)
+            },
+            title = { Text(text = "You are not authorized") },
+            text = { Text(text = "You need to authorize for adding recipes to favorite") },
+            confirmButton = {
+                Button(onClick = { vm.onUIEvent(RecipesListUIEvent.UserNotAuthDialogConfirmButtonClick) }) {
+                    Text(text = "Authorize")
+                }
+            },
+            dismissButton = {
+                Button(onClick = { vm.onUIEvent(RecipesListUIEvent.UserNotAuthDialogDismiss) }) {
+                    Text(text = "Cancel")
+                }
+            }
+        )
     }
 
     ModalBottomSheetLayout(

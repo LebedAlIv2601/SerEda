@@ -1,21 +1,27 @@
 package com.disgust.sereda.recipe.data
 
+import androidx.compose.material.ExperimentalMaterialApi
 import com.disgust.sereda.recipe.screens.info.model.RecipeInfo
 import com.disgust.sereda.recipe.screens.search.model.IngredientFilter
 import com.disgust.sereda.recipe.screens.search.model.RecipeItem
 import com.disgust.sereda.utils.commonModel.RecipeFavoriteState
 import com.disgust.sereda.utils.db.SerEdaDatabase
+import com.disgust.sereda.utils.firebase.FirebaseAuthHelper
 import com.disgust.sereda.utils.firebase.FirebaseDatabaseHelper
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
 
+@ExperimentalMaterialApi
 @Singleton
 class RecipeRepository @Inject constructor(
     private val api: RecipeApi,
     private val db: SerEdaDatabase,
-    private val firebaseHelper: FirebaseDatabaseHelper
+    private val firebaseHelper: FirebaseDatabaseHelper,
+    private val authHelper: FirebaseAuthHelper
 ) {
+
+    fun isAuth() = authHelper.isAuth()
 
     suspend fun getInfoRecipe(id: Int): RecipeInfo {
         return api.getRecipeInfo(id).toRecipeInfo()

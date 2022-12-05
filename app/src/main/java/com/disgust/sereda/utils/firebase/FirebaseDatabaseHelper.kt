@@ -11,10 +11,10 @@ import kotlinx.coroutines.tasks.await
 
 class FirebaseDatabaseHelper {
 
-    private val auth = Firebase.auth
     private val database = FirebaseDatabase.getInstance()
     private val usersDatabaseReference: DatabaseReference = database.reference.child("users")
-    private val userReference = auth.currentUser?.uid?.let { usersDatabaseReference.child(it) }
+    private val userReference
+        get() = Firebase.auth.currentUser?.uid?.let { usersDatabaseReference.child(it) }
 
     fun addFavoriteRecipe(recipe: FavoriteRecipeFirebaseModel) {
         userReference?.child("favoriteRecipes")

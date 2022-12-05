@@ -14,6 +14,7 @@ import com.disgust.sereda.recipe.screens.search.model.RecipeItem
 import com.disgust.sereda.utils.base.NavigatorViewModel
 import com.disgust.sereda.utils.base.UIEventHandler
 import com.disgust.sereda.utils.commonModel.RecipeFavoriteState
+import com.disgust.sereda.utils.commonModel.UserNotAuthDialogState
 import com.disgust.sereda.utils.doSingleRequest
 import com.disgust.sereda.utils.navigation.Screen
 import com.disgust.sereda.utils.subscribeToFlowOnIO
@@ -60,6 +61,9 @@ class SearchRecipeViewModel @Inject constructor(
         MutableStateFlow(listOf<Diet>())
     val dietList = _dietsList.asStateFlow()
 
+    private val _userNotAuthDialogState = MutableStateFlow(UserNotAuthDialogState.HIDDEN)
+    val userNotAuthDialogState = _userNotAuthDialogState.asStateFlow()
+
     init {
         subscribeToFavoriteRecipesIds()
         updateFavoriteIds()
@@ -101,10 +105,14 @@ class SearchRecipeViewModel @Inject constructor(
             }
 
             is RecipesListUIEvent.ListItemButtonAddToFavoriteClick -> {
-                if (event.recipe.favoriteState == RecipeFavoriteState.NOT_FAVORITE) {
-                    addRecipeToFavorite(event.recipe)
-                } else if (event.recipe.favoriteState == RecipeFavoriteState.FAVORITE) {
-                    deleteRecipeFromFavorite(event.recipe)
+                if (isAuth()) {
+                    if (event.recipe.favoriteState == RecipeFavoriteState.NOT_FAVORITE) {
+                        addRecipeToFavorite(event.recipe)
+                    } else if (event.recipe.favoriteState == RecipeFavoriteState.FAVORITE) {
+                        deleteRecipeFromFavorite(event.recipe)
+                    }
+                } else {
+                    _userNotAuthDialogState.value = UserNotAuthDialogState.SHOWN
                 }
             }
 
@@ -160,6 +168,15 @@ class SearchRecipeViewModel @Inject constructor(
             is RecipesListUIEvent.FavoriteListButtonClick -> {
                 navigate(Screen.Favorite.route)
             }
+
+            is RecipesListUIEvent.UserNotAuthDialogDismiss -> {
+                _userNotAuthDialogState.value = UserNotAuthDialogState.HIDDEN
+            }
+
+            is RecipesListUIEvent.UserNotAuthDialogConfirmButtonClick -> {
+                _userNotAuthDialogState.value = UserNotAuthDialogState.HIDDEN
+                navigate(Screen.GoogleAuth.route)
+            }
         }
     }
 
@@ -177,7 +194,11 @@ class SearchRecipeViewModel @Inject constructor(
     private fun subscribeToFavoriteRecipesIds() {
         subscribeToFlowOnIO(
             flowToCollect = { repository.getFavoriteRecipeIdsFlow() },
-            doOnCollect = { updateListWithFavoriteIds(it) }
+            doOnCollect = {
+                if (isAuth()) {
+                    updateListWithFavoriteIds(it)
+                }
+            }
         )
     }
 
@@ -260,5 +281,9 @@ class SearchRecipeViewModel @Inject constructor(
             query = { repository.deleteFavoriteRecipe(recipe) },
             doOnSuccess = {}
         )
+    }
+
+    private fun isAuth(): Boolean {
+        return repository.isAuth()
     }
 }

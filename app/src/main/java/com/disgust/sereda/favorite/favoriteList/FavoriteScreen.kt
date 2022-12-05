@@ -90,6 +90,17 @@ fun FavoriteScreen(
             is FavoriteRecipesListState.Error -> {
                 Text(text = favoriteList.exception.toString())
             }
+
+            is FavoriteRecipesListState.NotAuth -> {
+                Column(modifier = Modifier.fillMaxSize()) {
+                    Text(text = "You need to authorize to see favorite recipes")
+                    Button(onClick = {
+                        vm.onUIEvent(FavoriteUIEvent.ButtonAuthClick)
+                    }) {
+                        Text(text = "Authorize")
+                    }
+                }
+            }
             else -> {}
         }
     }
