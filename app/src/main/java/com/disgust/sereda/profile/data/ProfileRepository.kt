@@ -12,6 +12,8 @@ class ProfileRepository @Inject constructor(
     private val firebaseAuthHelper: FirebaseAuthHelper
 ) {
 
+    fun isAuth() = firebaseAuthHelper.isAuth()
+
     suspend fun getProfileInfo(): ProfileUser {
         return firebaseDatabaseHelper.getUserData().toProfileUser()
     }

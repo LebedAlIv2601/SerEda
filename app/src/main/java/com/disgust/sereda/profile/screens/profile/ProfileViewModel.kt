@@ -23,31 +23,41 @@ class ProfileViewModel @Inject constructor(val repository: ProfileRepository) :
     NavigatorViewModel(),
     UIEventHandler<ProfileUIEvent> {
 
-    private val _userInfoState = MutableStateFlow<UserInfoState>(UserInfoState.Loading)
+    private val _userInfoState = MutableStateFlow<UserInfoState>(UserInfoState.Waiting)
     val userInfoState = _userInfoState.asStateFlow()
 
     override fun onUIEvent(event: ProfileUIEvent) {
         when (event) {
             is ProfileUIEvent.StartScreen -> {
-                getProfileData()
+                if (isAuth()) {
+                    getProfileData()
+                } else {
+                    _userInfoState.value = UserInfoState.NotAuth
+                }
             }
             is ProfileUIEvent.ButtonSignOutClick -> {
                 signOut()
             }
+            ProfileUIEvent.ButtonAuthClick -> {
+                navigate(Screen.GoogleAuth.route)
+            }
         }
     }
+
+    private fun isAuth() = repository.isAuth()
 
     private fun signOut() {
         doSingleRequest(
             query = { repository.signOut() },
-            doOnSuccess = { navigateWithClearBackStack(Screen.GoogleAuth.route) }
+            doOnSuccess = { navigateWithClearBackStack(Screen.SearchRecipe.route) },
         )
     }
 
     private fun getProfileData() {
         doSingleRequest(
             query = { repository.getProfileInfo() },
-            doOnSuccess = { _userInfoState.value = UserInfoState.Success(it) }
+            doOnSuccess = { _userInfoState.value = UserInfoState.Success(it) },
+            doOnLoading = { _userInfoState.value = UserInfoState.Loading }
         )
     }
 }

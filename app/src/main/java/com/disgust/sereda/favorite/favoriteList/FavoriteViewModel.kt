@@ -29,17 +29,18 @@ class FavoriteViewModel @Inject constructor(private val repository: FavoriteRepo
         MutableStateFlow<FavoriteRecipesListState>(FavoriteRecipesListState.Waiting)
     val recipesListState = _recipesListState.asStateFlow()
 
-    init {
-        subscribeToFavoriteRecipes()
-    }
-
     override fun onUIEvent(event: FavoriteUIEvent) {
         when (event) {
             is FavoriteUIEvent.StartScreen -> {
-                if (_recipesListState.value !is FavoriteRecipesListState.Updated
-                    && _recipesListState.value !is FavoriteRecipesListState.NotUpdated
-                ) {
-                    updateFavoriteRecipes()
+                if (isAuth()) {
+                    if (_recipesListState.value !is FavoriteRecipesListState.Updated
+                        && _recipesListState.value !is FavoriteRecipesListState.NotUpdated
+                    ) {
+                        subscribeToFavoriteRecipes()
+                        updateFavoriteRecipes()
+                    }
+                } else {
+                    _recipesListState.value = FavoriteRecipesListState.NotAuth
                 }
             }
             is FavoriteUIEvent.FavoriteRecipesListItemClick -> {
@@ -57,8 +58,13 @@ class FavoriteViewModel @Inject constructor(private val repository: FavoriteRepo
             is FavoriteUIEvent.UpdateButtonClick -> {
                 updateFavoriteRecipes()
             }
+            FavoriteUIEvent.ButtonAuthClick -> {
+                navigate(Screen.GoogleAuth.route)
+            }
         }
     }
+
+    private fun isAuth() = repository.isAuth()
 
     private fun deleteRecipeFromFavorite(recipe: FavoriteRecipe) {
         doSingleRequest(
