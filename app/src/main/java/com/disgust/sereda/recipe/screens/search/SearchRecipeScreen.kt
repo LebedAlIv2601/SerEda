@@ -1,32 +1,26 @@
 package com.disgust.sereda.recipe.screens.search
 
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Star
-import androidx.compose.material.icons.outlined.Add
-import androidx.compose.material.icons.outlined.Check
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.*
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.disgust.sereda.recipe.screens.search.components.RecipeListItem
 import com.disgust.sereda.recipe.screens.search.interaction.RecipesListState
 import com.disgust.sereda.recipe.screens.search.interaction.RecipesListUIEvent
-import com.disgust.sereda.recipe.screens.search.model.RecipeItem
+import com.disgust.sereda.utils.Constants
 import com.disgust.sereda.utils.DoOnInit
-import com.disgust.sereda.utils.commonModel.RecipeFavoriteState
 import com.disgust.sereda.utils.commonModel.UserNotAuthDialogState
+import com.disgust.sereda.utils.components.PagingList
+import com.disgust.sereda.utils.components.PagingState
 import com.disgust.sereda.utils.components.SearchView
 import kotlinx.coroutines.launch
 
@@ -50,6 +44,8 @@ fun SearchRecipeScreen(
 
     val ingredientsList = vm.ingredientsList.collectAsState()
     val dietsList = vm.dietList.collectAsState()
+
+    val pagingState = remember { mutableStateOf<PagingState>(PagingState.Waiting) }
 
     DoOnInit {
         vm.onUIEvent(RecipesListUIEvent.StartScreen)
@@ -165,81 +161,40 @@ fun SearchRecipeScreen(
 
             when (val recipesValue = recipesState.value) {
                 is RecipesListState.Loading -> Text("Loading")
-                is RecipesListState.Success ->
-                    RecipesList(
-                        recipes = recipesValue.data,
-                        onItemClick = {
-                            vm.onUIEvent(
-                                RecipesListUIEvent.ListItemClick(
-                                    item = it
-                                )
+                is RecipesListState.Success -> {
+                    pagingState.value = recipesValue.pagingState
+                    PagingList(
+                        itemsList = recipesValue.data,
+                        itemComponent = {
+                            RecipeListItem(
+                                recipe = it,
+                                onItemClick = {
+                                    vm.onUIEvent(
+                                        RecipesListUIEvent.ListItemClick(
+                                            item = it
+                                        )
+                                    )
+                                },
+                                onAddToFavoriteButtonClick = {
+                                    vm.onUIEvent(
+                                        RecipesListUIEvent.ListItemButtonAddToFavoriteClick(it)
+                                    )
+                                }
                             )
                         },
-                        onAddToFavoriteButtonClick = {
+                        pageSize = Constants.RECIPES_LIST_PAGE_SIZE,
+                        pagingState = pagingState,
+                        getData = {
                             vm.onUIEvent(
-                                RecipesListUIEvent.ListItemButtonAddToFavoriteClick(it)
+                                RecipesListUIEvent.ListScrolledToLoadMoreDataPosition(
+                                    it
+                                )
                             )
                         }
                     )
+                }
                 is RecipesListState.Error -> Text(recipesValue.exception.toString())
                 else -> Text("")
-            }
-        }
-    }
-}
-
-@Composable
-fun RecipesList(
-    recipes: List<RecipeItem>,
-    onItemClick: (RecipeItem) -> Unit,
-    onAddToFavoriteButtonClick: (RecipeItem) -> Unit
-) {
-    LazyColumn {
-        items(recipes) { recipe ->
-            Row(
-                modifier = Modifier
-                    .padding(horizontal = 16.dp)
-                    .fillMaxWidth()
-                    .clickable { onItemClick(recipe) }
-                    .padding(bottom = 16.dp)
-                    .border(width = 2.dp, color = Color.Black),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceEvenly
-            ) {
-                Text(
-                    text = recipe.name, modifier =
-                    Modifier
-                        .weight(3f)
-                        .padding(start = 16.dp)
-                )
-                Box(
-                    modifier = Modifier.weight(1f),
-                    contentAlignment = Alignment.TopEnd
-                ) {
-                    when (recipe.favoriteState) {
-                        RecipeFavoriteState.NOT_FAVORITE -> {
-                            Icon(
-                                imageVector = Icons.Outlined.Add,
-                                contentDescription = "",
-                                modifier = Modifier
-                                    .width(50.dp)
-                                    .height(50.dp)
-                                    .clickable { onAddToFavoriteButtonClick(recipe) }
-                            )
-                        }
-                        RecipeFavoriteState.FAVORITE -> {
-                            Icon(
-                                imageVector = Icons.Outlined.Check,
-                                contentDescription = "",
-                                modifier = Modifier
-                                    .width(50.dp)
-                                    .height(50.dp)
-                                    .clickable { onAddToFavoriteButtonClick(recipe) }
-                            )
-                        }
-                    }
-
-                }
             }
         }
     }
