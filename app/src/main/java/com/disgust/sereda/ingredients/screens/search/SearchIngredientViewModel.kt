@@ -9,11 +9,13 @@ import com.disgust.sereda.ingredients.screens.search.interaction.IngredientsList
 import com.disgust.sereda.ingredients.screens.search.interaction.IngredientsListUIEvent
 import com.disgust.sereda.utils.base.NavigatorViewModel
 import com.disgust.sereda.utils.base.UIEventHandler
+import com.disgust.sereda.utils.components.PagingState
 import com.disgust.sereda.utils.doSingleRequest
 import com.disgust.sereda.utils.navigation.Screen
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 
 @ExperimentalAnimationApi
@@ -37,22 +39,6 @@ class SearchIngredientViewModel @Inject constructor(
     val inputText = _inputText.asStateFlow()
 
     private val lastQuery = mutableStateOf("")
-
-    private fun getIngredients(query: String) {
-        doSingleRequest(
-            query = { repository.getIngredients(query) },
-            doOnLoading = {
-                _ingredientsListState.value = IngredientsListState.Loading
-            },
-            doOnSuccess = {
-                lastQuery.value = query
-                _ingredientsListState.value = IngredientsListState.Success(it)
-            },
-            doOnError = {
-                _ingredientsListState.value = IngredientsListState.Error(it)
-            }
-        )
-    }
 
     override fun onUIEvent(event: IngredientsListUIEvent) {
         when (event) {
@@ -81,6 +67,63 @@ class SearchIngredientViewModel @Inject constructor(
             is IngredientsListUIEvent.KeyboardInitShow -> {
                 _showKeyboard.value = false
             }
+
+            is IngredientsListUIEvent.ListScrolledToLoadMoreDataPosition -> {
+                getMoreIngredients(event.loadedItems)
+            }
         }
+    }
+
+    private fun getIngredients(query: String) {
+        doSingleRequest(
+            query = { repository.getIngredients(query) },
+            doOnLoading = {
+                _ingredientsListState.value = IngredientsListState.Loading
+            },
+            doOnSuccess = {
+                lastQuery.value = query
+                _ingredientsListState.value =
+                    IngredientsListState.Success(it, pagingState = PagingState.Success(false))
+            },
+            doOnError = {
+                _ingredientsListState.value = IngredientsListState.Error(it)
+            }
+        )
+    }
+
+    private fun getMoreIngredients(loadedItems: Int) {
+        doSingleRequest(
+            query = { repository.getIngredients(lastQuery.value, loadedItems) },
+            doOnSuccess = {
+                _ingredientsListState.update { prevState ->
+                    val list =
+                        (prevState as IngredientsListState.Success).data.toMutableList()
+                    if (it.isNotEmpty()) {
+                        list.addAll(it)
+                        IngredientsListState.Success(
+                            list,
+                            pagingState = PagingState.Success(false)
+                        )
+                    } else {
+                        IngredientsListState.Success(
+                            list,
+                            pagingState = PagingState.Success(true)
+                        )
+                    }
+                }
+            },
+            doOnError = {
+                _ingredientsListState.update { prevState ->
+                    val data = (prevState as IngredientsListState.Success).data
+                    IngredientsListState.Success(data, PagingState.Error)
+                }
+            },
+            doOnLoading = {
+                _ingredientsListState.update { prevState ->
+                    val data = (prevState as IngredientsListState.Success).data
+                    IngredientsListState.Success(data, PagingState.Loading)
+                }
+            }
+        )
     }
 }

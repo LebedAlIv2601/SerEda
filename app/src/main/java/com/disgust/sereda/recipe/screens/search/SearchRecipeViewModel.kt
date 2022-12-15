@@ -15,12 +15,14 @@ import com.disgust.sereda.utils.base.NavigatorViewModel
 import com.disgust.sereda.utils.base.UIEventHandler
 import com.disgust.sereda.utils.commonModel.RecipeFavoriteState
 import com.disgust.sereda.utils.commonModel.UserNotAuthDialogState
+import com.disgust.sereda.utils.components.PagingState
 import com.disgust.sereda.utils.doSingleRequest
 import com.disgust.sereda.utils.navigation.Screen
 import com.disgust.sereda.utils.subscribeToFlowOnIO
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 
 @ExperimentalAnimationApi
@@ -177,9 +179,51 @@ class SearchRecipeViewModel @Inject constructor(
                 _userNotAuthDialogState.value = UserNotAuthDialogState.HIDDEN
                 navigate(Screen.GoogleAuth.route)
             }
+
+            is RecipesListUIEvent.ListScrolledToLoadMoreDataPosition -> {
+                getMoreRecipes(event.loadedItems)
+            }
         }
     }
 
+    private fun getMoreRecipes(loadedItems: Int) {
+        doSingleRequest(
+            query = {
+                repository.searchRecipes(
+                    query = lastQuery.value,
+                    includeIngredients = filtersRecipe.value.ingredientsList?.filter { it.isInclude }
+                        .toString(),
+                    excludeIngredients = filtersRecipe.value.ingredientsList?.filter { !it.isInclude }
+                        .toString(),
+                    diet = filtersRecipe.value.dietsList?.map { it.value }.toString(),
+                    offset = loadedItems
+                )
+            },
+            doOnSuccess = {
+                _recipesListState.update { prevState ->
+                    val list = (prevState as RecipesListState.Success).data.toMutableList()
+                    if (it.isNotEmpty()) {
+                        list.addAll(it)
+                        RecipesListState.Success(list, PagingState.Success(false))
+                    } else {
+                        RecipesListState.Success(list, PagingState.Success(true))
+                    }
+                }
+            },
+            doOnError = {
+                _recipesListState.update { prevState ->
+                    val data = (prevState as RecipesListState.Success).data
+                    RecipesListState.Success(data, PagingState.Error)
+                }
+            },
+            doOnLoading = {
+                _recipesListState.update { prevState ->
+                    val data = (prevState as RecipesListState.Success).data
+                    RecipesListState.Success(data, PagingState.Loading)
+                }
+            }
+        )
+    }
 
     private fun getFiltersIngredients() {
         doSingleRequest(
@@ -243,7 +287,7 @@ class SearchRecipeViewModel @Inject constructor(
             },
             doOnSuccess = {
                 lastQuery.value = query
-                _recipesListState.value = RecipesListState.Success(it)
+                _recipesListState.value = RecipesListState.Success(it, PagingState.Success(false))
             },
             doOnError = {
                 _recipesListState.value = RecipesListState.Error(it)
@@ -260,7 +304,7 @@ class SearchRecipeViewModel @Inject constructor(
                 _recipesListState.value = RecipesListState.Loading
             },
             doOnSuccess = {
-                _recipesListState.value = RecipesListState.Success(it)
+                _recipesListState.value = RecipesListState.Success(it, PagingState.Success(false))
             },
             doOnError = {
                 _recipesListState.value = RecipesListState.Error(it)

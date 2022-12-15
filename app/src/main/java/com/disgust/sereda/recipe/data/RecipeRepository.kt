@@ -32,7 +32,8 @@ class RecipeRepository @Inject constructor(
         sort: String = "",
         includeIngredients: String = "",
         excludeIngredients: String = "",
-        diet: String = ""
+        diet: String = "",
+        offset: Int = 0
     ): List<RecipeItem> {
         val favoriteIds = getFavoriteRecipeIds()
         val recipes =
@@ -41,7 +42,8 @@ class RecipeRepository @Inject constructor(
                 sort,
                 includeIngredients,
                 excludeIngredients,
-                diet
+                diet,
+                offset
             ).results.map { it.toRecipeItem() }.toMutableList()
         recipes.forEachIndexed { index, recipe ->
             val isFavorite = favoriteIds.find { it == recipe.id } != null

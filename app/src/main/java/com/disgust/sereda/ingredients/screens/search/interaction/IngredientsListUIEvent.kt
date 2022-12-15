@@ -10,4 +10,5 @@ sealed class IngredientsListUIEvent : BaseUIEvent {
 
     class InputTextChange(val text: String) : IngredientsListUIEvent()
     object KeyboardInitShow : IngredientsListUIEvent()
+    class ListScrolledToLoadMoreDataPosition(val loadedItems: Int) : IngredientsListUIEvent()
 }

@@ -1,21 +1,23 @@
 package com.disgust.sereda.ingredients.screens.search
 
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
+import com.disgust.sereda.ingredients.screens.search.components.IngredientItemComponent
 import com.disgust.sereda.ingredients.screens.search.interaction.IngredientsListState
 import com.disgust.sereda.ingredients.screens.search.interaction.IngredientsListUIEvent
-import com.disgust.sereda.ingredients.screens.search.model.IngredientItem
+import com.disgust.sereda.utils.Constants
+import com.disgust.sereda.utils.components.PagingList
+import com.disgust.sereda.utils.components.PagingState
 import com.disgust.sereda.utils.components.SearchView
 
 @ExperimentalAnimationApi
@@ -28,6 +30,7 @@ fun SearchIngredientScreen(
     val ingredientsState = vm.ingredientListState.collectAsState()
     val inputText = vm.inputText.collectAsState()
     val showKeyboard = vm.showKeyboard.collectAsState()
+    val pagingState = remember { mutableStateOf<PagingState>(PagingState.Waiting) }
 
     Column(
         modifier = Modifier
@@ -48,35 +51,34 @@ fun SearchIngredientScreen(
             }
         )
 
-        when (ingredientsState.value) {
+        when (val ingredientsStateValue = ingredientsState.value) {
             is IngredientsListState.Loading -> Text("Loading")
-            is IngredientsListState.Success ->
-                IngredientsList((ingredientsState.value as IngredientsListState.Success).data) {
-                    vm.onUIEvent(
-                        IngredientsListUIEvent.ListItemClick(
-                            item = it
+            is IngredientsListState.Success -> {
+                pagingState.value = ingredientsStateValue.pagingState
+                PagingList(
+                    itemsList = ingredientsStateValue.data,
+                    itemComponent = {
+                        IngredientItemComponent(it) { ingredient ->
+                            vm.onUIEvent(
+                                IngredientsListUIEvent.ListItemClick(
+                                    item = ingredient
+                                )
+                            )
+                        }
+                    },
+                    pageSize = Constants.INGREDIENTS_LIST_PAGE_SIZE,
+                    pagingState = pagingState,
+                    getData = { nextPage ->
+                        vm.onUIEvent(
+                            IngredientsListUIEvent.ListScrolledToLoadMoreDataPosition(
+                                nextPage
+                            )
                         )
-                    )
-                }
+                    }
+                )
+            }
             is IngredientsListState.Error -> Text("Error")
             else -> Text("")
-        }
-    }
-}
-
-@Composable
-fun IngredientsList(ingredients: List<IngredientItem>, onItemClick: (IngredientItem) -> Unit) {
-    LazyColumn {
-        items(ingredients) { ingredient ->
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(40.dp)
-                    .clickable { onItemClick(ingredient) },
-                contentAlignment = Alignment.Center
-            ) {
-                Text(text = ingredient.name)
-            }
         }
     }
 }
