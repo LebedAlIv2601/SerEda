@@ -42,12 +42,7 @@ fun SearchRecipeScreen(
     )
     val scope = rememberCoroutineScope()
 
-    val ingredientsList = vm.ingredientsList.collectAsState()
-    val dietsList = vm.dietList.collectAsState()
-    val intolerancesList = vm.intolerancesList.collectAsState()
-    val maxReadyTime = vm.maxReadyTime.collectAsState()
-    val minCalories = vm.minCalories.collectAsState()
-    val maxCalories = vm.maxCalories.collectAsState()
+    val filtersRecipeChanged = vm.filtersRecipeChanged.collectAsState()
 
     val pagingState = remember { mutableStateOf<PagingState>(PagingState.Waiting) }
 
@@ -64,13 +59,13 @@ fun SearchRecipeScreen(
 
     val ingredientsListFilter = @Composable {
         ListIngredientFilter(
-            list = ingredientsList.value,
+            list = filtersRecipeChanged.value.ingredientsList ?: listOf(),
             onDeleteItem = { vm.onUIEvent(RecipesListUIEvent.FiltersDeleteIngredient(it)) })
     }
 
     val dietsChips = @Composable {
         ChipsFilter(
-            selectedChips = dietsList.value,
+            selectedChips = filtersRecipeChanged.value.dietsList ?: listOf(),
             setChipState = { diet, isAdd ->
                 vm.onUIEvent(RecipesListUIEvent.FiltersSetDiet(diet, isAdd))
             })
@@ -78,7 +73,7 @@ fun SearchRecipeScreen(
 
     val intolerancesChips = @Composable {
         ChipsFilter(
-            selectedChips = intolerancesList.value,
+            selectedChips = filtersRecipeChanged.value.intolerancesList ?: listOf(),
             setChipState = { intolerance, isAdd ->
                 vm.onUIEvent(RecipesListUIEvent.FiltersSetIntolerance(intolerance, isAdd))
             })
@@ -87,7 +82,7 @@ fun SearchRecipeScreen(
     val maxReadyTimeFilter = @Composable {
         SingleInputFilter(
             label = "ReadyTime",
-            value = maxReadyTime.value,
+            value = filtersRecipeChanged.value.maxReadyTime,
             onValueChange = { vm.onUIEvent(RecipesListUIEvent.FiltersInputReadyTimeChange(it)) })
     }
 
@@ -95,8 +90,8 @@ fun SearchRecipeScreen(
         MinMaxInputFilter(
             labelMin = "Min Calories",
             labelMax = "Max Calories",
-            valueMin = minCalories.value,
-            valueMax = maxCalories.value,
+            valueMin = filtersRecipeChanged.value.minCalories,
+            valueMax = filtersRecipeChanged.value.maxCalories,
             onValueChangeMin = { vm.onUIEvent(RecipesListUIEvent.FiltersInputMinCaloriesChange(it)) },
             onValueChangeMax = { vm.onUIEvent(RecipesListUIEvent.FiltersInputMaxCaloriesChange(it)) }
         )
