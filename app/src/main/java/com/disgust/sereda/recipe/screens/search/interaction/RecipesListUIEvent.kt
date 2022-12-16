@@ -19,6 +19,11 @@ sealed class RecipesListUIEvent : BaseUIEvent {
     object ProfileButtonClick : RecipesListUIEvent()
     object FavoriteListButtonClick : RecipesListUIEvent()
 
+    class ListScrolledToLoadMoreDataPosition(val loadedItems: Int) : RecipesListUIEvent()
+
+    object UserNotAuthDialogDismiss : RecipesListUIEvent()
+    object UserNotAuthDialogConfirmButtonClick : RecipesListUIEvent()
+
     class FiltersApplyButtonClick(val query: String) : RecipesListUIEvent()
     object FiltersSearchIngredientButtonClick : RecipesListUIEvent()
     object FiltersOpenButtonClick : RecipesListUIEvent()

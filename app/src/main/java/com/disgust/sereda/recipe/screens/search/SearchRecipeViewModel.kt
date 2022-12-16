@@ -11,12 +11,15 @@ import com.disgust.sereda.recipe.screens.search.model.*
 import com.disgust.sereda.utils.base.NavigatorViewModel
 import com.disgust.sereda.utils.base.UIEventHandler
 import com.disgust.sereda.utils.commonModel.RecipeFavoriteState
+import com.disgust.sereda.utils.commonModel.UserNotAuthDialogState
+import com.disgust.sereda.utils.components.PagingState
 import com.disgust.sereda.utils.doSingleRequest
 import com.disgust.sereda.utils.navigation.Screen
 import com.disgust.sereda.utils.subscribeToFlowOnIO
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 
 @ExperimentalAnimationApi
@@ -73,9 +76,11 @@ class SearchRecipeViewModel @Inject constructor(
         MutableStateFlow<Int?>(null)
     val maxCalories = _maxCalories.asStateFlow()
 
+    private val _userNotAuthDialogState = MutableStateFlow(UserNotAuthDialogState.HIDDEN)
+    val userNotAuthDialogState = _userNotAuthDialogState.asStateFlow()
+
     init {
         subscribeToFavoriteRecipesIds()
-        updateFavoriteIds()
     }
 
     override fun onUIEvent(event: RecipesListUIEvent) {
@@ -107,6 +112,7 @@ class SearchRecipeViewModel @Inject constructor(
             }
 
             is RecipesListUIEvent.StartScreen -> {
+                updateFavoriteIds()
                 getFiltersIngredients()
                 if (_recipesListState.value is RecipesListState.Waiting) {
                     getRandomRecipes()
@@ -114,10 +120,14 @@ class SearchRecipeViewModel @Inject constructor(
             }
 
             is RecipesListUIEvent.ListItemButtonAddToFavoriteClick -> {
-                if (event.recipe.favoriteState == RecipeFavoriteState.NOT_FAVORITE) {
-                    addRecipeToFavorite(event.recipe)
-                } else if (event.recipe.favoriteState == RecipeFavoriteState.FAVORITE) {
-                    deleteRecipeFromFavorite(event.recipe)
+                if (isAuth()) {
+                    if (event.recipe.favoriteState == RecipeFavoriteState.NOT_FAVORITE) {
+                        addRecipeToFavorite(event.recipe)
+                    } else if (event.recipe.favoriteState == RecipeFavoriteState.FAVORITE) {
+                        deleteRecipeFromFavorite(event.recipe)
+                    }
+                } else {
+                    _userNotAuthDialogState.value = UserNotAuthDialogState.SHOWN
                 }
             }
 
@@ -211,9 +221,60 @@ class SearchRecipeViewModel @Inject constructor(
             is RecipesListUIEvent.FavoriteListButtonClick -> {
                 navigate(Screen.Favorite.route)
             }
+
+            is RecipesListUIEvent.UserNotAuthDialogDismiss -> {
+                _userNotAuthDialogState.value = UserNotAuthDialogState.HIDDEN
+            }
+
+            is RecipesListUIEvent.UserNotAuthDialogConfirmButtonClick -> {
+                _userNotAuthDialogState.value = UserNotAuthDialogState.HIDDEN
+                navigate(Screen.GoogleAuth.route)
+            }
+
+            is RecipesListUIEvent.ListScrolledToLoadMoreDataPosition -> {
+                getMoreRecipes(event.loadedItems)
+            }
         }
     }
 
+    private fun getMoreRecipes(loadedItems: Int) {
+        doSingleRequest(
+            query = {
+                repository.searchRecipes(
+                    query = lastQuery.value,
+                    includeIngredients = filtersRecipe.value.ingredientsList?.filter { it.isInclude }
+                        .toString(),
+                    excludeIngredients = filtersRecipe.value.ingredientsList?.filter { !it.isInclude }
+                        .toString(),
+                    diet = filtersRecipe.value.dietsList?.map { it.value }.toString(),
+                    offset = loadedItems
+                )
+            },
+            doOnSuccess = {
+                _recipesListState.update { prevState ->
+                    val list = (prevState as RecipesListState.Success).data.toMutableList()
+                    if (it.isNotEmpty()) {
+                        list.addAll(it)
+                        RecipesListState.Success(list, PagingState.Success(false))
+                    } else {
+                        RecipesListState.Success(list, PagingState.Success(true))
+                    }
+                }
+            },
+            doOnError = {
+                _recipesListState.update { prevState ->
+                    val data = (prevState as RecipesListState.Success).data
+                    RecipesListState.Success(data, PagingState.Error)
+                }
+            },
+            doOnLoading = {
+                _recipesListState.update { prevState ->
+                    val data = (prevState as RecipesListState.Success).data
+                    RecipesListState.Success(data, PagingState.Loading)
+                }
+            }
+        )
+    }
 
     private fun getFiltersIngredients() {
         doSingleRequest(
@@ -228,7 +289,11 @@ class SearchRecipeViewModel @Inject constructor(
     private fun subscribeToFavoriteRecipesIds() {
         subscribeToFlowOnIO(
             flowToCollect = { repository.getFavoriteRecipeIdsFlow() },
-            doOnCollect = { updateListWithFavoriteIds(it) }
+            doOnCollect = {
+                if (isAuth()) {
+                    updateListWithFavoriteIds(it)
+                }
+            }
         )
     }
 
@@ -276,7 +341,7 @@ class SearchRecipeViewModel @Inject constructor(
             },
             doOnSuccess = {
                 lastQuery.value = query
-                _recipesListState.value = RecipesListState.Success(it)
+                _recipesListState.value = RecipesListState.Success(it, PagingState.Success(false))
             },
             doOnError = {
                 _recipesListState.value = RecipesListState.Error(it)
@@ -293,7 +358,7 @@ class SearchRecipeViewModel @Inject constructor(
                 _recipesListState.value = RecipesListState.Loading
             },
             doOnSuccess = {
-                _recipesListState.value = RecipesListState.Success(it)
+                _recipesListState.value = RecipesListState.Success(it, PagingState.Success(false))
             },
             doOnError = {
                 _recipesListState.value = RecipesListState.Error(it)
@@ -314,5 +379,9 @@ class SearchRecipeViewModel @Inject constructor(
             query = { repository.deleteFavoriteRecipe(recipe) },
             doOnSuccess = {}
         )
+    }
+
+    private fun isAuth(): Boolean {
+        return repository.isAuth()
     }
 }

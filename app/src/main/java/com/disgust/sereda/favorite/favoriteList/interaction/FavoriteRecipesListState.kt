@@ -10,4 +10,5 @@ sealed class FavoriteRecipesListState : BaseState() {
     class Updating(val data: List<FavoriteRecipe>) : FavoriteRecipesListState()
     class NotUpdated(val data: List<FavoriteRecipe>) : FavoriteRecipesListState()
     class Error(val exception: Exception) : FavoriteRecipesListState()
+    object NotAuth : FavoriteRecipesListState()
 }

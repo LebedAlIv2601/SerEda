@@ -8,4 +8,5 @@ sealed class FavoriteUIEvent : BaseUIEvent {
     class FavoriteRecipesListItemClick(val recipe: FavoriteRecipe) : FavoriteUIEvent()
     class DeleteFromFavoriteButtonClick(val recipe: FavoriteRecipe) : FavoriteUIEvent()
     object UpdateButtonClick : FavoriteUIEvent()
+    object ButtonAuthClick : FavoriteUIEvent()
 }

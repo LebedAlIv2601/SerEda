@@ -6,4 +6,7 @@ object Constants {
 
     const val SIGN_IN_REQUEST = "signInRequest"
     const val SIGN_UP_REQUEST = "signUpRequest"
+
+    const val INGREDIENTS_LIST_PAGE_SIZE = 30
+    const val RECIPES_LIST_PAGE_SIZE = 30
 }

@@ -48,6 +48,17 @@ fun ProfileScreen(
             is UserInfoState.Error -> {
                 Text(text = userStateValue.e.toString())
             }
+            is UserInfoState.NotAuth -> {
+                Column(modifier = Modifier.fillMaxSize()) {
+                    Text(text = "You need to authorize to see your profile")
+                    Button(onClick = {
+                        vm.onUIEvent(ProfileUIEvent.ButtonAuthClick)
+                    }) {
+                        Text(text = "Authorize")
+                    }
+                }
+            }
+            is UserInfoState.Waiting -> {}
         }
     }
 

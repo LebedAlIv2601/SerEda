@@ -12,8 +12,11 @@ class SearchIngredientRepository @Inject constructor(
     private val db: SerEdaDatabase
 ) {
 
-    suspend fun getIngredients(query: String): List<IngredientItem> =
-        api.getIngredients(query).results
+    suspend fun getIngredients(query: String, loadedItems: Int = 0): List<IngredientItem> =
+        api.getIngredients(
+            query = query,
+            offset = loadedItems
+        ).results
 
     suspend fun getIngredientsInfo(id: Int): IngredientInfo =
         api.getIngredientInfo(id).toIngredientInfo()

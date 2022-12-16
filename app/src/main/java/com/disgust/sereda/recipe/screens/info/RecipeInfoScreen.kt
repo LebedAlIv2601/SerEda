@@ -1,26 +1,33 @@
 package com.disgust.sereda.recipe.screens.info
 
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.Check
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.disgust.sereda.recipe.screens.info.interaction.RecipeInfoState
 import com.disgust.sereda.recipe.screens.info.interaction.RecipeInfoUIEvent
 import com.disgust.sereda.utils.DoOnInit
 import com.disgust.sereda.utils.commonModel.RecipeFavoriteState
+import com.disgust.sereda.utils.commonModel.UserNotAuthDialogState
 import com.disgust.sereda.utils.components.ImageIngredientView
 import com.disgust.sereda.utils.components.ImageRecipeView
 
+@ExperimentalAnimationApi
+@ExperimentalComposeUiApi
+@ExperimentalMaterialApi
 @Composable
 fun RecipeInfoScreen(
     vm: RecipeInfoViewModel,
@@ -28,9 +35,30 @@ fun RecipeInfoScreen(
     favoriteState: Int
 ) {
     val recipeInfoState = vm.recipeInfoState.collectAsState()
+    val userNotAuthDialogState = vm.userNotAuthDialogState.collectAsState()
 
     DoOnInit {
         vm.onUIEvent(RecipeInfoUIEvent.StartScreen(recipeId, favoriteState))
+    }
+
+    if (userNotAuthDialogState.value == UserNotAuthDialogState.SHOWN) {
+        AlertDialog(
+            onDismissRequest = {
+                vm.onUIEvent(RecipeInfoUIEvent.UserNotAuthDialogDismiss)
+            },
+            title = { Text(text = "You are not authorized") },
+            text = { Text(text = "You need to authorize for adding recipes to favorite") },
+            confirmButton = {
+                Button(onClick = { vm.onUIEvent(RecipeInfoUIEvent.UserNotAuthDialogConfirmButtonClick) }) {
+                    Text(text = "Authorize")
+                }
+            },
+            dismissButton = {
+                Button(onClick = { vm.onUIEvent(RecipeInfoUIEvent.UserNotAuthDialogDismiss) }) {
+                    Text(text = "Cancel")
+                }
+            }
+        )
     }
 
     Box(

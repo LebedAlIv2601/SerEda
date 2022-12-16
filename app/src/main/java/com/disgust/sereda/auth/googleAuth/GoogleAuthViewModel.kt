@@ -13,7 +13,6 @@ import com.disgust.sereda.auth.googleAuth.interaction.OneTapSignInState
 import com.disgust.sereda.utils.base.NavigatorViewModel
 import com.disgust.sereda.utils.base.UIEventHandler
 import com.disgust.sereda.utils.doSingleRequest
-import com.disgust.sereda.utils.navigation.Screen
 import com.google.firebase.auth.GoogleAuthProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
@@ -51,7 +50,7 @@ class GoogleAuthViewModel @Inject constructor(private val repository: AuthReposi
         val googleCredentials = GoogleAuthProvider.getCredential(googleIdToken, null)
         doSingleRequest(
             query = { repository.signInWithGoogle(googleCredentials) },
-            doOnSuccess = { navigateWithClearBackStack(Screen.SearchRecipe.route) }
+            doOnSuccess = { popBackStack() }
         )
     }
 
