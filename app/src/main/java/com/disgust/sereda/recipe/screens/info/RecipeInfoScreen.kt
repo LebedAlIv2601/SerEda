@@ -3,6 +3,8 @@ package com.disgust.sereda.recipe.screens.info
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
@@ -99,7 +101,7 @@ fun RecipeInfoScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-                when (recipeInfoState.value) {
+                when (val recipeInfoStateValue = recipeInfoState.value) {
                     is RecipeInfoState.Loading -> {
                         Text(
                             text = "Loading $recipeId"
@@ -112,7 +114,7 @@ fun RecipeInfoScreen(
                                 .height(200.dp),
                             contentAlignment = Alignment.Center
                         ) {
-                            when ((recipeInfoState.value as RecipeInfoState.Success).data.favoriteState) {
+                            when (recipeInfoStateValue.data.favoriteState) {
                                 RecipeFavoriteState.NOT_FAVORITE -> {
                                     Icon(
                                         imageVector = Icons.Outlined.Add,
@@ -136,12 +138,15 @@ fun RecipeInfoScreen(
                             }
 
                         }
+                        val data = recipeInfoStateValue.data
                         Text(
-                            text =
-                            (recipeInfoState.value as RecipeInfoState.Success).data.toString()
+                            text = "имя ${data.name}\nкалории ${data.calories}\nвремя " +
+                                    "${data.time}\nдиеты ${data.diets}\nингридиенты " +
+                                    "${data.ingredients}",
+                            modifier = Modifier.verticalScroll(rememberScrollState())
                         )
                     }
-                    is RecipeInfoState.Error -> (recipeInfoState.value as RecipeInfoState.Error).error.toString()
+                    is RecipeInfoState.Error -> recipeInfoStateValue.error.toString()
                 }
             }
         }

@@ -7,10 +7,7 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import com.disgust.sereda.recipe.data.RecipeRepository
 import com.disgust.sereda.recipe.screens.search.interaction.RecipesListState
 import com.disgust.sereda.recipe.screens.search.interaction.RecipesListUIEvent
-import com.disgust.sereda.recipe.screens.search.model.Diet
-import com.disgust.sereda.recipe.screens.search.model.FiltersRecipe
-import com.disgust.sereda.recipe.screens.search.model.IngredientFilter
-import com.disgust.sereda.recipe.screens.search.model.RecipeItem
+import com.disgust.sereda.recipe.screens.search.model.*
 import com.disgust.sereda.utils.base.NavigatorViewModel
 import com.disgust.sereda.utils.base.UIEventHandler
 import com.disgust.sereda.utils.commonModel.RecipeFavoriteState
@@ -52,7 +49,7 @@ class SearchRecipeViewModel @Inject constructor(
     private val lastQuery = mutableStateOf("")
 
     private val filtersRecipe =
-        MutableStateFlow(FiltersRecipe(null, null))
+        MutableStateFlow(FiltersRecipe())
     private val builderFilters = FiltersRecipe.Builder()
 
     private val _ingredientsList =
@@ -62,6 +59,22 @@ class SearchRecipeViewModel @Inject constructor(
     private val _dietsList =
         MutableStateFlow(listOf<Diet>())
     val dietList = _dietsList.asStateFlow()
+
+    private val _intolerancesList =
+        MutableStateFlow(listOf<Intolerance>())
+    val intolerancesList = _intolerancesList.asStateFlow()
+
+    private val _maxReadyTime =
+        MutableStateFlow<Int?>(null)
+    val maxReadyTime = _maxReadyTime.asStateFlow()
+
+    private val _minCalories =
+        MutableStateFlow<Int?>(null)
+    val minCalories = _minCalories.asStateFlow()
+
+    private val _maxCalories =
+        MutableStateFlow<Int?>(null)
+    val maxCalories = _maxCalories.asStateFlow()
 
     private val _userNotAuthDialogState = MutableStateFlow(UserNotAuthDialogState.HIDDEN)
     val userNotAuthDialogState = _userNotAuthDialogState.asStateFlow()
@@ -143,11 +156,23 @@ class SearchRecipeViewModel @Inject constructor(
                 _hideKeyboard.value = true
                 _ingredientsList.value = filtersRecipe.value.ingredientsList ?: listOf()
                 _dietsList.value = filtersRecipe.value.dietsList ?: listOf()
+                _intolerancesList.value = filtersRecipe.value.intolerancesList ?: listOf()
+                _maxReadyTime.value = filtersRecipe.value.maxReadyTime
+                _minCalories.value = filtersRecipe.value.minCalories
+                _maxCalories.value = filtersRecipe.value.maxCalories
                 builderFilters
                     .setIngredientsList(
                         filtersRecipe.value.ingredientsList?.toMutableList() ?: mutableListOf()
                     )
-                    .setDietsList(filtersRecipe.value.dietsList?.toMutableList() ?: mutableListOf())
+                    .setDietsList(
+                        filtersRecipe.value.dietsList?.toMutableList() ?: mutableListOf()
+                    )
+                    .setIntolerancesList(
+                        filtersRecipe.value.intolerancesList?.toMutableList() ?: mutableListOf()
+                    )
+                    .setMaxReadyTime(filtersRecipe.value.maxReadyTime)
+                    .setMinCalories(filtersRecipe.value.minCalories)
+                    .setMaxCalories(filtersRecipe.value.maxCalories)
             }
 
             is RecipesListUIEvent.KeyboardSetHide -> {
@@ -167,6 +192,32 @@ class SearchRecipeViewModel @Inject constructor(
                     _dietsList.value = builderFilters.dietsList.map { it }
                 }
             }
+
+            is RecipesListUIEvent.FiltersSetIntolerance -> {
+                if (event.isAdd) {
+                    builderFilters.addIntolerance(event.intolerance)
+                    _intolerancesList.value = builderFilters.intolerancesList.map { it }
+                } else {
+                    builderFilters.deleteIntolerance(event.intolerance)
+                    _intolerancesList.value = builderFilters.intolerancesList.map { it }
+                }
+            }
+
+            is RecipesListUIEvent.FiltersInputReadyTimeChange -> {
+                _maxReadyTime.value = event.value.toIntOrNull()
+                builderFilters.setMaxReadyTime(_maxReadyTime.value)
+            }
+
+            is RecipesListUIEvent.FiltersInputMinCaloriesChange -> {
+                _minCalories.value = event.value.toIntOrNull()
+                builderFilters.setMinCalories(_minCalories.value)
+            }
+
+            is RecipesListUIEvent.FiltersInputMaxCaloriesChange -> {
+                _maxCalories.value = event.value.toIntOrNull()
+                builderFilters.setMaxCalories(_maxCalories.value)
+            }
+
             is RecipesListUIEvent.FavoriteListButtonClick -> {
                 navigate(Screen.Favorite.route)
             }
@@ -196,6 +247,11 @@ class SearchRecipeViewModel @Inject constructor(
                     excludeIngredients = filtersRecipe.value.ingredientsList?.filter { !it.isInclude }
                         .toString(),
                     diet = filtersRecipe.value.dietsList?.map { it.value }.toString(),
+                    intolerances = filtersRecipe.value.intolerancesList?.map { it.value }
+                        .toString(),
+                    maxReadyTime = filtersRecipe.value.maxReadyTime,
+                    minCalories = filtersRecipe.value.minCalories,
+                    maxCalories = filtersRecipe.value.maxCalories,
                     offset = loadedItems
                 )
             },
@@ -279,7 +335,10 @@ class SearchRecipeViewModel @Inject constructor(
                         .toString(),
                     excludeIngredients = filtersRecipe.value.ingredientsList?.filter { !it.isInclude }
                         .toString(),
-                    diet = filtersRecipe.value.dietsList?.map { it.value }.toString()
+                    diet = filtersRecipe.value.dietsList?.map { it.value }.toString(),
+                    maxReadyTime = filtersRecipe.value.maxReadyTime,
+                    minCalories = filtersRecipe.value.minCalories,
+                    maxCalories = filtersRecipe.value.maxCalories
                 )
             },
             doOnLoading = {

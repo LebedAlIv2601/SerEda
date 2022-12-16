@@ -44,11 +44,62 @@ fun SearchRecipeScreen(
 
     val ingredientsList = vm.ingredientsList.collectAsState()
     val dietsList = vm.dietList.collectAsState()
+    val intolerancesList = vm.intolerancesList.collectAsState()
+    val maxReadyTime = vm.maxReadyTime.collectAsState()
+    val minCalories = vm.minCalories.collectAsState()
+    val maxCalories = vm.maxCalories.collectAsState()
 
     val pagingState = remember { mutableStateOf<PagingState>(PagingState.Waiting) }
 
     DoOnInit {
         vm.onUIEvent(RecipesListUIEvent.StartScreen)
+    }
+
+    val topPanelFilter = @Composable {
+        TopPanelFilter(
+            onSearchIngredient = { vm.onUIEvent(RecipesListUIEvent.FiltersSearchIngredientButtonClick) },
+            onClose = { scope.launch { state.hide() } },
+            onDeleteAll = { vm.onUIEvent(RecipesListUIEvent.FiltersDeleteAllIngredients) })
+    }
+
+    val ingredientsListFilter = @Composable {
+        ListIngredientFilter(
+            list = ingredientsList.value,
+            onDeleteItem = { vm.onUIEvent(RecipesListUIEvent.FiltersDeleteIngredient(it)) })
+    }
+
+    val dietsChips = @Composable {
+        ChipsFilter(
+            selectedChips = dietsList.value,
+            setChipState = { diet, isAdd ->
+                vm.onUIEvent(RecipesListUIEvent.FiltersSetDiet(diet, isAdd))
+            })
+    }
+
+    val intolerancesChips = @Composable {
+        ChipsFilter(
+            selectedChips = intolerancesList.value,
+            setChipState = { intolerance, isAdd ->
+                vm.onUIEvent(RecipesListUIEvent.FiltersSetIntolerance(intolerance, isAdd))
+            })
+    }
+
+    val maxReadyTimeFilter = @Composable {
+        SingleInputFilter(
+            label = "ReadyTime",
+            value = maxReadyTime.value,
+            onValueChange = { vm.onUIEvent(RecipesListUIEvent.FiltersInputReadyTimeChange(it)) })
+    }
+
+    val minMaxCaloriesInputFilter = @Composable {
+        MinMaxInputFilter(
+            labelMin = "Min Calories",
+            labelMax = "Max Calories",
+            valueMin = minCalories.value,
+            valueMax = maxCalories.value,
+            onValueChangeMin = { vm.onUIEvent(RecipesListUIEvent.FiltersInputMinCaloriesChange(it)) },
+            onValueChangeMax = { vm.onUIEvent(RecipesListUIEvent.FiltersInputMaxCaloriesChange(it)) }
+        )
     }
 
     if (userNotAuthDialogState.value == UserNotAuthDialogState.SHOWN) {
@@ -76,28 +127,12 @@ fun SearchRecipeScreen(
         sheetShape = MaterialTheme.shapes.small,
         sheetContent = {
             FiltersView(
-                onApply = {
-                    scope.launch { state.hide() }
-                    vm.onUIEvent(RecipesListUIEvent.FiltersApplyButtonClick(inputText.value))
-                },
-                onSearchIngredient = {
-                    vm.onUIEvent(RecipesListUIEvent.FiltersSearchIngredientButtonClick)
-                },
-                onClose = {
-                    scope.launch { state.hide() }
-                },
-                onDeleteAll = {
-                    vm.onUIEvent(RecipesListUIEvent.FiltersDeleteAllIngredients)
-                },
-                onDeleteItem = {
-                    vm.onUIEvent(RecipesListUIEvent.FiltersDeleteIngredient(it))
-                },
-                ingredientListFilters = ingredientsList.value,
-                setDiet = { diet, isAdd ->
-                    vm.onUIEvent(RecipesListUIEvent.FiltersSetDiet(diet, isAdd))
-                },
-                dietsList = dietsList.value
-            )
+                topPanelFilter, maxReadyTimeFilter, dietsChips, intolerancesChips,
+                ingredientsListFilter, minMaxCaloriesInputFilter
+            ) {
+                scope.launch { state.hide() }
+                vm.onUIEvent(RecipesListUIEvent.FiltersApplyButtonClick(inputText.value))
+            }
         }) {
 
         Column() {
