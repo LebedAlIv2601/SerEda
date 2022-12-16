@@ -37,7 +37,7 @@ fun FiltersView(vararg views: @Composable () -> Unit, onApply: () -> Unit) {
             .fillMaxSize()
             .background(Color.White)
     ) {
-        LazyColumn( //заменить на лейзи
+        LazyColumn(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
                 .fillMaxSize()
@@ -191,7 +191,7 @@ fun SingleInputFilter(
 }
 
 @Composable
-fun MinMaxInputFiler(
+fun MinMaxInputFilter(
     title: String? = null,
     labelMin: String? = null,
     valueMin: Int?,

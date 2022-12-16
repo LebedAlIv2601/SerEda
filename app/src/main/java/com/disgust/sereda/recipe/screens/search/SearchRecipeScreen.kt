@@ -92,7 +92,7 @@ fun SearchRecipeScreen(
     }
 
     val minMaxCaloriesInputFiler = @Composable {
-        MinMaxInputFiler(
+        MinMaxInputFilter(
             labelMin = "Min Calories",
             labelMax = "Max Calories",
             valueMin = minCalories.value,

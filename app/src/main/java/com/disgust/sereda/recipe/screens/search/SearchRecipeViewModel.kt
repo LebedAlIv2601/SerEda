@@ -247,6 +247,11 @@ class SearchRecipeViewModel @Inject constructor(
                     excludeIngredients = filtersRecipe.value.ingredientsList?.filter { !it.isInclude }
                         .toString(),
                     diet = filtersRecipe.value.dietsList?.map { it.value }.toString(),
+                    intolerances = filtersRecipe.value.intolerancesList?.map { it.value }
+                        .toString(),
+                    maxReadyTime = filtersRecipe.value.maxReadyTime,
+                    minCalories = filtersRecipe.value.minCalories,
+                    maxCalories = filtersRecipe.value.maxCalories,
                     offset = loadedItems
                 )
             },
