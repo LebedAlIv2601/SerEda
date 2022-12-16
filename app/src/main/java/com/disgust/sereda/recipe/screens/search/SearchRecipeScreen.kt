@@ -91,7 +91,7 @@ fun SearchRecipeScreen(
             onValueChange = { vm.onUIEvent(RecipesListUIEvent.FiltersInputReadyTimeChange(it)) })
     }
 
-    val minMaxCaloriesInputFiler = @Composable {
+    val minMaxCaloriesInputFilter = @Composable {
         MinMaxInputFilter(
             labelMin = "Min Calories",
             labelMax = "Max Calories",
@@ -128,7 +128,7 @@ fun SearchRecipeScreen(
         sheetContent = {
             FiltersView(
                 topPanelFilter, maxReadyTimeFilter, dietsChips, intolerancesChips,
-                ingredientsListFilter, minMaxCaloriesInputFiler
+                ingredientsListFilter, minMaxCaloriesInputFilter
             ) {
                 scope.launch { state.hide() }
                 vm.onUIEvent(RecipesListUIEvent.FiltersApplyButtonClick(inputText.value))
