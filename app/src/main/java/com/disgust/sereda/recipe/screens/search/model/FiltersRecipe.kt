@@ -15,40 +15,52 @@ data class FiltersRecipe(
     )
 
     data class Builder(
-        var ingredientsList: MutableList<IngredientFilter> = mutableListOf(),
-        var dietsList: MutableList<Diet> = mutableListOf(),
-        var intolerancesList: MutableList<Intolerance> = mutableListOf(),
+        var ingredientsList: List<IngredientFilter> = listOf(),
+        var dietsList: List<Diet> = listOf(),
+        var intolerancesList: List<Intolerance> = listOf(),
         var maxReadyTime: Int? = null,
         var minCalories: Int? = null,
         var maxCalories: Int? = null
     ) {
 
-        fun setIngredientsList(ingredientsList: MutableList<IngredientFilter>) =
-            apply { this.ingredientsList = ingredientsList }
+        fun setIngredientsList(ingredientsList: List<IngredientFilter>?) =
+            apply {
+                if (ingredientsList != null) {
+                    this.ingredientsList = ingredientsList
+                }
+            }
 
         fun addIngredient(ingredient: IngredientFilter) =
-            apply { ingredientsList.add(ingredient) }
+            apply { ingredientsList = ingredientsList + ingredient }
 
         fun deleteIngredient(ingredient: IngredientFilter) =
-            apply { ingredientsList.remove(ingredient) }
+            apply { ingredientsList = ingredientsList - ingredient }
 
-        fun setDietsList(dietsList: MutableList<Diet>) =
-            apply { this.dietsList = dietsList }
+        fun setDietsList(dietsList: List<Diet>?) =
+            apply {
+                if (dietsList != null) {
+                    this.dietsList = dietsList
+                }
+            }
 
         fun addDiet(diet: Diet) =
-            apply { dietsList.add(diet) }
+            apply { dietsList = dietsList + diet }
 
         fun deleteDiet(diet: Diet) =
-            apply { dietsList.remove(diet) }
+            apply { dietsList = dietsList - diet }
 
-        fun setIntolerancesList(intolerancesList: MutableList<Intolerance>) =
-            apply { this.intolerancesList = intolerancesList }
+        fun setIntolerancesList(intolerancesList: List<Intolerance>?) =
+            apply {
+                if (intolerancesList != null) {
+                    this.intolerancesList = intolerancesList
+                }
+            }
 
         fun addIntolerance(intolerance: Intolerance) =
-            apply { intolerancesList.add(intolerance) }
+            apply { intolerancesList = intolerancesList + intolerance }
 
         fun deleteIntolerance(intolerance: Intolerance) =
-            apply { intolerancesList.remove(intolerance) }
+            apply { intolerancesList = intolerancesList - intolerance }
 
         fun setMaxReadyTime(maxTime: Int?) =
             apply { maxReadyTime = maxTime }
