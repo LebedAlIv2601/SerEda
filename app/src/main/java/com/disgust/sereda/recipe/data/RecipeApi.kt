@@ -17,6 +17,10 @@ interface RecipeApi {
         @Query("sort") sort: String,
         @Query("includeIngredients") includeIngredients: String,
         @Query("excludeIngredients") excludeIngredients: String,
-        @Query("diet") diet: String
+        @Query("diet") diet: String,
+        @Query("intolerances") intolerances: String,
+        @Query("maxReadyTime") maxReadyTime: Int?,
+        @Query("minCalories") minCalories: Int?,
+        @Query("maxCalories") maxCalories: Int?
     ): RecipeListResponse
 }

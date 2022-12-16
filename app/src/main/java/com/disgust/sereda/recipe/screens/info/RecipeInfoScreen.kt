@@ -2,6 +2,8 @@ package com.disgust.sereda.recipe.screens.info
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
@@ -110,9 +112,12 @@ fun RecipeInfoScreen(
                             }
 
                         }
+                        val data = (recipeInfoState.value as RecipeInfoState.Success).data
                         Text(
-                            text =
-                            (recipeInfoState.value as RecipeInfoState.Success).data.toString()
+                            text = "имя ${data.name}\nкалории ${data.calories}\nвремя " +
+                                    "${data.time}\nдиеты ${data.diets}\nингридиенты " +
+                                    "${data.ingredients}",
+                            modifier = Modifier.verticalScroll(rememberScrollState())
                         )
                     }
                     is RecipeInfoState.Error -> (recipeInfoState.value as RecipeInfoState.Error).error.toString()
