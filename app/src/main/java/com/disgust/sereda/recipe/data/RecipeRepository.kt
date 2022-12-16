@@ -95,10 +95,18 @@ class RecipeRepository @Inject constructor(
     }
     //end
 
-    fun getFiltersIngredientsRecipe(): List<IngredientFilter> =
-        db.filtersRecipeDao().getFilterRecipeByIngredients().map {
-            it.toIngredientFilter()
-        }
+    fun getFiltersIngredientRecipe(): List<IngredientFilter> =
+        db.filtersRecipeDao().getFiltersRecipe().map { it.toIngredientFilter() }
+
+    fun deleteAllFiltersRecipe() =
+        db.filtersRecipeDao().deleteAllFiltersRecipe()
+
+    fun deleteFiltersIngredient(ingredientFilter: IngredientFilter) =
+        db.filtersRecipeDao().deleteFilterRecipe(ingredientFilter.toFilterRecipeDBModel())
+
+    fun updateFiltersIngredients(list: List<IngredientFilter>) =
+        db.filtersRecipeDao()
+            .updateFilterRecipeByIngredient(list.map { it.toFilterRecipeDBModel() })
 
     private fun getFavoriteRecipeIds(): List<Int> =
         db.favoriteRecipeDao().getFavoriteRecipes().map { it.id }

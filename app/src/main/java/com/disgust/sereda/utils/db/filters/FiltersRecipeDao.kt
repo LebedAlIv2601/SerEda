@@ -11,6 +11,9 @@ interface FiltersRecipeDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertFilterRecipe(filter: FilterRecipeDBModel)
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertFiltersRecipe(filters: List<FilterRecipeDBModel>)
+
     @Delete
     fun deleteFilterRecipe(filter: FilterRecipeDBModel)
 
@@ -18,10 +21,9 @@ interface FiltersRecipeDao {
     fun deleteAllFiltersRecipe()
 
     @Transaction
-    fun getFilterRecipeByIngredients(): List<FilterRecipeDBModel> {
-        val list = getFiltersRecipe()
+    fun updateFilterRecipeByIngredient(list: List<FilterRecipeDBModel>) {
         deleteAllFiltersRecipe()
-        return list
+        insertFiltersRecipe(list)
     }
 
 }

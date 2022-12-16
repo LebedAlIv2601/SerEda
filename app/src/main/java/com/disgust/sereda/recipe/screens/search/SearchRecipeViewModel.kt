@@ -8,6 +8,7 @@ import com.disgust.sereda.recipe.data.RecipeRepository
 import com.disgust.sereda.recipe.screens.search.interaction.RecipesListState
 import com.disgust.sereda.recipe.screens.search.interaction.RecipesListUIEvent
 import com.disgust.sereda.recipe.screens.search.model.FiltersRecipe
+import com.disgust.sereda.recipe.screens.search.model.IngredientFilter
 import com.disgust.sereda.recipe.screens.search.model.RecipeItem
 import com.disgust.sereda.utils.base.NavigatorViewModel
 import com.disgust.sereda.utils.base.UIEventHandler
@@ -61,6 +62,7 @@ class SearchRecipeViewModel @Inject constructor(
 
     init {
         subscribeToFavoriteRecipesIds()
+        filtersDeleteAllIngredients()
     }
 
     override fun onUIEvent(event: RecipesListUIEvent) {
@@ -111,26 +113,15 @@ class SearchRecipeViewModel @Inject constructor(
                 }
             }
 
-            is RecipesListUIEvent.FiltersApplyButtonClick -> {
-                val oldFilters = filtersRecipeApplied.value
-                filtersRecipeApplied.value = builderFilters.build()
-                if (oldFilters != filtersRecipeApplied.value)
-                    getRecipes(query = event.query)
-            }
+            is RecipesListUIEvent.FiltersApplyButtonClick -> filtersApplyButtonClick(event.query)
 
             is RecipesListUIEvent.FiltersSearchIngredientButtonClick -> {
                 navigate(Screen.SearchIngredient.route)
             }
 
-            is RecipesListUIEvent.FiltersDeleteAllIngredients -> {
-                builderFilters.setIngredientsList(listOf())
-                _filtersRecipeChanged.value = builderFilters.build()
-            }
+            is RecipesListUIEvent.FiltersDeleteAll -> filtersDeleteAll()
 
-            is RecipesListUIEvent.FiltersDeleteIngredient -> {
-                builderFilters.deleteIngredient(event.item)
-                _filtersRecipeChanged.value = builderFilters.build()
-            }
+            is RecipesListUIEvent.FiltersDeleteIngredient -> filtersDeleteIngredient(event.item)
 
             is RecipesListUIEvent.FiltersOpenButtonClick -> {
                 _hideKeyboard.value = true
@@ -148,6 +139,7 @@ class SearchRecipeViewModel @Inject constructor(
                     .setMinCalories(filtersRecipeApplied.value.minCalories)
                     .setMaxCalories(filtersRecipeApplied.value.maxCalories)
                 _filtersRecipeChanged.value = builderFilters.build()
+                updateFiltersIngredients(builderFilters.ingredientsList)
             }
 
             is RecipesListUIEvent.KeyboardSetHide -> {
@@ -254,12 +246,49 @@ class SearchRecipeViewModel @Inject constructor(
 
     private fun getFiltersIngredients() {
         doSingleRequest(
-            query = { repository.getFiltersIngredientsRecipe() },
+            query = { repository.getFiltersIngredientRecipe() },
             doOnSuccess = {
-                builderFilters.addIngredient(it.first())
+                builderFilters.addIngredient(it.minus(builderFilters.ingredientsList).first())
                 _filtersRecipeChanged.value = builderFilters.build()
             }
         )
+    }
+
+    private fun filtersDeleteAll() {
+        builderFilters.clearAll()
+        _filtersRecipeChanged.value = builderFilters.build()
+        filtersDeleteAllIngredients()
+    }
+
+    private fun filtersDeleteAllIngredients() {
+        doSingleRequest(
+            query = { repository.deleteAllFiltersRecipe() },
+            doOnSuccess = {}
+        )
+    }
+
+    private fun filtersDeleteIngredient(ingredientFilter: IngredientFilter) {
+        doSingleRequest(
+            query = { repository.deleteFiltersIngredient(ingredientFilter) },
+            doOnSuccess = {
+                builderFilters.deleteIngredient(ingredientFilter)
+                _filtersRecipeChanged.value = builderFilters.build()
+            }
+        )
+    }
+
+    private fun updateFiltersIngredients(list: List<IngredientFilter>) {
+        doSingleRequest(
+            query = { repository.updateFiltersIngredients(list) },
+            doOnSuccess = {}
+        )
+    }
+
+    private fun filtersApplyButtonClick(query: String) {
+        val oldFilters = filtersRecipeApplied.value
+        filtersRecipeApplied.value = builderFilters.build()
+        if (oldFilters != filtersRecipeApplied.value)
+            getRecipes(query = query)
     }
 
     private fun subscribeToFavoriteRecipesIds() {

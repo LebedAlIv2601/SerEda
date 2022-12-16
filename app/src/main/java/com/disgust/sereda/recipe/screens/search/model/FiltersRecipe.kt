@@ -80,6 +80,16 @@ data class FiltersRecipe(
         fun clearMaxCalories() =
             apply { maxCalories = null }
 
+        fun clearAll() =
+            apply {
+                ingredientsList = listOf()
+                dietsList = listOf()
+                intolerancesList = listOf()
+                maxReadyTime = null
+                minCalories = null
+                maxCalories = null
+            }
+
         fun build() = FiltersRecipe(
             ingredientsList, dietsList, intolerancesList, maxReadyTime, minCalories, maxCalories
         )

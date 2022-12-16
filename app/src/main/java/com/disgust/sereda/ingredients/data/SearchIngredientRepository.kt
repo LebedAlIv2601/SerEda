@@ -24,4 +24,7 @@ class SearchIngredientRepository @Inject constructor(
     fun addFilterRecipe(filter: FilterRecipeDBModel) =
         db.filtersRecipeDao().insertFilterRecipe(filter)
 
+    fun getFiltersIngredients(): List<FilterRecipeDBModel> =
+        db.filtersRecipeDao().getFiltersRecipe()
+
 }

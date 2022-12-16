@@ -32,6 +32,12 @@ class IngredientInfoViewModel @Inject constructor(
         MutableStateFlow(false)
     val enabledButtonFilters = _enabledButtonFilters.asStateFlow()
 
+    private var filtersIngredientsId = listOf<Int>()
+
+    init {
+        getIngredientsFilters()
+    }
+
     override fun onUIEvent(event: IngredientInfoUIEvent) {
         when (event) {
             is IngredientInfoUIEvent.StartScreen -> getIngredientInfo(event.id, event.name)
@@ -84,9 +90,19 @@ class IngredientInfoViewModel @Inject constructor(
                 _ingredientInfoState.value = IngredientInfoState.Success(
                     it.copy(name = name)
                 )
-                _enabledButtonFilters.value = true
+                if (id !in filtersIngredientsId)
+                    _enabledButtonFilters.value = true
             },
             doOnError = { _ingredientInfoState.value = IngredientInfoState.Error(it) }
+        )
+    }
+
+    private fun getIngredientsFilters() {
+        doSingleRequest(
+            query = { repository.getFiltersIngredients() },
+            doOnSuccess = { list ->
+                filtersIngredientsId = list.map { it.id }
+            }
         )
     }
 }
