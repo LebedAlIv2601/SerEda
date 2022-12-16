@@ -108,3 +108,9 @@ fun FilterRecipeDBModel.toIngredientFilter(): IngredientFilter {
         isInclude = isInclude
     )
 }
+
+fun IngredientFilter.toFilterRecipeDBModel(): FilterRecipeDBModel {
+    return FilterRecipeDBModel(
+        id, name, image, isInclude
+    )
+}

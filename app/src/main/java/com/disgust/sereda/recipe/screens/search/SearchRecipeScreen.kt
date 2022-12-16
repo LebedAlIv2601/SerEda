@@ -1,5 +1,6 @@
 package com.disgust.sereda.recipe.screens.search
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -53,8 +54,11 @@ fun SearchRecipeScreen(
     val topPanelFilter = @Composable {
         TopPanelFilter(
             onSearchIngredient = { vm.onUIEvent(RecipesListUIEvent.FiltersSearchIngredientButtonClick) },
-            onClose = { scope.launch { state.hide() } },
-            onDeleteAll = { vm.onUIEvent(RecipesListUIEvent.FiltersDeleteAllIngredients) })
+            onClose = {
+                scope.launch { state.hide() }
+                vm.onUIEvent(RecipesListUIEvent.FiltersDeleteAll)
+            },
+            onDeleteAll = { vm.onUIEvent(RecipesListUIEvent.FiltersDeleteAll) })
     }
 
     val ingredientsListFilter = @Composable {
@@ -121,6 +125,12 @@ fun SearchRecipeScreen(
         sheetState = state,
         sheetShape = MaterialTheme.shapes.small,
         sheetContent = {
+            if (state.isVisible) {
+                BackHandler(onBack = {
+                    scope.launch { state.hide() }
+                    vm.onUIEvent(RecipesListUIEvent.FiltersDeleteAll)
+                })
+            }
             FiltersView(
                 topPanelFilter, maxReadyTimeFilter, dietsChips, intolerancesChips,
                 ingredientsListFilter, minMaxCaloriesInputFilter
