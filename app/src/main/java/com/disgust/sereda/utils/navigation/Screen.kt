@@ -21,13 +21,13 @@ import com.disgust.sereda.recipe.screens.search.SearchRecipeScreen
 import com.disgust.sereda.recipe.screens.search.SearchRecipeViewModel
 import com.disgust.sereda.splash.SplashScreen
 import com.disgust.sereda.splash.SplashViewModel
-import com.disgust.sereda.utils.base.NavigatorViewModel
+import com.disgust.sereda.utils.base.navigationDelegate.NavigationHandler
 import com.disgust.sereda.utils.commonModel.RecipeFavoriteState
 
 @ExperimentalAnimationApi
 @ExperimentalMaterialApi
 @ExperimentalComposeUiApi
-sealed class Screen<T : NavigatorViewModel>(
+sealed class Screen<T : NavigationHandler>(
     val route: String,
     val arguments: List<NamedNavArgument> = emptyList(),
     val deepLinks: List<NavDeepLink> = emptyList(),

@@ -7,8 +7,7 @@ import com.disgust.sereda.recipe.data.RecipeRepository
 import com.disgust.sereda.recipe.screens.info.interaction.RecipeInfoState
 import com.disgust.sereda.recipe.screens.info.interaction.RecipeInfoUIEvent
 import com.disgust.sereda.recipe.screens.info.model.RecipeInfo
-import com.disgust.sereda.utils.base.NavigatorViewModel
-import com.disgust.sereda.utils.base.UIEventHandler
+import com.disgust.sereda.utils.base.BaseViewModel
 import com.disgust.sereda.utils.commonModel.RecipeFavoriteState
 import com.disgust.sereda.utils.commonModel.UserNotAuthDialogState
 import com.disgust.sereda.utils.doSingleRequest
@@ -24,7 +23,7 @@ import javax.inject.Inject
 @HiltViewModel
 class RecipeInfoViewModel @Inject constructor(
     private val repository: RecipeRepository
-) : NavigatorViewModel(), UIEventHandler<RecipeInfoUIEvent> {
+) : BaseViewModel<RecipeInfoUIEvent>() {
 
     private val _recipeInfoState =
         MutableStateFlow<RecipeInfoState>(RecipeInfoState.Loading)

@@ -7,8 +7,7 @@ import com.disgust.sereda.favorite.data.FavoriteRepository
 import com.disgust.sereda.favorite.favoriteList.interaction.FavoriteRecipesListState
 import com.disgust.sereda.favorite.favoriteList.interaction.FavoriteUIEvent
 import com.disgust.sereda.favorite.favoriteList.model.FavoriteRecipe
-import com.disgust.sereda.utils.base.NavigatorViewModel
-import com.disgust.sereda.utils.base.UIEventHandler
+import com.disgust.sereda.utils.base.BaseViewModel
 import com.disgust.sereda.utils.commonModel.RecipeFavoriteState
 import com.disgust.sereda.utils.doSingleRequest
 import com.disgust.sereda.utils.navigation.Screen
@@ -23,7 +22,7 @@ import javax.inject.Inject
 @ExperimentalAnimationApi
 @HiltViewModel
 class FavoriteViewModel @Inject constructor(private val repository: FavoriteRepository) :
-    NavigatorViewModel(), UIEventHandler<FavoriteUIEvent> {
+    BaseViewModel<FavoriteUIEvent>() {
 
     private val _recipesListState =
         MutableStateFlow<FavoriteRecipesListState>(FavoriteRecipesListState.Waiting)

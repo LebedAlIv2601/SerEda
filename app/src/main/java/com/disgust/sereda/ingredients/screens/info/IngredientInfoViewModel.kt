@@ -6,8 +6,7 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import com.disgust.sereda.ingredients.data.SearchIngredientRepository
 import com.disgust.sereda.ingredients.screens.info.interactioin.IngredientInfoState
 import com.disgust.sereda.ingredients.screens.info.interactioin.IngredientInfoUIEvent
-import com.disgust.sereda.utils.base.NavigatorViewModel
-import com.disgust.sereda.utils.base.UIEventHandler
+import com.disgust.sereda.utils.base.BaseViewModel
 import com.disgust.sereda.utils.db.filters.FilterRecipeDBModel
 import com.disgust.sereda.utils.doSingleRequest
 import com.disgust.sereda.utils.navigation.Screen
@@ -22,7 +21,7 @@ import javax.inject.Inject
 @HiltViewModel
 class IngredientInfoViewModel @Inject constructor(
     private val repository: SearchIngredientRepository
-) : NavigatorViewModel(), UIEventHandler<IngredientInfoUIEvent> {
+) : BaseViewModel<IngredientInfoUIEvent>() {
 
     private val _ingredientInfoState =
         MutableStateFlow<IngredientInfoState>(IngredientInfoState.Loading)

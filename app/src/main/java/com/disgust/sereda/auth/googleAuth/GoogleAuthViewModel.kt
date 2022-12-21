@@ -10,8 +10,7 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import com.disgust.sereda.auth.data.AuthRepository
 import com.disgust.sereda.auth.googleAuth.interaction.GoogleAuthUIEvent
 import com.disgust.sereda.auth.googleAuth.interaction.OneTapSignInState
-import com.disgust.sereda.utils.base.NavigatorViewModel
-import com.disgust.sereda.utils.base.UIEventHandler
+import com.disgust.sereda.utils.base.BaseViewModel
 import com.disgust.sereda.utils.doSingleRequest
 import com.google.firebase.auth.GoogleAuthProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -22,7 +21,7 @@ import javax.inject.Inject
 @ExperimentalAnimationApi
 @HiltViewModel
 class GoogleAuthViewModel @Inject constructor(private val repository: AuthRepository) :
-    NavigatorViewModel(), UIEventHandler<GoogleAuthUIEvent> {
+    BaseViewModel<GoogleAuthUIEvent>() {
 
     private val oneTapSignInState = repository.oneTapSignInState
 

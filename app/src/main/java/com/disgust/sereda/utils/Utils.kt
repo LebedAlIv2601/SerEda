@@ -6,7 +6,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
-import com.disgust.sereda.utils.base.NavigatorViewModel
+import com.disgust.sereda.utils.base.navigationDelegate.NavigationHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -68,7 +68,7 @@ inline fun DoOnInit(
 }
 
 @Composable
-inline fun <reified T : NavigatorViewModel> NavigatorViewModelScreen(
+inline fun <reified T : NavigationHandler> NavigationViewModelScreen(
     navController: NavHostController,
     viewModel: T = hiltViewModel(),
     screenDrawFun: @Composable (T) -> Unit

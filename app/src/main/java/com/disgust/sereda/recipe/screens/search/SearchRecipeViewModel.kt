@@ -10,8 +10,7 @@ import com.disgust.sereda.recipe.screens.search.interaction.RecipesListUIEvent
 import com.disgust.sereda.recipe.screens.search.model.FiltersRecipe
 import com.disgust.sereda.recipe.screens.search.model.IngredientFilter
 import com.disgust.sereda.recipe.screens.search.model.RecipeItem
-import com.disgust.sereda.utils.base.NavigatorViewModel
-import com.disgust.sereda.utils.base.UIEventHandler
+import com.disgust.sereda.utils.base.BaseViewModel
 import com.disgust.sereda.utils.commonModel.RecipeFavoriteState
 import com.disgust.sereda.utils.commonModel.UserNotAuthDialogState
 import com.disgust.sereda.utils.components.PagingState
@@ -30,7 +29,7 @@ import javax.inject.Inject
 @HiltViewModel
 class SearchRecipeViewModel @Inject constructor(
     private val repository: RecipeRepository
-) : NavigatorViewModel(), UIEventHandler<RecipesListUIEvent> {
+) : BaseViewModel<RecipesListUIEvent>() {
 
     private val _recipesListState =
         MutableStateFlow<RecipesListState>(RecipesListState.Waiting)

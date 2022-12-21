@@ -6,8 +6,7 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import com.disgust.sereda.profile.data.ProfileRepository
 import com.disgust.sereda.profile.screens.profile.interaction.ProfileUIEvent
 import com.disgust.sereda.profile.screens.profile.interaction.UserInfoState
-import com.disgust.sereda.utils.base.NavigatorViewModel
-import com.disgust.sereda.utils.base.UIEventHandler
+import com.disgust.sereda.utils.base.BaseViewModel
 import com.disgust.sereda.utils.doSingleRequest
 import com.disgust.sereda.utils.navigation.Screen
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -20,8 +19,7 @@ import javax.inject.Inject
 @ExperimentalComposeUiApi
 @HiltViewModel
 class ProfileViewModel @Inject constructor(val repository: ProfileRepository) :
-    NavigatorViewModel(),
-    UIEventHandler<ProfileUIEvent> {
+    BaseViewModel<ProfileUIEvent>() {
 
     private val _userInfoState = MutableStateFlow<UserInfoState>(UserInfoState.Waiting)
     val userInfoState = _userInfoState.asStateFlow()
