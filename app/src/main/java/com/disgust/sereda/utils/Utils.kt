@@ -13,12 +13,13 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.util.*
 
-inline fun <T : Any> ViewModel.doSingleRequest(
-    crossinline query: suspend () -> T,
-    crossinline doOnLoading: () -> Unit = {},
-    crossinline doOnSuccess: (T) -> Unit,
-    crossinline doOnError: (Exception) -> Unit = {}
+fun <T : Any> ViewModel.doSingleRequest(
+    query: suspend () -> T,
+    doOnLoading: () -> Unit = {},
+    doOnSuccess: (T) -> Unit,
+    doOnError: (Exception) -> Unit = {}
 ) {
     viewModelScope.launch {
         doOnLoading.invoke()
@@ -31,11 +32,11 @@ inline fun <T : Any> ViewModel.doSingleRequest(
     }
 }
 
-inline fun <T : Any> ViewModel.subscribeToFlowOnIO(
-    crossinline flowToCollect: suspend () -> Flow<T>,
-    crossinline doOnLoading: () -> Unit = {},
-    crossinline doOnCollect: (T) -> Unit,
-    crossinline doOnError: (Exception) -> Unit = {}
+fun <T : Any> ViewModel.subscribeToFlowOnIO(
+    flowToCollect: suspend () -> Flow<T>,
+    doOnLoading: () -> Unit = {},
+    doOnCollect: (T) -> Unit,
+    doOnError: (Exception) -> Unit = {}
 ) {
     viewModelScope.launch {
         doOnLoading.invoke()
@@ -48,8 +49,8 @@ inline fun <T : Any> ViewModel.subscribeToFlowOnIO(
     }
 }
 
-inline fun <T> Flow<T>.handleErrors(
-    crossinline onError: (Exception) -> Unit
+fun <T> Flow<T>.handleErrors(
+    onError: (Exception) -> Unit
 ): Flow<T> = flow {
     try {
         collect { value -> emit(value) }
@@ -77,4 +78,18 @@ inline fun <reified T : NavigatorViewModel> NavigatorViewModelScreen(
         viewModel.instantiateNavController(navController)
     }
     screenDrawFun.invoke(viewModel)
+}
+
+fun List<Any?>?.toQueryString(): String {
+    return if (this != null) {
+        if (size != 0) {
+            var query = ""
+            forEach { query += "$it," }
+            query.substring(0, query.lastIndex).lowercase(Locale.getDefault())
+        } else {
+            ""
+        }
+    } else {
+        "null"
+    }
 }

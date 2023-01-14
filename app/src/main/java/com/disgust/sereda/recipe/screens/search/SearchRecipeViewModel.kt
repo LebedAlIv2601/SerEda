@@ -7,9 +7,7 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import com.disgust.sereda.recipe.data.RecipeRepository
 import com.disgust.sereda.recipe.screens.search.interaction.RecipesListState
 import com.disgust.sereda.recipe.screens.search.interaction.RecipesListUIEvent
-import com.disgust.sereda.recipe.screens.search.model.FiltersRecipe
-import com.disgust.sereda.recipe.screens.search.model.IngredientFilter
-import com.disgust.sereda.recipe.screens.search.model.RecipeItem
+import com.disgust.sereda.recipe.screens.search.model.*
 import com.disgust.sereda.utils.base.NavigatorViewModel
 import com.disgust.sereda.utils.base.UIEventHandler
 import com.disgust.sereda.utils.commonModel.RecipeFavoriteState
@@ -18,6 +16,7 @@ import com.disgust.sereda.utils.components.PagingState
 import com.disgust.sereda.utils.doSingleRequest
 import com.disgust.sereda.utils.navigation.Screen
 import com.disgust.sereda.utils.subscribeToFlowOnIO
+import com.disgust.sereda.utils.toQueryString
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -50,8 +49,7 @@ class SearchRecipeViewModel @Inject constructor(
 
     private val lastQuery = mutableStateOf("")
 
-    private val filtersRecipeApplied =
-        MutableStateFlow(FiltersRecipe())
+    private var filtersRecipeApplied = FiltersRecipe()
     private val builderFilters = FiltersRecipe.Builder()
     private val _filtersRecipeChanged =
         MutableStateFlow(FiltersRecipe())
@@ -67,137 +65,156 @@ class SearchRecipeViewModel @Inject constructor(
 
     override fun onUIEvent(event: RecipesListUIEvent) {
         when (event) {
-            is RecipesListUIEvent.SearchClick -> {
-                if (event.query.isNotBlank()
-                    && lastQuery.value != event.query
-                ) {
-                    getRecipes(query = event.query)
-                }
-            }
+            is RecipesListUIEvent.SearchClick -> searchRecipes(event.query)
 
-            is RecipesListUIEvent.ListItemClick -> {
-                navigateWithArguments(
-                    destination = Screen.RecipeInfo.route,
-                    arguments = mapOf(
-                        "recipeId" to event.item.id.toString(),
-                        "favoriteState" to event.item.favoriteState.ordinal.toString()
-                    )
+            is RecipesListUIEvent.ListItemClick -> navigateWithArguments(
+                destination = Screen.RecipeInfo.route,
+                arguments = mapOf(
+                    "recipeId" to event.item.id.toString(),
+                    "favoriteState" to event.item.favoriteState.ordinal.toString()
                 )
-            }
+            )
 
-            is RecipesListUIEvent.InputTextChange -> {
-                _inputText.value = event.text
-            }
+            is RecipesListUIEvent.InputTextChange -> _inputText.value = event.text
 
-            is RecipesListUIEvent.KeyboardInitShow -> {
-                _showKeyboard.value = false
-            }
+            is RecipesListUIEvent.KeyboardInitShow -> _showKeyboard.value = false
 
-            is RecipesListUIEvent.StartScreen -> {
-                updateFavoriteIds()
-                getFiltersIngredients()
-                if (_recipesListState.value is RecipesListState.Waiting) {
-                    getRandomRecipes()
-                }
-            }
+            is RecipesListUIEvent.StartScreen -> onStartScreen()
 
-            is RecipesListUIEvent.ListItemButtonAddToFavoriteClick -> {
-                if (isAuth()) {
-                    if (event.recipe.favoriteState == RecipeFavoriteState.NOT_FAVORITE) {
-                        addRecipeToFavorite(event.recipe)
-                    } else if (event.recipe.favoriteState == RecipeFavoriteState.FAVORITE) {
-                        deleteRecipeFromFavorite(event.recipe)
-                    }
-                } else {
-                    _userNotAuthDialogState.value = UserNotAuthDialogState.SHOWN
-                }
-            }
+            is RecipesListUIEvent.ListItemButtonAddToFavoriteClick -> changeRecipeFavoriteState(
+                event.recipe
+            )
 
             is RecipesListUIEvent.FiltersApplyButtonClick -> filtersApplyButtonClick(event.query)
 
-            is RecipesListUIEvent.FiltersSearchIngredientButtonClick -> {
-                navigate(Screen.SearchIngredient.route)
-            }
+            is RecipesListUIEvent.FiltersSearchIngredientButtonClick -> navigate(Screen.SearchIngredient.route)
 
             is RecipesListUIEvent.FiltersDeleteAll -> filtersDeleteAll()
 
             is RecipesListUIEvent.FiltersDeleteIngredient -> filtersDeleteIngredient(event.item)
 
-            is RecipesListUIEvent.FiltersOpenButtonClick -> {
-                _hideKeyboard.value = true
-                builderFilters
-                    .setIngredientsList(
-                        filtersRecipeApplied.value.ingredientsList
-                    )
-                    .setDietsList(
-                        filtersRecipeApplied.value.dietsList
-                    )
-                    .setIntolerancesList(
-                        filtersRecipeApplied.value.intolerancesList
-                    )
-                    .setMaxReadyTime(filtersRecipeApplied.value.maxReadyTime)
-                    .setMinCalories(filtersRecipeApplied.value.minCalories)
-                    .setMaxCalories(filtersRecipeApplied.value.maxCalories)
-                _filtersRecipeChanged.value = builderFilters.build()
-                updateFiltersIngredients(builderFilters.ingredientsList)
+            is RecipesListUIEvent.FiltersOpenButtonClick -> onFiltersOpen()
+
+            is RecipesListUIEvent.KeyboardSetHide -> _hideKeyboard.value = false
+
+            is RecipesListUIEvent.ProfileButtonClick -> navigate(Screen.Profile.route)
+
+            is RecipesListUIEvent.FiltersSetDiet -> setDiet(event.diet, event.isAdd)
+
+            is RecipesListUIEvent.FiltersSetIntolerance -> setIntolerance(
+                event.intolerance,
+                event.isAdd
+            )
+
+            is RecipesListUIEvent.FiltersInputReadyTimeChange -> buildFiltersChanged {
+                builderFilters.setMaxReadyTime(
+                    event.value.toIntOrNull()
+                )
             }
 
-            is RecipesListUIEvent.KeyboardSetHide -> {
-                _hideKeyboard.value = false
+            is RecipesListUIEvent.FiltersInputMinCaloriesChange -> buildFiltersChanged {
+                builderFilters.setMinCalories(
+                    event.value.toIntOrNull()
+                )
             }
 
-            is RecipesListUIEvent.ProfileButtonClick -> {
-                navigate(Screen.Profile.route)
+            is RecipesListUIEvent.FiltersInputMaxCaloriesChange -> buildFiltersChanged {
+                builderFilters.setMaxCalories(
+                    event.value.toIntOrNull()
+                )
             }
 
-            is RecipesListUIEvent.FiltersSetDiet -> {
-                if (event.isAdd)
-                    builderFilters.addDiet(event.diet)
-                else
-                    builderFilters.deleteDiet(event.diet)
-                _filtersRecipeChanged.value = builderFilters.build()
-            }
+            is RecipesListUIEvent.FavoriteListButtonClick -> navigate(Screen.Favorite.route)
 
-            is RecipesListUIEvent.FiltersSetIntolerance -> {
-                if (event.isAdd)
-                    builderFilters.addIntolerance(event.intolerance)
-                else
-                    builderFilters.deleteIntolerance(event.intolerance)
-                _filtersRecipeChanged.update { builderFilters.build() }
-            }
+            is RecipesListUIEvent.UserNotAuthDialogDismiss -> _userNotAuthDialogState.value =
+                UserNotAuthDialogState.HIDDEN
 
-            is RecipesListUIEvent.FiltersInputReadyTimeChange -> {
-                builderFilters.setMaxReadyTime(event.value.toIntOrNull())
-                _filtersRecipeChanged.value = builderFilters.build()
-            }
+            is RecipesListUIEvent.UserNotAuthDialogConfirmButtonClick -> navigateToAuthScreenFromNotAuthDialog()
 
-            is RecipesListUIEvent.FiltersInputMinCaloriesChange -> {
-                builderFilters.setMinCalories(event.value.toIntOrNull())
-                _filtersRecipeChanged.value = builderFilters.build()
-            }
+            is RecipesListUIEvent.ListScrolledToLoadMoreDataPosition -> getMoreRecipes(event.loadedItems)
+        }
+    }
 
-            is RecipesListUIEvent.FiltersInputMaxCaloriesChange -> {
-                builderFilters.setMaxCalories(event.value.toIntOrNull())
-                _filtersRecipeChanged.value = builderFilters.build()
-            }
+    private fun searchRecipes(query: String) {
+        if (query.isNotBlank()
+            && lastQuery.value != query
+        ) {
+            getRecipes(query = query)
+        }
+    }
 
-            is RecipesListUIEvent.FavoriteListButtonClick -> {
-                navigate(Screen.Favorite.route)
+    private fun changeRecipeFavoriteState(recipe: RecipeItem) {
+        if (isAuth()) {
+            if (recipe.favoriteState == RecipeFavoriteState.NOT_FAVORITE) {
+                addRecipeToFavorite(recipe)
+            } else if (recipe.favoriteState == RecipeFavoriteState.FAVORITE) {
+                deleteRecipeFromFavorite(recipe)
             }
+        } else {
+            _userNotAuthDialogState.value = UserNotAuthDialogState.SHOWN
+        }
+    }
 
-            is RecipesListUIEvent.UserNotAuthDialogDismiss -> {
-                _userNotAuthDialogState.value = UserNotAuthDialogState.HIDDEN
-            }
+    private fun onStartScreen() {
+        updateFavoriteIds()
+        getFiltersIngredients()
+        if (_recipesListState.value is RecipesListState.Waiting) {
+            getRandomRecipes()
+        }
+    }
 
-            is RecipesListUIEvent.UserNotAuthDialogConfirmButtonClick -> {
-                _userNotAuthDialogState.value = UserNotAuthDialogState.HIDDEN
-                navigate(Screen.GoogleAuth.route)
-            }
+    private fun onFiltersOpen() {
+        _hideKeyboard.value = true
+        restoreFiltersChanged()
+    }
 
-            is RecipesListUIEvent.ListScrolledToLoadMoreDataPosition -> {
-                getMoreRecipes(event.loadedItems)
+    private fun restoreFiltersChanged() {
+        buildFiltersChanged {
+            builderFilters
+                .setIngredientsList(
+                    filtersRecipeApplied.ingredientsList
+                )
+                .setDietsList(
+                    filtersRecipeApplied.dietsList
+                )
+                .setIntolerancesList(
+                    filtersRecipeApplied.intolerancesList
+                )
+                .setMaxReadyTime(filtersRecipeApplied.maxReadyTime)
+                .setMinCalories(filtersRecipeApplied.minCalories)
+                .setMaxCalories(filtersRecipeApplied.maxCalories)
+        }
+        updateFiltersIngredients(builderFilters.ingredientsList)
+    }
+
+    private fun setDiet(diet: Diet, isAdd: Boolean) {
+        buildFiltersChanged {
+            if (isAdd) {
+                builderFilters.addDiet(diet)
+            } else {
+                builderFilters.deleteDiet(diet)
             }
         }
+    }
+
+    private fun setIntolerance(intolerance: Intolerance, isAdd: Boolean) {
+        buildFiltersChanged {
+            if (isAdd) {
+                builderFilters.addIntolerance(intolerance)
+            } else {
+                builderFilters.deleteIntolerance(intolerance)
+            }
+        }
+    }
+
+    private fun navigateToAuthScreenFromNotAuthDialog() {
+        _userNotAuthDialogState.value = UserNotAuthDialogState.HIDDEN
+        navigate(Screen.GoogleAuth.route)
+    }
+
+    private fun buildFiltersChanged(changeBuilder: () -> Unit = {}) {
+        changeBuilder()
+        _filtersRecipeChanged.value = builderFilters.build()
     }
 
     private fun getMoreRecipes(loadedItems: Int) {
@@ -205,16 +222,16 @@ class SearchRecipeViewModel @Inject constructor(
             query = {
                 repository.searchRecipes(
                     query = lastQuery.value,
-                    includeIngredients = filtersRecipeApplied.value.ingredientsList?.filter { it.isInclude }
+                    includeIngredients = filtersRecipeApplied.ingredientsList?.filter { it.isInclude }
                         .toString(),
-                    excludeIngredients = filtersRecipeApplied.value.ingredientsList?.filter { !it.isInclude }
+                    excludeIngredients = filtersRecipeApplied.ingredientsList?.filter { !it.isInclude }
                         .toString(),
-                    diet = filtersRecipeApplied.value.dietsList?.map { it.value }.toString(),
-                    intolerances = filtersRecipeApplied.value.intolerancesList?.map { it.value }
-                        .toString(),
-                    maxReadyTime = filtersRecipeApplied.value.maxReadyTime,
-                    minCalories = filtersRecipeApplied.value.minCalories,
-                    maxCalories = filtersRecipeApplied.value.maxCalories,
+                    diet = filtersRecipeApplied.dietsList?.map { it.value }.toQueryString(),
+                    intolerances = filtersRecipeApplied.intolerancesList?.map { it.value }
+                        .toQueryString(),
+                    maxReadyTime = filtersRecipeApplied.maxReadyTime,
+                    minCalories = filtersRecipeApplied.minCalories,
+                    maxCalories = filtersRecipeApplied.maxCalories,
                     offset = loadedItems
                 )
             },
@@ -248,15 +265,15 @@ class SearchRecipeViewModel @Inject constructor(
         doSingleRequest(
             query = { repository.getFiltersIngredientRecipe() },
             doOnSuccess = {
-                builderFilters.addIngredient(it.minus(builderFilters.ingredientsList).first())
-                _filtersRecipeChanged.value = builderFilters.build()
+                buildFiltersChanged {
+                    builderFilters.addIngredient(it.minus(builderFilters.ingredientsList).first())
+                }
             }
         )
     }
 
     private fun filtersDeleteAll() {
-        builderFilters.clearAll()
-        _filtersRecipeChanged.value = builderFilters.build()
+        buildFiltersChanged { builderFilters.clearAll() }
         filtersDeleteAllIngredients()
     }
 
@@ -271,8 +288,7 @@ class SearchRecipeViewModel @Inject constructor(
         doSingleRequest(
             query = { repository.deleteFiltersIngredient(ingredientFilter) },
             doOnSuccess = {
-                builderFilters.deleteIngredient(ingredientFilter)
-                _filtersRecipeChanged.value = builderFilters.build()
+                buildFiltersChanged { builderFilters.deleteIngredient(ingredientFilter) }
             }
         )
     }
@@ -285,10 +301,11 @@ class SearchRecipeViewModel @Inject constructor(
     }
 
     private fun filtersApplyButtonClick(query: String) {
-        val oldFilters = filtersRecipeApplied.value
-        filtersRecipeApplied.value = builderFilters.build()
-        if (oldFilters != filtersRecipeApplied.value)
+        val oldFilters = filtersRecipeApplied
+        filtersRecipeApplied = builderFilters.build()
+        if (oldFilters != filtersRecipeApplied) {
             getRecipes(query = query)
+        }
     }
 
     private fun subscribeToFavoriteRecipesIds() {
@@ -331,14 +348,16 @@ class SearchRecipeViewModel @Inject constructor(
             query = {
                 repository.searchRecipes(
                     query = query,
-                    includeIngredients = filtersRecipeApplied.value.ingredientsList?.filter { it.isInclude }
+                    includeIngredients = filtersRecipeApplied.ingredientsList?.filter { it.isInclude }
                         .toString(),
-                    excludeIngredients = filtersRecipeApplied.value.ingredientsList?.filter { !it.isInclude }
+                    excludeIngredients = filtersRecipeApplied.ingredientsList?.filter { !it.isInclude }
                         .toString(),
-                    diet = filtersRecipeApplied.value.dietsList?.map { it.value }.toString(),
-                    maxReadyTime = filtersRecipeApplied.value.maxReadyTime,
-                    minCalories = filtersRecipeApplied.value.minCalories,
-                    maxCalories = filtersRecipeApplied.value.maxCalories
+                    diet = filtersRecipeApplied.dietsList?.map { it.value }.toQueryString(),
+                    intolerances = filtersRecipeApplied.intolerancesList?.map { it.value }
+                        .toQueryString(),
+                    maxReadyTime = filtersRecipeApplied.maxReadyTime,
+                    minCalories = filtersRecipeApplied.minCalories,
+                    maxCalories = filtersRecipeApplied.maxCalories
                 )
             },
             doOnLoading = {

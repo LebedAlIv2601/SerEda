@@ -42,17 +42,17 @@ fun RecipeInfoScreen(
     if (userNotAuthDialogState.value == UserNotAuthDialogState.SHOWN) {
         AlertDialog(
             onDismissRequest = {
-                vm.onUIEvent(RecipeInfoUIEvent.UserNotAuthDialogDismiss)
+                vm.onUIEvent(RecipeInfoUIEvent.UserNotAuthDialogDismiss(false))
             },
             title = { Text(text = "You are not authorized") },
             text = { Text(text = "You need to authorize for adding recipes to favorite") },
             confirmButton = {
-                Button(onClick = { vm.onUIEvent(RecipeInfoUIEvent.UserNotAuthDialogConfirmButtonClick) }) {
+                Button(onClick = { vm.onUIEvent(RecipeInfoUIEvent.UserNotAuthDialogDismiss(false)) }) {
                     Text(text = "Authorize")
                 }
             },
             dismissButton = {
-                Button(onClick = { vm.onUIEvent(RecipeInfoUIEvent.UserNotAuthDialogDismiss) }) {
+                Button(onClick = { vm.onUIEvent(RecipeInfoUIEvent.UserNotAuthDialogDismiss(false)) }) {
                     Text(text = "Cancel")
                 }
             }

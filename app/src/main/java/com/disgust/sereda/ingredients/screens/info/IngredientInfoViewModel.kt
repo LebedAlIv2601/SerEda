@@ -42,43 +42,30 @@ class IngredientInfoViewModel @Inject constructor(
         when (event) {
             is IngredientInfoUIEvent.StartScreen -> getIngredientInfo(event.id, event.name)
             is IngredientInfoUIEvent.ButtonRestartClick -> {}
+            is IngredientInfoUIEvent.IngredientAddButtonClick -> changeFridgeIngredients(true)
+            is IngredientInfoUIEvent.IngredientExcludeButtonClick -> changeFridgeIngredients(false)
+        }
+    }
 
-            is IngredientInfoUIEvent.IngredientAddButtonClick -> {
-                _ingredientInfoState.value.doAsStateIfPossible<IngredientInfoState.Success> {
-                    val data = it.data
-                    addFilterRecipe(
-                        FilterRecipeDBModel(
-                            id = data.id,
-                            name = data.name,
-                            image = data.image,
-                            isInclude = true
-                        )
-                    )
-                    popBackStack(Screen.SearchRecipe.route, false)
-                }
-            }
-
-            is IngredientInfoUIEvent.IngredientExcludeButtonClick -> {
-                _ingredientInfoState.value.doAsStateIfPossible<IngredientInfoState.Success> {
-                    val data = it.data
-                    addFilterRecipe(
-                        FilterRecipeDBModel(
-                            id = data.id,
-                            name = data.name,
-                            image = data.image,
-                            isInclude = false
-                        )
-                    )
-                    popBackStack(Screen.SearchRecipe.route, false)
-                }
-            }
+    private fun changeFridgeIngredients(isInclude: Boolean) {
+        _ingredientInfoState.value.doAsStateIfPossible<IngredientInfoState.Success> {
+            val data = it.data
+            addFilterRecipe(
+                FilterRecipeDBModel(
+                    id = data.id,
+                    name = data.name,
+                    image = data.image,
+                    isInclude = isInclude
+                )
+            )
+            popBackStack(Screen.SearchRecipe.route, false)
         }
     }
 
     private fun addFilterRecipe(filter: FilterRecipeDBModel) {
         doSingleRequest(
             query = { repository.addFilterRecipe(filter) },
-            doOnSuccess = {}
+            doOnSuccess = { }
         )
     }
 

@@ -28,12 +28,8 @@ class GoogleAuthViewModel @Inject constructor(private val repository: AuthReposi
 
     override fun onUIEvent(event: GoogleAuthUIEvent) {
         when (event) {
-            is GoogleAuthUIEvent.ButtonAuthClick -> {
-                oneTapSignIn(event.launcher)
-            }
-            is GoogleAuthUIEvent.IntentResultOk -> {
-                signInWithGoogle(event.intent)
-            }
+            is GoogleAuthUIEvent.ButtonAuthClick -> oneTapSignIn(event.launcher)
+            is GoogleAuthUIEvent.IntentResultOk -> signInWithGoogle(event.intent)
         }
     }
 
