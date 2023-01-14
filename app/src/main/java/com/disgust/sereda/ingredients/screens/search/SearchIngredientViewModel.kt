@@ -42,15 +42,9 @@ class SearchIngredientViewModel @Inject constructor(
 
     override fun onUIEvent(event: IngredientsListUIEvent) {
         when (event) {
-            is IngredientsListUIEvent.SearchClick -> {
-                if (event.query.isNotBlank()
-                    && lastQuery.value != event.query
-                ) {
-                    getIngredients(query = event.query)
-                }
-            }
+            is IngredientsListUIEvent.SearchClick -> searchIngredients(event.query)
 
-            is IngredientsListUIEvent.ListItemClick -> {
+            is IngredientsListUIEvent.ListItemClick ->
                 navigateWithArguments(
                     destination = Screen.IngredientInfo.route,
                     arguments = mapOf(
@@ -58,19 +52,20 @@ class SearchIngredientViewModel @Inject constructor(
                         "ingredientName" to event.item.name
                     )
                 )
-            }
 
-            is IngredientsListUIEvent.InputTextChange -> {
-                _inputText.value = event.text
-            }
+            is IngredientsListUIEvent.InputTextChange -> _inputText.value = event.text
 
-            is IngredientsListUIEvent.KeyboardInitShow -> {
-                _showKeyboard.value = false
-            }
+            is IngredientsListUIEvent.KeyboardInitShow -> _showKeyboard.value = false
 
-            is IngredientsListUIEvent.ListScrolledToLoadMoreDataPosition -> {
-                getMoreIngredients(event.loadedItems)
-            }
+            is IngredientsListUIEvent.ListScrolledToLoadMoreDataPosition -> getMoreIngredients(event.loadedItems)
+        }
+    }
+
+    private fun searchIngredients(query: String) {
+        if (query.isNotBlank()
+            && lastQuery.value != query
+        ) {
+            getIngredients(query = query)
         }
     }
 

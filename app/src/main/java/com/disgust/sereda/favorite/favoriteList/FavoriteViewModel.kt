@@ -31,36 +31,33 @@ class FavoriteViewModel @Inject constructor(private val repository: FavoriteRepo
 
     override fun onUIEvent(event: FavoriteUIEvent) {
         when (event) {
-            is FavoriteUIEvent.StartScreen -> {
-                if (isAuth()) {
-                    if (_recipesListState.value !is FavoriteRecipesListState.Updated
-                        && _recipesListState.value !is FavoriteRecipesListState.NotUpdated
-                    ) {
-                        subscribeToFavoriteRecipes()
-                        updateFavoriteRecipes()
-                    }
-                } else {
-                    _recipesListState.value = FavoriteRecipesListState.NotAuth
-                }
-            }
-            is FavoriteUIEvent.FavoriteRecipesListItemClick -> {
-                navigateWithArguments(
-                    Screen.RecipeInfo.route,
-                    mapOf(
-                        "recipeId" to event.recipe.id.toString(),
-                        "favoriteState" to RecipeFavoriteState.FAVORITE.ordinal.toString()
-                    )
+            is FavoriteUIEvent.StartScreen -> screenStarted()
+
+            is FavoriteUIEvent.FavoriteRecipesListItemClick -> navigateWithArguments(
+                Screen.RecipeInfo.route,
+                mapOf(
+                    "recipeId" to event.recipe.id.toString(),
+                    "favoriteState" to RecipeFavoriteState.FAVORITE.ordinal.toString()
                 )
-            }
-            is FavoriteUIEvent.DeleteFromFavoriteButtonClick -> {
-                deleteRecipeFromFavorite(event.recipe)
-            }
-            is FavoriteUIEvent.UpdateButtonClick -> {
+            )
+
+            is FavoriteUIEvent.DeleteFromFavoriteButtonClick -> deleteRecipeFromFavorite(event.recipe)
+
+            is FavoriteUIEvent.UpdateButtonClick -> updateFavoriteRecipes()
+            FavoriteUIEvent.ButtonAuthClick -> navigate(Screen.GoogleAuth.route)
+        }
+    }
+
+    private fun screenStarted() {
+        if (isAuth()) {
+            if (_recipesListState.value !is FavoriteRecipesListState.Updated
+                && _recipesListState.value !is FavoriteRecipesListState.NotUpdated
+            ) {
+                subscribeToFavoriteRecipes()
                 updateFavoriteRecipes()
             }
-            FavoriteUIEvent.ButtonAuthClick -> {
-                navigate(Screen.GoogleAuth.route)
-            }
+        } else {
+            _recipesListState.value = FavoriteRecipesListState.NotAuth
         }
     }
 

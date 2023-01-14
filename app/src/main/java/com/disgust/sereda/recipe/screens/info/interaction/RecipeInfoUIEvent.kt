@@ -7,6 +7,5 @@ sealed class RecipeInfoUIEvent : BaseUIEvent {
     class ButtonRestartClick(val id: Int) : RecipeInfoUIEvent()
     object ButtonAddToFavoriteClick : RecipeInfoUIEvent()
 
-    object UserNotAuthDialogDismiss : RecipeInfoUIEvent()
-    object UserNotAuthDialogConfirmButtonClick : RecipeInfoUIEvent()
+    class UserNotAuthDialogDismiss(val isConfirmed: Boolean) : RecipeInfoUIEvent()
 }

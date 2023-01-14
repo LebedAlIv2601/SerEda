@@ -28,19 +28,17 @@ class ProfileViewModel @Inject constructor(val repository: ProfileRepository) :
 
     override fun onUIEvent(event: ProfileUIEvent) {
         when (event) {
-            is ProfileUIEvent.StartScreen -> {
-                if (isAuth()) {
-                    getProfileData()
-                } else {
-                    _userInfoState.value = UserInfoState.NotAuth
-                }
-            }
-            is ProfileUIEvent.ButtonSignOutClick -> {
-                signOut()
-            }
-            ProfileUIEvent.ButtonAuthClick -> {
-                navigate(Screen.GoogleAuth.route)
-            }
+            is ProfileUIEvent.StartScreen -> screenStarted()
+            is ProfileUIEvent.ButtonSignOutClick -> signOut()
+            is ProfileUIEvent.ButtonAuthClick -> navigate(Screen.GoogleAuth.route)
+        }
+    }
+
+    private fun screenStarted() {
+        if (isAuth()) {
+            getProfileData()
+        } else {
+            _userInfoState.value = UserInfoState.NotAuth
         }
     }
 

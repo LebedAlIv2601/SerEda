@@ -37,27 +37,30 @@ class RecipeInfoViewModel @Inject constructor(
         when (event) {
             is RecipeInfoUIEvent.StartScreen -> getRecipeInfo(event.id, event.state)
             is RecipeInfoUIEvent.ButtonRestartClick -> getRecipeInfo(event.id)
-            is RecipeInfoUIEvent.ButtonAddToFavoriteClick -> {
-                if (isAuth()) {
-                    _recipeInfoState.value.doAsStateIfPossible<RecipeInfoState.Success> { state ->
-                        val recipe = state.data
-                        if (recipe.favoriteState == RecipeFavoriteState.FAVORITE) {
-                            deleteRecipeFromFavorite(recipe)
-                        } else if (recipe.favoriteState == RecipeFavoriteState.NOT_FAVORITE) {
-                            addRecipeToFavorite(recipe)
-                        }
-                    }
-                } else {
-                    _userNotAuthDialogState.value = UserNotAuthDialogState.SHOWN
+            is RecipeInfoUIEvent.ButtonAddToFavoriteClick -> addToFavoriteButtonClicked()
+            is RecipeInfoUIEvent.UserNotAuthDialogDismiss -> userNotAuthDialogDismiss(event.isConfirmed)
+        }
+    }
+
+    private fun userNotAuthDialogDismiss(isConfirmed: Boolean) {
+        _userNotAuthDialogState.value = UserNotAuthDialogState.HIDDEN
+        if (isConfirmed) {
+            navigate(Screen.GoogleAuth.route)
+        }
+    }
+
+    private fun addToFavoriteButtonClicked() {
+        if (isAuth()) {
+            _recipeInfoState.value.doAsStateIfPossible<RecipeInfoState.Success> { state ->
+                val recipe = state.data
+                if (recipe.favoriteState == RecipeFavoriteState.FAVORITE) {
+                    deleteRecipeFromFavorite(recipe)
+                } else if (recipe.favoriteState == RecipeFavoriteState.NOT_FAVORITE) {
+                    addRecipeToFavorite(recipe)
                 }
             }
-            is RecipeInfoUIEvent.UserNotAuthDialogDismiss -> {
-                _userNotAuthDialogState.value = UserNotAuthDialogState.HIDDEN
-            }
-            is RecipeInfoUIEvent.UserNotAuthDialogConfirmButtonClick -> {
-                _userNotAuthDialogState.value = UserNotAuthDialogState.HIDDEN
-                navigate(Screen.GoogleAuth.route)
-            }
+        } else {
+            _userNotAuthDialogState.value = UserNotAuthDialogState.SHOWN
         }
     }
 
