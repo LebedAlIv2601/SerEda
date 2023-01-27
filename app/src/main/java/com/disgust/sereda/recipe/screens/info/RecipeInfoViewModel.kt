@@ -35,10 +35,23 @@ class RecipeInfoViewModel @Inject constructor(
 
     override fun onUIEvent(event: RecipeInfoUIEvent) {
         when (event) {
-            is RecipeInfoUIEvent.StartScreen -> getRecipeInfo(event.id, event.state)
+            is RecipeInfoUIEvent.StartScreen -> startScreen(event.id, event.state)
             is RecipeInfoUIEvent.ButtonRestartClick -> getRecipeInfo(event.id)
             is RecipeInfoUIEvent.ButtonAddToFavoriteClick -> addToFavoriteButtonClicked()
             is RecipeInfoUIEvent.UserNotAuthDialogDismiss -> userNotAuthDialogDismiss(event.isConfirmed)
+            is RecipeInfoUIEvent.IngredientItemClick -> navigateWithArguments(
+                Screen.IngredientInfo.route,
+                arguments = mapOf(
+                    "ingredientId" to event.id.toString(),
+                    "ingredientName" to event.name
+                )
+            )
+        }
+    }
+
+    private fun startScreen(id: Int, state: Int?) {
+        if (_recipeInfoState.value !is RecipeInfoState.Success) {
+            getRecipeInfo(id, state)
         }
     }
 

@@ -1,8 +1,8 @@
 package com.disgust.sereda.utils.navigation
 
-import androidx.compose.animation.EnterTransition
-import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.navigation.NavGraphBuilder
@@ -22,10 +22,10 @@ inline fun <reified T : NavigatorViewModel> NavGraphBuilder.createDestination(
         route = screen.route,
         arguments = screen.arguments,
         deepLinks = screen.deepLinks,
-        enterTransition = { EnterTransition.None },
-        exitTransition = { ExitTransition.None },
-        popEnterTransition = { EnterTransition.None },
-        popExitTransition = { ExitTransition.None }
+        enterTransition = { slideInHorizontally(initialOffsetX = { 2000 }) },
+        exitTransition = { slideOutHorizontally(targetOffsetX = { -2000 }) },
+        popEnterTransition = { slideInHorizontally(initialOffsetX = { -2000 }) },
+        popExitTransition = { slideOutHorizontally(targetOffsetX = { 2000 }) }
     ) { navBackStackEntry ->
         NavigatorViewModelScreen<T>(navController = navController) { vm ->
             screen.screenDrawFun(vm, navBackStackEntry)

@@ -8,8 +8,6 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import com.disgust.sereda.ingredients.screens.search.components.IngredientItemComponent
@@ -17,7 +15,6 @@ import com.disgust.sereda.ingredients.screens.search.interaction.IngredientsList
 import com.disgust.sereda.ingredients.screens.search.interaction.IngredientsListUIEvent
 import com.disgust.sereda.utils.Constants
 import com.disgust.sereda.utils.components.PagingList
-import com.disgust.sereda.utils.components.PagingState
 import com.disgust.sereda.utils.components.SearchView
 
 @ExperimentalAnimationApi
@@ -30,7 +27,6 @@ fun SearchIngredientScreen(
     val ingredientsState = vm.ingredientListState.collectAsState()
     val inputText = vm.inputText.collectAsState()
     val showKeyboard = vm.showKeyboard.collectAsState()
-    val pagingState = remember { mutableStateOf<PagingState>(PagingState.Waiting) }
 
     Column(
         modifier = Modifier
@@ -54,7 +50,6 @@ fun SearchIngredientScreen(
         when (val ingredientsStateValue = ingredientsState.value) {
             is IngredientsListState.Loading -> Text("Loading")
             is IngredientsListState.Success -> {
-                pagingState.value = ingredientsStateValue.pagingState
                 PagingList(
                     itemsList = ingredientsStateValue.data,
                     itemComponent = {
@@ -67,7 +62,7 @@ fun SearchIngredientScreen(
                         }
                     },
                     pageSize = Constants.INGREDIENTS_LIST_PAGE_SIZE,
-                    pagingState = pagingState,
+                    pagingState = ingredientsStateValue.pagingState,
                     getData = { nextPage ->
                         vm.onUIEvent(
                             IngredientsListUIEvent.ListScrolledToLoadMoreDataPosition(

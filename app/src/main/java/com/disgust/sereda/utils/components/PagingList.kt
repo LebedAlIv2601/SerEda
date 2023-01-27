@@ -10,7 +10,6 @@ import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.disgust.sereda.utils.base.BaseState
@@ -20,7 +19,7 @@ fun <T> PagingList(
     itemsList: List<T>,
     itemComponent: @Composable (T) -> Unit,
     pageSize: Int,
-    pagingState: MutableState<PagingState>,
+    pagingState: PagingState,
     getData: (Int) -> Unit
 ) {
     val listState = rememberLazyListState()
@@ -28,7 +27,7 @@ fun <T> PagingList(
     LazyColumn(state = listState) {
 
         itemsIndexed(itemsList) { index, item ->
-            pagingState.value.doAsStateIfPossible<PagingState.Success> {
+            pagingState.doAsStateIfPossible<PagingState.Success> {
                 if (index == itemsList.size - 1 - pageSize / 3 && !it.isEndReached) {
                     LaunchedEffect(key1 = Unit) {
                         getData(itemsList.size)
@@ -37,7 +36,7 @@ fun <T> PagingList(
             }
             itemComponent(item)
         }
-        when (pagingState.value) {
+        when (pagingState) {
             is PagingState.Loading -> {
                 item {
                     Box(
