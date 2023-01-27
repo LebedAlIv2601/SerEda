@@ -106,6 +106,30 @@ fun RecipeInfoScreen(
                     )
                 }
             )
+            Text(
+                text = "Diets: ${recipeInfo.data.diets}",
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Medium,
+                color = Color.Black,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.padding(top = 8.dp)
+            )
+            Text(
+                text = "Servings Count: ${recipeInfo.data.servings}",
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Medium,
+                color = Color.Black,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.padding(top = 8.dp)
+            )
+            Text(
+                text = "Cook time: ${recipeInfo.data.time} min",
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Medium,
+                color = Color.Black,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.padding(top = 8.dp)
+            )
             NutritionPieChart(
                 listOf(
                     ChartSlice(
