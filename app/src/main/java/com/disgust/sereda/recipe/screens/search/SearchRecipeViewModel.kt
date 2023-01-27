@@ -332,7 +332,7 @@ class SearchRecipeViewModel @Inject constructor(
                         recipe.copy(favoriteState = RecipeFavoriteState.NOT_FAVORITE)
                 }
             }
-            _recipesListState.value = RecipesListState.Success(recipesList)
+            _recipesListState.value = RecipesListState.Success(recipesList, state.pagingState)
         }
     }
 

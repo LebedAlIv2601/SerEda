@@ -1,4 +1,4 @@
-package com.disgust.sereda.recipe.screens.search
+package com.disgust.sereda.recipe.screens.search.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -22,8 +22,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.disgust.sereda.recipe.screens.search.model.Diet
 import com.disgust.sereda.recipe.screens.search.model.IngredientFilter
 import com.disgust.sereda.utils.base.BaseChipsEnum
 
@@ -82,6 +84,12 @@ fun TopPanelFilter(
     }
 }
 
+@Preview
+@Composable
+fun TopPanelFilterPreview() {
+    TopPanelFilter(onSearchIngredient = {}, onClose = {}) {}
+}
+
 @Composable
 fun ApplyButtonFilter(onApply: () -> Unit) {
     Button(
@@ -93,6 +101,12 @@ fun ApplyButtonFilter(onApply: () -> Unit) {
     ) {
         Text(text = "Применить", fontSize = 16.sp)
     }
+}
+
+@Preview
+@Composable
+fun ApplyButtonPreview() {
+    ApplyButtonFilter(onApply = {})
 }
 
 @Composable
@@ -127,6 +141,19 @@ fun ItemIngredient(item: IngredientFilter, onDeleteItem: (item: IngredientFilter
             Icon(Icons.Default.Delete, contentDescription = "Удалить из фильтров")
         }
     }
+}
+
+@Preview
+@Composable
+fun ItemIngredientPreview() {
+    ItemIngredient(
+        item = IngredientFilter(
+            id = 0,
+            name = "Lemon",
+            image = "",
+            isInclude = true
+        ),
+        onDeleteItem = {})
 }
 
 @ExperimentalMaterialApi
@@ -166,6 +193,16 @@ inline fun <reified T> ChipsFilter(
         })
 }
 
+@ExperimentalMaterialApi
+@Preview
+@Composable
+fun ChipsFilterPreview() {
+    ChipsFilter(
+        title = "Chips",
+        selectedChips = listOf<Diet>(),
+        setChipState = { _, _ -> })
+}
+
 @Composable
 fun SingleInputFilter(
     label: String? = null,
@@ -188,6 +225,16 @@ fun SingleInputFilter(
         }),
         label = { label?.let { Text(text = it) } }
     )
+}
+
+@Preview
+@Composable
+fun SingleInputFilterPreview() {
+    SingleInputFilter(
+        label = "Ass State",
+        title = "State of Ass",
+        value = null,
+        onValueChange = {})
 }
 
 @Composable
@@ -221,4 +268,18 @@ fun MinMaxInputFilter(
             )
         }
     }
+}
+
+@Preview
+@Composable
+fun MinMaxInputFilterPreview() {
+    MinMaxInputFilter(
+        labelMin = "Min Ass",
+        labelMax = "Max Ass",
+        title = "State of Ass",
+        valueMin = null,
+        onValueChangeMin = {},
+        valueMax = null,
+        onValueChangeMax = {},
+    )
 }

@@ -56,6 +56,10 @@ data class Nutrient(
 
 @JsonClass(generateAdapter = true)
 data class Ingredient(
+
+    @Json(name = "id")
+    val id: Int,
+
     @Json(name = "name")
     val name: String,
 
