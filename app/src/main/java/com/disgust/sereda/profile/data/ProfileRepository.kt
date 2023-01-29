@@ -24,4 +24,18 @@ class ProfileRepository @Inject constructor(
         db.favoriteRecipeDao().clearFavoriteRecipes()
         firebaseAuthHelper.signOut()
     }
+
+    fun addDiet(diet: String) = firebaseDatabaseHelper.addDiet(diet)
+
+    fun deleteDiet(diet: String) = firebaseDatabaseHelper.deleteDiet(diet)
+
+    fun addIntolerance(intolerance: String) = firebaseDatabaseHelper.addIntolerance(intolerance)
+
+    fun deleteIntolerance(intolerance: String) =
+        firebaseDatabaseHelper.deleteIntolerance(intolerance)
+
+    suspend fun getDiets(): List<String> = firebaseDatabaseHelper.getDiets()
+
+    suspend fun getIntolerance(): List<String> = firebaseDatabaseHelper.getIntolerance()
+
 }

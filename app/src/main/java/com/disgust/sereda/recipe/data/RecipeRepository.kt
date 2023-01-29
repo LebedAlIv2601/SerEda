@@ -2,8 +2,8 @@ package com.disgust.sereda.recipe.data
 
 import androidx.compose.material.ExperimentalMaterialApi
 import com.disgust.sereda.recipe.screens.info.model.RecipeInfo
-import com.disgust.sereda.recipe.screens.search.model.IngredientFilter
 import com.disgust.sereda.recipe.screens.search.model.RecipeItem
+import com.disgust.sereda.utils.commonModel.IngredientFilter
 import com.disgust.sereda.utils.commonModel.RecipeFavoriteState
 import com.disgust.sereda.utils.db.SerEdaDatabase
 import com.disgust.sereda.utils.firebase.FirebaseAuthHelper
@@ -110,4 +110,8 @@ class RecipeRepository @Inject constructor(
 
     private fun getFavoriteRecipeIds(): List<Int> =
         db.favoriteRecipeDao().getFavoriteRecipes().map { it.id }
+
+    suspend fun getDiets(): List<String> = firebaseHelper.getDiets()
+
+    suspend fun getIntolerance(): List<String> = firebaseHelper.getIntolerance()
 }

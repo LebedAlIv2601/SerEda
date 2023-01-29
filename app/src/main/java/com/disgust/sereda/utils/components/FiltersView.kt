@@ -1,4 +1,4 @@
-package com.disgust.sereda.recipe.screens.search.components
+package com.disgust.sereda.utils.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -25,9 +25,9 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.disgust.sereda.recipe.screens.search.model.Diet
-import com.disgust.sereda.recipe.screens.search.model.IngredientFilter
 import com.disgust.sereda.utils.base.BaseChipsEnum
+import com.disgust.sereda.utils.commonModel.Diet
+import com.disgust.sereda.utils.commonModel.IngredientFilter
 
 @ExperimentalComposeUiApi
 @Composable
@@ -158,7 +158,7 @@ fun ItemIngredientPreview() {
 
 @ExperimentalMaterialApi
 @Composable
-inline fun <reified T> ChipsFilter(
+inline fun <reified T> ChipsFilterClickable(
     title: String? = null,
     selectedChips: List<T>,
     crossinline setChipState: (t: T, isAdd: Boolean) -> Unit,
@@ -196,11 +196,50 @@ inline fun <reified T> ChipsFilter(
 @ExperimentalMaterialApi
 @Preview
 @Composable
-fun ChipsFilterPreview() {
-    ChipsFilter(
+fun ChipsFilterClickablePreview() {
+    ChipsFilterClickable(
         title = "Chips",
         selectedChips = listOf<Diet>(),
         setChipState = { _, _ -> })
+}
+
+@ExperimentalMaterialApi
+@Composable
+fun <T> ChipsFilterNotClickable(
+    title: String? = null,
+    chips: List<T>,
+) where T : Enum<T>, T : BaseChipsEnum {
+    title?.let { Text(text = it) }
+
+    LazyHorizontalGrid(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(50.dp) // itemHeight * rowCount + verticalSpacing * (rowCount - 1)
+            //сейчас рандомное значение стоит)))
+            .padding(5.dp),
+        rows = GridCells.Fixed(1),
+        content = {
+            items(chips) { chip ->
+                Chip(
+                    modifier = Modifier.wrapContentSize(),
+                    enabled = false,
+                    colors = ChipDefaults.chipColors(),
+                    onClick = {}
+                ) {
+                    Text(text = chip.value)
+                }
+            }
+        })
+}
+
+@ExperimentalMaterialApi
+@Preview
+@Composable
+fun ChipsFilterNotClickablePreview() {
+    ChipsFilterNotClickable(
+        title = "Chips",
+        chips = listOf<Diet>(Diet.GLUTEN_FREE, Diet.KETOGENIC)
+    )
 }
 
 @Composable

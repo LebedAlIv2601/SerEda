@@ -7,11 +7,10 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import com.disgust.sereda.recipe.data.RecipeRepository
 import com.disgust.sereda.recipe.screens.search.interaction.RecipesListState
 import com.disgust.sereda.recipe.screens.search.interaction.RecipesListUIEvent
-import com.disgust.sereda.recipe.screens.search.model.*
+import com.disgust.sereda.recipe.screens.search.model.RecipeItem
 import com.disgust.sereda.utils.base.NavigatorViewModel
 import com.disgust.sereda.utils.base.UIEventHandler
-import com.disgust.sereda.utils.commonModel.RecipeFavoriteState
-import com.disgust.sereda.utils.commonModel.UserNotAuthDialogState
+import com.disgust.sereda.utils.commonModel.*
 import com.disgust.sereda.utils.components.PagingState
 import com.disgust.sereda.utils.doSingleRequest
 import com.disgust.sereda.utils.navigation.Screen
@@ -158,6 +157,9 @@ class SearchRecipeViewModel @Inject constructor(
     private fun onStartScreen() {
         updateFavoriteIds()
         getFiltersIngredients()
+        getDiets()
+        getIntolerance()
+
         if (_recipesListState.value is RecipesListState.Waiting) {
             getRandomRecipes()
         }
@@ -272,6 +274,34 @@ class SearchRecipeViewModel @Inject constructor(
         )
     }
 
+    private fun getDiets() {
+        doSingleRequest(
+            query = { repository.getDiets() },
+            doOnSuccess = {
+                buildFiltersChanged {
+                    it.forEach { string ->
+                        (Diet from string)?.let { diet -> builderFilters.addDiet(diet = diet) }
+                    }
+                }
+            }
+        )
+    }
+
+    private fun getIntolerance() {
+        doSingleRequest(
+            query = { repository.getIntolerance() },
+            doOnSuccess = {
+                buildFiltersChanged {
+                    it.forEach { string ->
+                        (Intolerance from string)?.let { intolerance ->
+                            builderFilters.addIntolerance(intolerance = intolerance)
+                        }
+                    }
+                }
+            }
+        )
+    }
+
     private fun filtersDeleteAll() {
         buildFiltersChanged { builderFilters.clearAll() }
         filtersDeleteAllIngredients()
@@ -376,7 +406,11 @@ class SearchRecipeViewModel @Inject constructor(
     private fun getRandomRecipes() {
         doSingleRequest(
             query = {
-                repository.searchRecipes(sort = "random")
+                repository.searchRecipes(
+                    sort = "random",
+                    diet = filtersRecipeApplied.dietsList?.map { it.value }.toQueryString(),
+                    intolerances = filtersRecipeApplied.intolerancesList?.map { it.value }
+                        .toQueryString())
             },
             doOnLoading = {
                 _recipesListState.value = RecipesListState.Loading
