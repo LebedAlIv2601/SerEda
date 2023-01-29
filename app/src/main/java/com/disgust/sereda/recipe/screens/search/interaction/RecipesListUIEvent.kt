@@ -1,10 +1,10 @@
 package com.disgust.sereda.recipe.screens.search.interaction
 
-import com.disgust.sereda.recipe.screens.search.model.Diet
-import com.disgust.sereda.recipe.screens.search.model.IngredientFilter
-import com.disgust.sereda.recipe.screens.search.model.Intolerance
 import com.disgust.sereda.recipe.screens.search.model.RecipeItem
 import com.disgust.sereda.utils.base.BaseUIEvent
+import com.disgust.sereda.utils.commonModel.Diet
+import com.disgust.sereda.utils.commonModel.IngredientFilter
+import com.disgust.sereda.utils.commonModel.Intolerance
 
 sealed class RecipesListUIEvent : BaseUIEvent {
     class SearchClick(val query: String) : RecipesListUIEvent()

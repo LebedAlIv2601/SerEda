@@ -1,4 +1,4 @@
-package com.disgust.sereda.recipe.screens.search.model
+package com.disgust.sereda.utils.commonModel
 
 import com.disgust.sereda.utils.base.BaseChipsEnum
 
@@ -111,7 +111,11 @@ enum class Diet(override val value: String) : BaseChipsEnum {
     VEGAN("Vegan"),
     PESCETARIAN("Pescetarian"),
     PALEO("Paleo"),
-    PRIMAL("Primal")
+    PRIMAL("Primal");
+
+    companion object {
+        infix fun from(value: String): Diet? = Diet.values().firstOrNull { it.value == value }
+    }
 }
 
 enum class Intolerance(override val value: String) : BaseChipsEnum {
@@ -126,5 +130,10 @@ enum class Intolerance(override val value: String) : BaseChipsEnum {
     SOY("Soy"),
     SULFITE("Sulfite"),
     TREE_NUT("Tree Nut"),
-    WHEAT("Wheat")
+    WHEAT("Wheat");
+
+    companion object {
+        infix fun from(value: String): Intolerance? =
+            Intolerance.values().firstOrNull { it.value == value }
+    }
 }

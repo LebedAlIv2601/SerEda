@@ -16,14 +16,13 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.disgust.sereda.recipe.screens.search.components.*
+import com.disgust.sereda.recipe.screens.search.components.RecipeListItem
 import com.disgust.sereda.recipe.screens.search.interaction.RecipesListState
 import com.disgust.sereda.recipe.screens.search.interaction.RecipesListUIEvent
 import com.disgust.sereda.utils.Constants
 import com.disgust.sereda.utils.DoOnInit
 import com.disgust.sereda.utils.commonModel.UserNotAuthDialogState
-import com.disgust.sereda.utils.components.PagingList
-import com.disgust.sereda.utils.components.SearchView
+import com.disgust.sereda.utils.components.*
 import kotlinx.coroutines.launch
 
 @ExperimentalAnimationApi
@@ -67,7 +66,7 @@ fun SearchRecipeScreen(
     }
 
     val dietsChips = @Composable {
-        ChipsFilter(
+        ChipsFilterClickable(
             selectedChips = filtersRecipeChanged.value.dietsList ?: listOf(),
             setChipState = { diet, isAdd ->
                 vm.onUIEvent(RecipesListUIEvent.FiltersSetDiet(diet, isAdd))
@@ -75,7 +74,7 @@ fun SearchRecipeScreen(
     }
 
     val intolerancesChips = @Composable {
-        ChipsFilter(
+        ChipsFilterClickable(
             selectedChips = filtersRecipeChanged.value.intolerancesList ?: listOf(),
             setChipState = { intolerance, isAdd ->
                 vm.onUIEvent(RecipesListUIEvent.FiltersSetIntolerance(intolerance, isAdd))
