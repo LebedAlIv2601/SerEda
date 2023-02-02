@@ -2,7 +2,7 @@
 <resources>
 
     <style name="Theme.SerEda" parent="android:Theme.Material.Light.NoActionBar">
-        <item name="android:statusBarColor">@color/purple_700</item>
+        <item name="android:statusBarColor">@color/green_400</item>
     </style>
 
     <style name="SplashTheme" parent="android:Theme.Material.Light.NoActionBar">
