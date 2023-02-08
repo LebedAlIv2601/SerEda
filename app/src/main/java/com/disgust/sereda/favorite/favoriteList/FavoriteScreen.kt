@@ -6,7 +6,10 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.*
+import androidx.compose.material.Button
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.Icon
+import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.runtime.Composable
@@ -20,6 +23,7 @@ import com.disgust.sereda.favorite.favoriteList.interaction.FavoriteRecipesListS
 import com.disgust.sereda.favorite.favoriteList.interaction.FavoriteUIEvent
 import com.disgust.sereda.favorite.favoriteList.model.FavoriteRecipe
 import com.disgust.sereda.utils.DoOnInit
+import com.disgust.sereda.utils.components.CustomProgressBar
 
 @ExperimentalAnimationApi
 @ExperimentalMaterialApi
@@ -38,7 +42,7 @@ fun FavoriteScreen(
     Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
         when (val favoriteList = favoriteRecipesState.value) {
             is FavoriteRecipesListState.Loading -> {
-                CircularProgressIndicator()
+                CustomProgressBar()
             }
             is FavoriteRecipesListState.Updated -> {
                 Button({ vm.onUIEvent(FavoriteUIEvent.UpdateButtonClick) }) {
@@ -57,7 +61,7 @@ fun FavoriteScreen(
                 )
             }
             is FavoriteRecipesListState.Updating -> {
-                CircularProgressIndicator()
+                CustomProgressBar()
                 RecipesList(
                     recipes = favoriteList.data,
                     onItemClick = { vm.onUIEvent(FavoriteUIEvent.FavoriteRecipesListItemClick(it)) },

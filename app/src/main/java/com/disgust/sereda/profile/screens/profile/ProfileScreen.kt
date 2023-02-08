@@ -20,6 +20,7 @@ import com.disgust.sereda.profile.screens.profile.interaction.UserInfoState
 import com.disgust.sereda.utils.DoOnInit
 import com.disgust.sereda.utils.components.ChipsFilterClickable
 import com.disgust.sereda.utils.components.ChipsFilterNotClickable
+import com.disgust.sereda.utils.components.CustomProgressBar
 import com.disgust.sereda.utils.components.FiltersView
 import kotlinx.coroutines.launch
 
@@ -85,7 +86,7 @@ fun ProfileScreen(
 
             when (val userStateValue = userInfoState.value) {
                 is UserInfoState.Loading -> {
-                    CircularProgressIndicator()
+                    CustomProgressBar()
                 }
                 is UserInfoState.Success -> {
 
