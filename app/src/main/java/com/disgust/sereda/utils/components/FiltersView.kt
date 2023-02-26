@@ -15,6 +15,8 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisallowComposableCalls
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -25,9 +27,11 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.disgust.sereda.utils.ImmutableList
 import com.disgust.sereda.utils.base.BaseChipsEnum
 import com.disgust.sereda.utils.commonModel.Diet
 import com.disgust.sereda.utils.commonModel.IngredientFilter
+import com.disgust.sereda.utils.immutableListOf
 
 @ExperimentalComposeUiApi
 @Composable
@@ -158,10 +162,53 @@ fun ItemIngredientPreview() {
 
 @ExperimentalMaterialApi
 @Composable
+fun <T> ChipsFilterClickableTest(
+    title: String? = null,
+    chips: ImmutableList<T>,
+    selectedChips: ImmutableList<T>,
+    setChipState: (t: T, isAdd: Boolean) -> Unit
+) where T : Enum<T>, T : BaseChipsEnum {
+    title?.let { Text(text = it) }
+
+    LazyHorizontalGrid(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(150.dp) // itemHeight * rowCount + verticalSpacing * (rowCount - 1)
+            //сейчас рандомное значение стоит)))
+            .padding(5.dp),
+        rows = GridCells.Fixed(3)
+    ) {
+        items(chips.items, key = { it.ordinal }) { chip ->
+            var state = selectedChips.items.contains(chip)
+            val onChipClick = remember(state) {
+                {
+                    state = !state
+                    setChipState(chip, state)
+                }
+            }
+            FilterChip(
+                modifier = Modifier.wrapContentSize(),
+                selected = state,
+                colors =
+                if (state) {
+                    ChipDefaults.filterChipColors()
+                } else {
+                    ChipDefaults.outlinedFilterChipColors()
+                },
+                onClick = onChipClick
+            ) {
+                Text(text = chip.value)
+            }
+        }
+    }
+}
+
+@ExperimentalMaterialApi
+@Composable
 inline fun <reified T> ChipsFilterClickable(
     title: String? = null,
-    selectedChips: List<T>,
-    crossinline setChipState: (t: T, isAdd: Boolean) -> Unit,
+    selectedChips: ImmutableList<T>,
+    crossinline setChipState: @DisallowComposableCalls (t: T, isAdd: Boolean) -> Unit
 ) where T : Enum<T>, T : BaseChipsEnum {
     title?.let { Text(text = it) }
 
@@ -174,7 +221,7 @@ inline fun <reified T> ChipsFilterClickable(
         rows = GridCells.Fixed(3),
         content = {
             items(enumValues<T>()) { chip ->
-                var state = chip in selectedChips
+                var state = chip in selectedChips.items
                 FilterChip(
                     modifier = Modifier.wrapContentSize(),
                     selected = state,
@@ -199,7 +246,7 @@ inline fun <reified T> ChipsFilterClickable(
 fun ChipsFilterClickablePreview() {
     ChipsFilterClickable(
         title = "Chips",
-        selectedChips = listOf<Diet>(),
+        selectedChips = immutableListOf<Diet>(),
         setChipState = { _, _ -> })
 }
 
@@ -207,7 +254,7 @@ fun ChipsFilterClickablePreview() {
 @Composable
 fun <T> ChipsFilterNotClickable(
     title: String? = null,
-    chips: List<T>,
+    chips: ImmutableList<T>,
 ) where T : Enum<T>, T : BaseChipsEnum {
     title?.let { Text(text = it) }
 
@@ -219,7 +266,7 @@ fun <T> ChipsFilterNotClickable(
             .padding(5.dp),
         rows = GridCells.Fixed(1),
         content = {
-            items(chips) { chip ->
+            items(chips.items, key = { it.ordinal }) { chip ->
                 Chip(
                     modifier = Modifier.wrapContentSize(),
                     enabled = false,
@@ -238,7 +285,7 @@ fun <T> ChipsFilterNotClickable(
 fun ChipsFilterNotClickablePreview() {
     ChipsFilterNotClickable(
         title = "Chips",
-        chips = listOf<Diet>(Diet.GLUTEN_FREE, Diet.KETOGENIC)
+        chips = immutableListOf(Diet.GLUTEN_FREE, Diet.KETOGENIC)
     )
 }
 

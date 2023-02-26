@@ -12,19 +12,18 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.util.*
 
 fun <T : Any> ViewModel.doSingleRequest(
     query: suspend () -> T,
     doOnLoading: () -> Unit = {},
-    doOnSuccess: (T) -> Unit,
+    doOnSuccess: (T) -> Unit = {},
     doOnError: (Exception) -> Unit = {}
 ) {
     viewModelScope.launch {
         doOnLoading.invoke()
         try {
-            val response = withContext(Dispatchers.IO) { query.invoke() }
+            val response = query.invoke()
             doOnSuccess.invoke(response)
         } catch (e: Exception) {
             doOnError.invoke(e)
@@ -92,4 +91,8 @@ fun List<Any?>?.toQueryString(): String {
     } else {
         "null"
     }
+}
+
+fun <T> List<T>?.toImmutableOrEmpty(): ImmutableList<T> {
+    return this?.toImmutable() ?: immutableListOf()
 }

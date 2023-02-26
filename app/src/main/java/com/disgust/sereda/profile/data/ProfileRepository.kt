@@ -5,6 +5,8 @@ import com.disgust.sereda.profile.screens.profile.model.ProfileUser
 import com.disgust.sereda.utils.db.SerEdaDatabase
 import com.disgust.sereda.utils.firebase.FirebaseAuthHelper
 import com.disgust.sereda.utils.firebase.FirebaseDatabaseHelper
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @ExperimentalMaterialApi
@@ -17,25 +19,32 @@ class ProfileRepository @Inject constructor(
     fun isAuth() = firebaseAuthHelper.isAuth()
 
     suspend fun getProfileInfo(): ProfileUser {
-        return firebaseDatabaseHelper.getUserData().toProfileUser()
+        return withContext(Dispatchers.IO) { firebaseDatabaseHelper.getUserData().toProfileUser() }
     }
 
-    fun signOut() {
-        db.favoriteRecipeDao().clearFavoriteRecipes()
-        firebaseAuthHelper.signOut()
+    suspend fun signOut() {
+        withContext(Dispatchers.IO) {
+            db.favoriteRecipeDao().clearFavoriteRecipes()
+            firebaseAuthHelper.signOut()
+        }
     }
 
-    fun addDiet(diet: String) = firebaseDatabaseHelper.addDiet(diet)
+    suspend fun addDiet(diet: String) =
+        withContext(Dispatchers.IO) { firebaseDatabaseHelper.addDiet(diet) }
 
-    fun deleteDiet(diet: String) = firebaseDatabaseHelper.deleteDiet(diet)
+    suspend fun deleteDiet(diet: String) =
+        withContext(Dispatchers.IO) { firebaseDatabaseHelper.deleteDiet(diet) }
 
-    fun addIntolerance(intolerance: String) = firebaseDatabaseHelper.addIntolerance(intolerance)
+    suspend fun addIntolerance(intolerance: String) =
+        withContext(Dispatchers.IO) { firebaseDatabaseHelper.addIntolerance(intolerance) }
 
-    fun deleteIntolerance(intolerance: String) =
-        firebaseDatabaseHelper.deleteIntolerance(intolerance)
+    suspend fun deleteIntolerance(intolerance: String) =
+        withContext(Dispatchers.IO) { firebaseDatabaseHelper.deleteIntolerance(intolerance) }
 
-    suspend fun getDiets(): List<String> = firebaseDatabaseHelper.getDiets()
+    suspend fun getDiets(): List<String> =
+        withContext(Dispatchers.IO) { firebaseDatabaseHelper.getDiets() }
 
-    suspend fun getIntolerance(): List<String> = firebaseDatabaseHelper.getIntolerance()
+    suspend fun getIntolerance(): List<String> =
+        withContext(Dispatchers.IO) { firebaseDatabaseHelper.getIntolerance() }
 
 }

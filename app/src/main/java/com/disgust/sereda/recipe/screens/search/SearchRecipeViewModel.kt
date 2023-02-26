@@ -309,8 +309,7 @@ class SearchRecipeViewModel @Inject constructor(
 
     private fun filtersDeleteAllIngredients() {
         doSingleRequest(
-            query = { repository.deleteAllFiltersRecipe() },
-            doOnSuccess = {}
+            query = { repository.deleteAllFiltersRecipe() }
         )
     }
 
@@ -325,8 +324,7 @@ class SearchRecipeViewModel @Inject constructor(
 
     private fun updateFiltersIngredients(list: List<IngredientFilter>) {
         doSingleRequest(
-            query = { repository.updateFiltersIngredients(list) },
-            doOnSuccess = {}
+            query = { repository.updateFiltersIngredients(list) }
         )
     }
 
@@ -368,8 +366,7 @@ class SearchRecipeViewModel @Inject constructor(
 
     private fun updateFavoriteIds() {
         doSingleRequest(
-            query = { repository.updateFavoriteRecipeIds() },
-            doOnSuccess = {}
+            query = { repository.updateFavoriteRecipeIds() }
         )
     }
 
@@ -426,16 +423,14 @@ class SearchRecipeViewModel @Inject constructor(
 
     private fun addRecipeToFavorite(recipe: RecipeItem) {
         doSingleRequest(
-            query = { repository.addFavoriteRecipe(recipe) },
-            doOnSuccess = {}
+            query = { repository.addFavoriteRecipe(recipe) }
         )
     }
 
 
     private fun deleteRecipeFromFavorite(recipe: RecipeItem) {
         doSingleRequest(
-            query = { repository.deleteFavoriteRecipe(recipe) },
-            doOnSuccess = {}
+            query = { repository.deleteFavoriteRecipe(recipe) }
         )
     }
 

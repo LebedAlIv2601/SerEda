@@ -75,10 +75,11 @@ class ProfileViewModel @Inject constructor(val repository: ProfileRepository) :
     }
 
     private fun setIntolerance(intolerance: Intolerance, isAdd: Boolean) {
-        if (isAdd)
+        if (isAdd) {
             addIntolerance(intolerance)
-        else
+        } else {
             deleteIntolerance(intolerance)
+        }
     }
 
     private fun deleteIntolerance(intolerance: Intolerance) {

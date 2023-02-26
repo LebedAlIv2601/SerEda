@@ -11,6 +11,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -18,10 +19,14 @@ import androidx.compose.ui.unit.dp
 import com.disgust.sereda.profile.screens.profile.interaction.ProfileUIEvent
 import com.disgust.sereda.profile.screens.profile.interaction.UserInfoState
 import com.disgust.sereda.utils.DoOnInit
-import com.disgust.sereda.utils.components.ChipsFilterClickable
+import com.disgust.sereda.utils.commonModel.Diet
+import com.disgust.sereda.utils.commonModel.Intolerance
+import com.disgust.sereda.utils.components.ChipsFilterClickableTest
 import com.disgust.sereda.utils.components.ChipsFilterNotClickable
 import com.disgust.sereda.utils.components.CustomProgressBar
 import com.disgust.sereda.utils.components.FiltersView
+import com.disgust.sereda.utils.toImmutableList
+import com.disgust.sereda.utils.toImmutableOrEmpty
 import kotlinx.coroutines.launch
 
 @ExperimentalMaterialApi
@@ -40,27 +45,45 @@ fun ProfileScreen(
     val scope = rememberCoroutineScope()
 
     val dietsChips = @Composable {
-        ChipsFilterClickable(
-            selectedChips = filtersProfile.value.dietsList ?: listOf(),
-            setChipState = { diet, isAdd ->
+        val setDiet: (Diet, Boolean) -> Unit = remember {
+            { diet, isAdd ->
                 vm.onUIEvent(ProfileUIEvent.FiltersSetDiet(diet, isAdd))
-            })
+            }
+        }
+        ChipsFilterClickableTest(
+            selectedChips = filtersProfile.value.dietsList.toImmutableOrEmpty(),
+            chips = Diet.values().toImmutableList(),
+            setChipState = setDiet
+        )
+//        ChipsFilterClickable(
+//            selectedChips = filtersProfile.value.dietsList.toImmutableOrEmpty(),
+//            setChipState = setDiet
+//        )
     }
 
     val intoleranceChips = @Composable {
-        ChipsFilterClickable(
-            selectedChips = filtersProfile.value.intolerancesList ?: listOf(),
-            setChipState = { intolerance, isAdd ->
+        val setIntolerance: (Intolerance, Boolean) -> Unit = remember {
+            { intolerance, isAdd ->
                 vm.onUIEvent(ProfileUIEvent.FiltersSetIntolerance(intolerance, isAdd))
-            })
+            }
+        }
+        ChipsFilterClickableTest(
+            selectedChips = filtersProfile.value.intolerancesList.toImmutableOrEmpty(),
+            chips = Intolerance.values().toImmutableList(),
+            setChipState = setIntolerance
+        )
+//        ChipsFilterClickable(
+//            selectedChips = filtersProfile.value.intolerancesList.toImmutableOrEmpty(),
+//            setChipState = setIntolerance
+//        )
     }
 
     val dietsChipsSelected = @Composable {
-        ChipsFilterNotClickable(chips = filtersProfile.value.dietsList ?: listOf())
+        ChipsFilterNotClickable(chips = filtersProfile.value.dietsList.toImmutableOrEmpty())
     }
 
     val intoleranceChipsSelected = @Composable {
-        ChipsFilterNotClickable(chips = filtersProfile.value.intolerancesList ?: listOf())
+        ChipsFilterNotClickable(chips = filtersProfile.value.intolerancesList.toImmutableOrEmpty())
     }
 
     DoOnInit {
@@ -82,8 +105,6 @@ fun ProfileScreen(
             }
         }) {
         Column() {
-
-
             when (val userStateValue = userInfoState.value) {
                 is UserInfoState.Loading -> {
                     CustomProgressBar()
