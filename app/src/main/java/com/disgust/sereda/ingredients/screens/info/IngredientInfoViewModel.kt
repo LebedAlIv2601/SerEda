@@ -64,8 +64,7 @@ class IngredientInfoViewModel @Inject constructor(
 
     private fun addFilterRecipe(filter: FilterRecipeDBModel) {
         doSingleRequest(
-            query = { repository.addFilterRecipe(filter) },
-            doOnSuccess = { }
+            query = { repository.addFilterRecipe(filter) }
         )
     }
 

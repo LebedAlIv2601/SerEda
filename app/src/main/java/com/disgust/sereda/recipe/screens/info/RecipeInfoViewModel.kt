@@ -80,16 +80,14 @@ class RecipeInfoViewModel @Inject constructor(
     private fun addRecipeToFavorite(recipe: RecipeInfo) {
         changeRecipeState(RecipeFavoriteState.FAVORITE)
         doSingleRequest(
-            query = { repository.addFavoriteRecipe(recipe) },
-            doOnSuccess = {}
+            query = { repository.addFavoriteRecipe(recipe) }
         )
     }
 
     private fun deleteRecipeFromFavorite(recipe: RecipeInfo) {
         changeRecipeState(RecipeFavoriteState.NOT_FAVORITE)
         doSingleRequest(
-            query = { repository.deleteFavoriteRecipe(recipe) },
-            doOnSuccess = {}
+            query = { repository.deleteFavoriteRecipe(recipe) }
         )
     }
 

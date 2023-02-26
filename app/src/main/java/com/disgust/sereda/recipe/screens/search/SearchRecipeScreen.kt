@@ -23,6 +23,7 @@ import com.disgust.sereda.utils.Constants
 import com.disgust.sereda.utils.DoOnInit
 import com.disgust.sereda.utils.commonModel.UserNotAuthDialogState
 import com.disgust.sereda.utils.components.*
+import com.disgust.sereda.utils.toImmutableOrEmpty
 import kotlinx.coroutines.launch
 
 @ExperimentalAnimationApi
@@ -67,7 +68,7 @@ fun SearchRecipeScreen(
 
     val dietsChips = @Composable {
         ChipsFilterClickable(
-            selectedChips = filtersRecipeChanged.value.dietsList ?: listOf(),
+            selectedChips = filtersRecipeChanged.value.dietsList.toImmutableOrEmpty(),
             setChipState = { diet, isAdd ->
                 vm.onUIEvent(RecipesListUIEvent.FiltersSetDiet(diet, isAdd))
             })
@@ -75,7 +76,7 @@ fun SearchRecipeScreen(
 
     val intolerancesChips = @Composable {
         ChipsFilterClickable(
-            selectedChips = filtersRecipeChanged.value.intolerancesList ?: listOf(),
+            selectedChips = filtersRecipeChanged.value.intolerancesList.toImmutableOrEmpty(),
             setChipState = { intolerance, isAdd ->
                 vm.onUIEvent(RecipesListUIEvent.FiltersSetIntolerance(intolerance, isAdd))
             })

@@ -65,8 +65,7 @@ class FavoriteViewModel @Inject constructor(private val repository: FavoriteRepo
 
     private fun deleteRecipeFromFavorite(recipe: FavoriteRecipe) {
         doSingleRequest(
-            query = { repository.deleteRecipeFromFavorite(recipe) },
-            doOnSuccess = {}
+            query = { repository.deleteRecipeFromFavorite(recipe) }
         )
     }
 

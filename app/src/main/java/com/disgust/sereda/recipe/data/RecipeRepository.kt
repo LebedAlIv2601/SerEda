@@ -8,7 +8,9 @@ import com.disgust.sereda.utils.commonModel.RecipeFavoriteState
 import com.disgust.sereda.utils.db.SerEdaDatabase
 import com.disgust.sereda.utils.firebase.FirebaseAuthHelper
 import com.disgust.sereda.utils.firebase.FirebaseDatabaseHelper
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -24,7 +26,7 @@ class RecipeRepository @Inject constructor(
     fun isAuth() = authHelper.isAuth()
 
     suspend fun getInfoRecipe(id: Int): RecipeInfo {
-        return api.getRecipeInfo(id).toRecipeInfo()
+        return withContext(Dispatchers.IO) { api.getRecipeInfo(id).toRecipeInfo() }
     }
 
     suspend fun searchRecipes(
@@ -39,79 +41,99 @@ class RecipeRepository @Inject constructor(
         maxCalories: Int? = null,
         offset: Int = 0
     ): List<RecipeItem> {
-        val favoriteIds = getFavoriteRecipeIds()
-        val recipes =
-            api.searchRecipes(
-                query,
-                sort,
-                includeIngredients,
-                excludeIngredients,
-                diet,
-                intolerances,
-                maxReadyTime,
-                minCalories,
-                maxCalories,
-                offset
-            ).results.map { it.toRecipeItem() }.toMutableList()
-        recipes.forEachIndexed { index, recipe ->
-            val isFavorite = favoriteIds.find { it == recipe.id } != null
-            if (isFavorite) {
-                recipes[index] = recipe.copy(favoriteState = RecipeFavoriteState.FAVORITE)
+        return withContext(Dispatchers.IO) {
+            val favoriteIds = getFavoriteRecipeIds()
+            val recipes =
+                api.searchRecipes(
+                    query,
+                    sort,
+                    includeIngredients,
+                    excludeIngredients,
+                    diet,
+                    intolerances,
+                    maxReadyTime,
+                    minCalories,
+                    maxCalories,
+                    offset
+                ).results.map { it.toRecipeItem() }.toMutableList()
+            recipes.forEachIndexed { index, recipe ->
+                val isFavorite = favoriteIds.find { it == recipe.id } != null
+                if (isFavorite) {
+                    recipes[index] = recipe.copy(favoriteState = RecipeFavoriteState.FAVORITE)
+                }
             }
+            recipes
         }
-        return recipes
     }
 
     suspend fun updateFavoriteRecipeIds() {
-        val list = firebaseHelper.getFavoriteRecipes()
-        db.favoriteRecipeDao()
-            .updateFavoriteRecipes(list.map { it.toFavoriteRecipeDBModel() })
+        withContext(Dispatchers.IO) {
+            val list = firebaseHelper.getFavoriteRecipes()
+            db.favoriteRecipeDao()
+                .updateFavoriteRecipes(list.map { it.toFavoriteRecipeDBModel() })
+        }
     }
 
     fun getFavoriteRecipeIdsFlow() =
         db.favoriteRecipeDao().getFavoriteRecipesFlow().map { it.map { item -> item.id } }
 
     //add recipe to favorite
-    fun addFavoriteRecipe(recipe: RecipeItem) {
-        db.favoriteRecipeDao().insertFavoriteRecipe(recipe.toFavoriteRecipeDBModel())
-        firebaseHelper.addFavoriteRecipe(recipe.toFavoriteRecipeFirebaseModel())
+    suspend fun addFavoriteRecipe(recipe: RecipeItem) {
+        withContext(Dispatchers.IO) {
+            db.favoriteRecipeDao().insertFavoriteRecipe(recipe.toFavoriteRecipeDBModel())
+            firebaseHelper.addFavoriteRecipe(recipe.toFavoriteRecipeFirebaseModel())
+        }
     }
 
-    fun addFavoriteRecipe(recipe: RecipeInfo) {
-        db.favoriteRecipeDao().insertFavoriteRecipe(recipe.toFavoriteRecipeDBModel())
-        firebaseHelper.addFavoriteRecipe(recipe.toFavoriteRecipeFirebaseModel())
+    suspend fun addFavoriteRecipe(recipe: RecipeInfo) {
+        withContext(Dispatchers.IO) {
+            db.favoriteRecipeDao().insertFavoriteRecipe(recipe.toFavoriteRecipeDBModel())
+            firebaseHelper.addFavoriteRecipe(recipe.toFavoriteRecipeFirebaseModel())
+        }
     }
     //end
 
     //delete recipe from favorite
-    fun deleteFavoriteRecipe(recipe: RecipeItem) {
-        db.favoriteRecipeDao().deleteFavoriteRecipe(recipe.toFavoriteRecipeDBModel())
-        firebaseHelper.deleteFavoriteRecipe(recipe.toFavoriteRecipeFirebaseModel())
+    suspend fun deleteFavoriteRecipe(recipe: RecipeItem) {
+        withContext(Dispatchers.IO) {
+            db.favoriteRecipeDao().deleteFavoriteRecipe(recipe.toFavoriteRecipeDBModel())
+            firebaseHelper.deleteFavoriteRecipe(recipe.toFavoriteRecipeFirebaseModel())
+        }
     }
 
-    fun deleteFavoriteRecipe(recipe: RecipeInfo) {
-        db.favoriteRecipeDao().deleteFavoriteRecipe(recipe.toFavoriteRecipeDBModel())
-        firebaseHelper.deleteFavoriteRecipe(recipe.toFavoriteRecipeFirebaseModel())
+    suspend fun deleteFavoriteRecipe(recipe: RecipeInfo) {
+        withContext(Dispatchers.IO) {
+            db.favoriteRecipeDao().deleteFavoriteRecipe(recipe.toFavoriteRecipeDBModel())
+            firebaseHelper.deleteFavoriteRecipe(recipe.toFavoriteRecipeFirebaseModel())
+        }
     }
     //end
 
-    fun getFiltersIngredientRecipe(): List<IngredientFilter> =
-        db.filtersRecipeDao().getFiltersRecipe().map { it.toIngredientFilter() }
+    suspend fun getFiltersIngredientRecipe(): List<IngredientFilter> =
+        withContext(Dispatchers.IO) {
+            db.filtersRecipeDao().getFiltersRecipe().map { it.toIngredientFilter() }
+        }
 
-    fun deleteAllFiltersRecipe() =
-        db.filtersRecipeDao().deleteAllFiltersRecipe()
+    suspend fun deleteAllFiltersRecipe() =
+        withContext(Dispatchers.IO) {
+            db.filtersRecipeDao().deleteAllFiltersRecipe()
+        }
 
-    fun deleteFiltersIngredient(ingredientFilter: IngredientFilter) =
-        db.filtersRecipeDao().deleteFilterRecipe(ingredientFilter.toFilterRecipeDBModel())
+    suspend fun deleteFiltersIngredient(ingredientFilter: IngredientFilter) =
+        withContext(Dispatchers.IO) {
+            db.filtersRecipeDao().deleteFilterRecipe(ingredientFilter.toFilterRecipeDBModel())
+        }
 
-    fun updateFiltersIngredients(list: List<IngredientFilter>) =
-        db.filtersRecipeDao()
-            .updateFilterRecipeByIngredient(list.map { it.toFilterRecipeDBModel() })
-
-    private fun getFavoriteRecipeIds(): List<Int> =
-        db.favoriteRecipeDao().getFavoriteRecipes().map { it.id }
+    suspend fun updateFiltersIngredients(list: List<IngredientFilter>) =
+        withContext(Dispatchers.IO) {
+            db.filtersRecipeDao()
+                .updateFilterRecipeByIngredient(list.map { it.toFilterRecipeDBModel() })
+        }
 
     suspend fun getDiets(): List<String> = firebaseHelper.getDiets()
 
     suspend fun getIntolerance(): List<String> = firebaseHelper.getIntolerance()
+
+    private suspend fun getFavoriteRecipeIds(): List<Int> =
+        withContext(Dispatchers.IO) { db.favoriteRecipeDao().getFavoriteRecipes().map { it.id } }
 }
